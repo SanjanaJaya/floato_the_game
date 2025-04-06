@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:flame/components.dart';
+import 'package:floato_the_game/constants.dart';
 
 class Rocket extends SpriteComponent{
 
-  Rocket() : super(position: Vector2(100, 100),size: Vector2(60, 40));
+  Rocket() : super(position: Vector2(rocketStartX, rocketStartY),size: Vector2(rocketWidth, rocketHeight));
 
   double velocity = 0;
-  final double gravity = 800;
-  final double jumpStrength = -300;
+
 
   @override
   FutureOr<void> onLoad() async {
