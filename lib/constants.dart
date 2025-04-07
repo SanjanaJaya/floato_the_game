@@ -1,29 +1,21 @@
+// Rocket constants
 const double rocketStartX = 100;
 const double rocketStartY = 100;
 const double rocketWidth = 40;
 const double rocketHeight = 40;
 const double gravity = 800;
 const double jumpStrength = -300;
+
+// Ground constants
 const double groundHeight = 100;
 const double groundScrollingSpeed = 100;
+
+// Building constants
 const double buildingInterval = 2;
 const double buildingGap = 300;
 const double minBuildingHeight = 125;
 const double maxBuildingHeight = 200;
 const double buildingWidth = 60;
-const double enemyPlaneWidth = 110;
-const double enemyPlaneHeight = 65;
-const double enemyPlaneSpeed = 150;
-const double enemySpawnInterval = 3;
-// Add these to your constants
-const List<String> enemyPlaneImages = [
-  'enemy_plane1.png',
-  'enemy_plane2.png',
-  'enemy_plane3.png',
-  'enemy_plane4.png',
-];
-const List<double> enemyPlaneSpeeds = [150, 170, 130, 250]; // Different speeds for each plane
-// Add this to your constants.dart file
 const List<String> buildingImages = [
   'building1.png',
   'building2.png',
@@ -31,7 +23,21 @@ const List<String> buildingImages = [
   'building4.png',
   'building5.png',
 ];
-// Add these to your constants.dart file
+
+// Enemy plane constants
+const double enemyPlaneWidth = 110;
+const double enemyPlaneHeight = 65;
+const double enemyPlaneSpeed = 150;
+const double enemySpawnInterval = 3;
+const List<String> enemyPlaneImages = [
+  'enemy_plane1.png',
+  'enemy_plane2.png',
+  'enemy_plane3.png',
+  'enemy_plane4.png',
+];
+const List<double> enemyPlaneSpeeds = [150, 170, 130, 200];
+
+// Difficulty levels
 const Map<int, Map<String, dynamic>> difficultyLevels = {
   0: { // Level 1 (0-49 points)
     'buildingInterval': 2.0,
@@ -45,7 +51,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'buildingInterval': 1.7,
     'buildingGap': 280.0,
     'enemySpawnInterval': 2.7,
-    'groundScrollingSpeed': 120.0,
+    'groundScrollingSpeed': 125.0,
     'levelName': 'Level 2',
     'levelRange': '50-150',
   },
@@ -53,7 +59,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'buildingInterval': 1.4,
     'buildingGap': 260.0,
     'enemySpawnInterval': 2.4,
-    'groundScrollingSpeed': 140.0,
+    'groundScrollingSpeed': 150.0,
     'levelName': 'Level 3',
     'levelRange': '150-250',
   },
@@ -61,7 +67,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'buildingInterval': 1.1,
     'buildingGap': 240.0,
     'enemySpawnInterval': 2.1,
-    'groundScrollingSpeed': 160.0,
+    'groundScrollingSpeed': 200.0,
     'levelName': 'Level 4',
     'levelRange': '250-350',
   },
@@ -69,7 +75,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'buildingInterval': 0.8,
     'buildingGap': 220.0,
     'enemySpawnInterval': 1.8,
-    'groundScrollingSpeed': 180.0,
+    'groundScrollingSpeed': 225.0,
     'levelName': 'Level 5',
     'levelRange': '350-500',
   },
