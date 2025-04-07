@@ -6,6 +6,7 @@ import 'package:floato_the_game/components/building_manager.dart';
 import 'package:floato_the_game/components/buildinng.dart';
 import 'package:floato_the_game/components/rocket.dart';
 import 'package:floato_the_game/components/ground.dart';
+import 'package:floato_the_game/components/score.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,7 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
   late Background background;
   late Ground ground;
   late BuildingManager buildingManager;
+  late ScoreText scoreText;
 
   @override
   FutureOr<void> onLoad() {
@@ -30,12 +32,22 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
     buildingManager = BuildingManager();
     add(buildingManager);
 
+    scoreText = ScoreText();
+    add(scoreText);
+
   }
 
   @override
   void onTap() {
     rocket.flap();
   }
+
+  int score = 0;
+
+  void incrementScore(){
+    score += 1;
+  }
+
 
   //Game Over
   bool isGameOver = false;
@@ -50,6 +62,7 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
       context: buildContext!,
       builder: (context) => AlertDialog(
         title: const Text("Game Over Hutto"),
+        content: Text("High Score: $score"),
         actions: [
           TextButton(
             onPressed: (){
@@ -68,6 +81,7 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
   void resetGame(){
     rocket.position = Vector2(rocketStartX, rocketStartY);
     rocket.velocity = 0;
+    score = 0;
     isGameOver = false;
 
     children.whereType<Building>().forEach((Building building) => building.removeFromParent());
