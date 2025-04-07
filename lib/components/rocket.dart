@@ -30,6 +30,11 @@ class Rocket extends SpriteComponent with CollisionCallbacks{
     velocity += gravity * dt;
 
     position.y += velocity * dt;
+
+    if (position.y < 0) {
+      position.y = 0;
+      velocity = 0;
+    }
   }
 
 
