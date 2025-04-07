@@ -29,6 +29,17 @@ class floato extends FlameGame with TapDetector{
     rocket.flap();
   }
 
+  //Game Over
+  bool isGameOver = false;
+
+  void gameOver() {
+    if (isGameOver) return;
+
+    isGameOver = true;
+    pauseEngine();
+  }
+
+
 
 }
 

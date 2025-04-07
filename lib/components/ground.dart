@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
 
-class Ground extends SpriteComponent with HasGameRef<floato>{
+class Ground extends SpriteComponent with HasGameRef<floato>, CollisionCallbacks{
   Ground() : super();
 
 
