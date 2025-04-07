@@ -3,6 +3,7 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:floato_the_game/components/background.dart';
 import 'package:floato_the_game/components/building_manager.dart';
+import 'package:floato_the_game/components/buildinng.dart';
 import 'package:floato_the_game/components/rocket.dart';
 import 'package:floato_the_game/components/ground.dart';
 import 'package:floato_the_game/constants.dart';
@@ -68,8 +69,9 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
     rocket.position = Vector2(rocketStartX, rocketStartY);
     rocket.velocity = 0;
     isGameOver = false;
+
+    children.whereType<Building>().forEach((Building building) => building.removeFromParent());
     resumeEngine();
   }
-
 }
 
