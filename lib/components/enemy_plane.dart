@@ -1,32 +1,28 @@
 import 'dart:async';
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:floato_the_game/components/rocket.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
 
-class Building extends SpriteComponent with CollisionCallbacks, HasGameRef<floato> {
-  bool scored = false;
-
-  Building(Vector2 position, Vector2 size)
-      : super(position: position, size: size);
+class EnemyPlane extends SpriteComponent with CollisionCallbacks, HasGameRef<floato> {
+  EnemyPlane({
+    required Vector2 position,
+    required Vector2 size,
+  }) : super(position: position, size: size);
 
   @override
   FutureOr<void> onLoad() async {
-    sprite = await Sprite.load('building_bottom.png');
+    sprite = await Sprite.load('enemy_plane.png');
     add(RectangleHitbox());
   }
 
   @override
   void update(double dt) {
-    position.x -= groundScrollingSpeed * dt;
+    position.x -= enemyPlaneSpeed * dt;
 
-    if (!scored && position.x + size.x < gameRef.rocket.position.x) {
-      scored = true;
-      gameRef.incrementScore();
-    }
-
-    if (position.x + size.x <= 0) {
+    if (position.x + size.x < 0) {
       removeFromParent();
     }
   }

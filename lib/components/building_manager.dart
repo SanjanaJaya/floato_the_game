@@ -1,55 +1,55 @@
 import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:floato_the_game/components/buildinng.dart';
+import 'package:floato_the_game/components/enemy_plane.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
 
-class BuildingManager extends Component with HasGameRef<floato>{
-
+class BuildingManager extends Component with HasGameRef<floato> {
   double buildingSpawnTimer = 0;
+  double enemySpawnTimer = 0;
 
   @override
-  void update(double dt){
-
+  void update(double dt) {
     buildingSpawnTimer += dt;
+    enemySpawnTimer += dt;
 
-
-    if (buildingSpawnTimer > buildingInterval){
+    if (buildingSpawnTimer > buildingInterval) {
       buildingSpawnTimer = 0;
       spawnBuilding();
     }
+
+    if (enemySpawnTimer > enemySpawnInterval) {
+      enemySpawnTimer = 0;
+      spawnEnemy();
+    }
   }
 
-  void spawnBuilding(){
+  void spawnBuilding() {
     final double screenHeight = gameRef.size.y;
+    final double maxBuildingHeight = screenHeight - groundHeight - minBuildingHeight;
+    final double buildingHeight = minBuildingHeight + Random().nextDouble() * (maxBuildingHeight - minBuildingHeight);
 
-
-    final double maxBuildingHeight =
-        screenHeight- groundHeight - buildingGap - minBuildingHeight;
-
-    final double bottomBuildingHeight =
-        minBuildingHeight + Random().nextDouble() * (maxBuildingHeight - minBuildingHeight);
-
-    final double topBuildingHeight =
-        screenHeight - groundHeight - bottomBuildingHeight - buildingGap;
-
-
-    final bottomBuilding = Building(
-      Vector2(gameRef.size.x, screenHeight - groundHeight - bottomBuildingHeight),
-      Vector2(buildingWidth,bottomBuildingHeight),
-      isTopBuilding: false,
+    final building = Building(
+      Vector2(gameRef.size.x, screenHeight - groundHeight - buildingHeight),
+      Vector2(buildingWidth, buildingHeight),
     );
 
-    final topBuilding = Building(
-      Vector2(gameRef.size.x,0),
-      Vector2(buildingWidth,topBuildingHeight),
-      isTopBuilding: true,
-    );
-
-    gameRef.add(bottomBuilding);
-    gameRef.add(topBuilding);
-
-
+    gameRef.add(building);
   }
 
+  void spawnEnemy() {
+    final double screenHeight = gameRef.size.y;
+    final double minY = 100;
+    final double maxY = screenHeight - groundHeight - 150;
+
+    final double yPos = minY + Random().nextDouble() * (maxY - minY);
+
+    final enemy = EnemyPlane(
+      position: Vector2(gameRef.size.x, yPos),
+      size: Vector2(enemyPlaneWidth, enemyPlaneHeight),
+    );
+
+    gameRef.add(enemy);
+  }
 }

@@ -7,6 +7,7 @@ import 'package:floato_the_game/components/buildinng.dart';
 import 'package:floato_the_game/components/rocket.dart';
 import 'package:floato_the_game/components/ground.dart';
 import 'package:floato_the_game/components/score.dart';
+import 'package:floato_the_game/components/enemy_plane.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -61,14 +62,12 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
     showDialog(
       context: buildContext!,
       builder: (context) => AlertDialog(
-        title: const Text("Game Over Hutto"),
-        content: Text("High Score: $score"),
+        title: const Text("Game Over"),
+        content: Text("Score: $score"),
         actions: [
           TextButton(
             onPressed: (){
-
               Navigator.pop(context);
-
               resetGame();
             },
             child: const Text("Restart"),
@@ -84,7 +83,10 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
     score = 0;
     isGameOver = false;
 
-    children.whereType<Building>().forEach((Building building) => building.removeFromParent());
+    // Remove all buildings and enemies
+    children.whereType<Building>().forEach((building) => building.removeFromParent());
+    children.whereType<EnemyPlane>().forEach((enemy) => enemy.removeFromParent());
+
     resumeEngine();
   }
 }
