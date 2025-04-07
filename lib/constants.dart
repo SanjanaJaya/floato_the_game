@@ -31,3 +31,46 @@ const List<String> buildingImages = [
   'building4.png',
   'building5.png',
 ];
+// Add these to your constants.dart file
+const Map<int, Map<String, dynamic>> difficultyLevels = {
+  0: { // Level 1 (0-49 points)
+    'buildingInterval': 2.0,
+    'buildingGap': 300.0,
+    'enemySpawnInterval': 3.0,
+    'groundScrollingSpeed': 100.0,
+    'levelName': 'Level 1',
+    'levelRange': '0-50',
+  },
+  50: { // Level 2 (50-149 points)
+    'buildingInterval': 1.7,
+    'buildingGap': 280.0,
+    'enemySpawnInterval': 2.7,
+    'groundScrollingSpeed': 120.0,
+    'levelName': 'Level 2',
+    'levelRange': '50-150',
+  },
+  150: { // Level 3 (150-249 points)
+    'buildingInterval': 1.4,
+    'buildingGap': 260.0,
+    'enemySpawnInterval': 2.4,
+    'groundScrollingSpeed': 140.0,
+    'levelName': 'Level 3',
+    'levelRange': '150-250',
+  },
+  250: { // Level 4 (250-349 points)
+    'buildingInterval': 1.1,
+    'buildingGap': 240.0,
+    'enemySpawnInterval': 2.1,
+    'groundScrollingSpeed': 160.0,
+    'levelName': 'Level 4',
+    'levelRange': '250-350',
+  },
+  350: { // Level 5 (350-500+ points)
+    'buildingInterval': 0.8,
+    'buildingGap': 220.0,
+    'enemySpawnInterval': 1.8,
+    'groundScrollingSpeed': 180.0,
+    'levelName': 'Level 5',
+    'levelRange': '350-500',
+  },
+};

@@ -8,6 +8,8 @@ import 'package:floato_the_game/game.dart';
 class Ground extends SpriteComponent with HasGameRef<floato>, CollisionCallbacks {
   Ground() : super();
 
+  double scrollingSpeed = difficultyLevels[0]!['groundScrollingSpeed'];
+
   @override
   FutureOr<void> onLoad() async {
     size = Vector2(2 * gameRef.size.x, groundHeight);
@@ -18,11 +20,17 @@ class Ground extends SpriteComponent with HasGameRef<floato>, CollisionCallbacks
 
   @override
   void update(double dt) {
-    position.x -= groundScrollingSpeed * dt;
+    if (gameRef.isGameOver) return;
+
+    position.x -= scrollingSpeed * dt;
 
     if (position.x + size.x / 2 <= 0) {
       position.x = 0;
     }
+  }
+
+  void updateScrollingSpeed(double newSpeed) {
+    scrollingSpeed = newSpeed;
   }
 
   @override

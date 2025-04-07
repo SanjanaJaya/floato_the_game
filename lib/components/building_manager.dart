@@ -8,9 +8,13 @@ import 'package:floato_the_game/game.dart';
 class BuildingManager extends Component with HasGameRef<floato> {
   double buildingSpawnTimer = 0;
   double enemySpawnTimer = 0;
+  double buildingInterval = difficultyLevels[0]!['buildingInterval'];
+  double enemySpawnInterval = difficultyLevels[0]!['enemySpawnInterval'];
 
   @override
   void update(double dt) {
+    if (gameRef.isGameOver) return;
+
     buildingSpawnTimer += dt;
     enemySpawnTimer += dt;
 
@@ -27,15 +31,11 @@ class BuildingManager extends Component with HasGameRef<floato> {
 
   void spawnBuilding() {
     final double screenHeight = gameRef.size.y;
-    // Random height between minBuildingHeight and maxBuildingHeight
     final double buildingHeight = minBuildingHeight +
         Random().nextDouble() * (maxBuildingHeight - minBuildingHeight);
 
     final building = Building(
-      Vector2(
-          gameRef.size.x,
-          screenHeight - groundHeight // Remove the "- buildingHeight" from this calculation
-      ),
+      Vector2(gameRef.size.x, screenHeight - groundHeight),
       Vector2(buildingWidth, buildingHeight),
     );
 
@@ -49,7 +49,7 @@ class BuildingManager extends Component with HasGameRef<floato> {
 
     final double yPos = minY + Random().nextDouble() * (maxY - minY);
     final random = Random();
-    final planeType = random.nextInt(4); // Random number 0-3
+    final planeType = random.nextInt(enemyPlaneImages.length);
 
     final enemy = EnemyPlane(
       position: Vector2(gameRef.size.x, yPos),
@@ -58,5 +58,15 @@ class BuildingManager extends Component with HasGameRef<floato> {
     );
 
     gameRef.add(enemy);
+  }
+
+  void updateDifficulty({
+    required double buildingInterval,
+    required double enemySpawnInterval,
+  }) {
+    this.buildingInterval = buildingInterval;
+    this.enemySpawnInterval = enemySpawnInterval;
+    buildingSpawnTimer = 0;
+    enemySpawnTimer = 0;
   }
 }

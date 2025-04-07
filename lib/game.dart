@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:floato_the_game/components/background.dart';
@@ -12,8 +13,7 @@ import 'package:floato_the_game/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flame_audio/flame_audio.dart';
 
-class floato extends FlameGame with TapDetector, HasCollisionDetection{
-
+class floato extends FlameGame with TapDetector, HasCollisionDetection {
   late Rocket rocket;
   late Background background;
   late Ground ground;
@@ -36,22 +36,64 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
 
     scoreText = ScoreText();
     add(scoreText);
-
   }
 
   @override
   void onTap() {
-    rocket.flap();
+    if (!isGameOver) {
+      rocket.flap();
+    }
   }
 
   int score = 0;
+  int currentLevelThreshold = 0;
 
-  void incrementScore(){
+  void incrementScore() {
+    final previousLevel = _getCurrentLevelThreshold();
     score += 1;
+    final newLevel = _getCurrentLevelThreshold();
+
+    if (newLevel != previousLevel) {
+      updateDifficultySettings();
+      showLevelUpNotification(newLevel);
+    }
   }
 
+  int _getCurrentLevelThreshold() {
+    final thresholds = difficultyLevels.keys.toList()..sort((a, b) => b.compareTo(a));
+    for (final threshold in thresholds) {
+      if (score >= threshold) {
+        return threshold;
+      }
+    }
+    return 0;
+  }
 
-  //Game Over
+  String getCurrentLevelName() {
+    return difficultyLevels[_getCurrentLevelThreshold()]?['levelName'] ?? 'Level 1';
+  }
+
+  String getCurrentLevelRange() {
+    return difficultyLevels[_getCurrentLevelThreshold()]?['levelRange'] ?? '0-50';
+  }
+
+  void updateDifficultySettings() {
+    final settings = difficultyLevels[_getCurrentLevelThreshold()]!;
+    buildingManager.updateDifficulty(
+      buildingInterval: settings['buildingInterval'],
+      enemySpawnInterval: settings['enemySpawnInterval'],
+    );
+    ground.updateScrollingSpeed(settings['groundScrollingSpeed']);
+  }
+
+  void showLevelUpNotification(int levelThreshold) {
+    final overlay = LevelUpNotification(
+      levelName: difficultyLevels[levelThreshold]?['levelName'] ?? 'New Level',
+      levelRange: difficultyLevels[levelThreshold]?['levelRange'] ?? '',
+    );
+    add(overlay);
+  }
+
   bool isGameOver = false;
 
   void gameOver() {
@@ -59,17 +101,13 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
 
     isGameOver = true;
     pauseEngine();
-
-    // Play crash sound
     FlameAudio.play('crash.wav');
 
     showDialog(
       context: buildContext!,
-      barrierDismissible: false, // Prevent closing by tapping outside
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
         backgroundColor: Colors.blueGrey[900],
         elevation: 20,
         title: const Text(
@@ -88,14 +126,26 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
             color: Colors.blueGrey[800],
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Text(
-            "Your Score: $score",
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.amber,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Score: $score",
+                style: const TextStyle(
+                  color: Colors.amber,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "${getCurrentLevelName()} (${getCurrentLevelRange()})",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
+              ),
+            ],
           ),
         ),
         actionsAlignment: MainAxisAlignment.center,
@@ -121,8 +171,7 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 shadowColor: Colors.transparent,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 30, vertical: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
@@ -146,16 +195,17 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
     );
   }
 
-  // Add this to your floato class
   void resetGame() {
     rocket.position = Vector2(rocketStartX, rocketStartY);
     rocket.velocity = 0;
     score = 0;
     isGameOver = false;
 
-    // Remove all buildings and enemies
     children.whereType<Building>().forEach((building) => building.removeFromParent());
     children.whereType<EnemyPlane>().forEach((enemy) => enemy.removeFromParent());
+    children.whereType<LevelUpNotification>().forEach((notification) => notification.removeFromParent());
+
+    updateDifficultySettings();
 
     if (paused) {
       resumeEngine();
@@ -163,3 +213,60 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
   }
 }
 
+class LevelUpNotification extends Component with HasGameRef<floato> {
+  final String levelName;
+  final String levelRange;
+  Timer? _timer;
+
+  LevelUpNotification({
+    required this.levelName,
+    required this.levelRange,
+  });
+
+  @override
+  Future<void> onLoad() async {
+    _timer = Timer(2.5, onTick: () => removeFromParent());
+  }
+
+  @override
+  void render(Canvas canvas) {
+    final text = TextPainter(
+      text: TextSpan(
+        text: '$levelName REACHED!\n$levelRange',
+        style: const TextStyle(
+          color: Colors.amber,
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+          shadows: [
+            Shadow(
+              blurRadius: 10,
+              color: Colors.black,
+              offset: Offset(2, 2),
+            ),
+          ],
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    text.paint(
+      canvas,
+      Offset(
+        (gameRef.size.x - text.width) / 2,
+        gameRef.size.y / 3,
+      ),
+    );
+  }
+
+  @override
+  void update(double dt) {
+    _timer?.update(dt);
+    super.update(dt);
+  }
+
+  @override
+  void onRemove() {
+    _timer?.stop();
+    super.onRemove();
+  }
+}
