@@ -12,7 +12,7 @@ class BuildingManager extends Component with HasGameRef<floato>{
   void update(double dt){
 
     buildingSpawnTimer += dt;
-    const double buildingInterval = 5;
+
 
     if (buildingSpawnTimer > buildingInterval){
       buildingSpawnTimer = 0;
@@ -22,9 +22,7 @@ class BuildingManager extends Component with HasGameRef<floato>{
 
   void spawnBuilding(){
     final double screenHeight = gameRef.size.y;
-    const double buildingGap = 150;
-    const double minBuildingHeight = 50;
-    const double buildingWidth = 60;
+
 
     final double maxBuildingHeight =
         screenHeight- groundHeight - buildingGap - minBuildingHeight;

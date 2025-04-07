@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:floato_the_game/components/buildinng.dart';
 import 'package:floato_the_game/components/ground.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
@@ -38,6 +39,10 @@ class Rocket extends SpriteComponent with CollisionCallbacks{
     super.onCollision(intersectionPoints, other);
 
     if(other is Ground){
+      (parent as floato).gameOver();
+    }
+
+    if(other is Building){
       (parent as floato).gameOver();
     }
   }
