@@ -28,5 +28,5 @@ const List<String> buildingImages = [
   'building1.png',
   'building2.png',
   'building3.png',
-  'building4.png',
+  'building4.png,
 ];
