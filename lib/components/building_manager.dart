@@ -27,8 +27,9 @@ class BuildingManager extends Component with HasGameRef<floato> {
 
   void spawnBuilding() {
     final double screenHeight = gameRef.size.y;
-    final double maxBuildingHeight = screenHeight - groundHeight - minBuildingHeight;
-    final double buildingHeight = minBuildingHeight + Random().nextDouble() * (maxBuildingHeight - minBuildingHeight);
+    // Random height between minBuildingHeight and maxBuildingHeight
+    final double buildingHeight = minBuildingHeight +
+        Random().nextDouble() * (maxBuildingHeight - minBuildingHeight);
 
     final building = Building(
       Vector2(gameRef.size.x, screenHeight - groundHeight - buildingHeight),
@@ -41,7 +42,7 @@ class BuildingManager extends Component with HasGameRef<floato> {
   void spawnEnemy() {
     final double screenHeight = gameRef.size.y;
     final double minY = 100;
-    final double maxY = screenHeight - groundHeight - 150;
+    final double maxY = screenHeight - groundHeight - maxBuildingHeight - 50; // Keep planes above buildings
 
     final double yPos = minY + Random().nextDouble() * (maxY - minY);
 
