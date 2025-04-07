@@ -10,10 +10,20 @@ class Ground extends SpriteComponent with HasGameRef<floato>{
 
   @override
   FutureOr<void> onLoad() async{
-    size = Vector2(gameRef.size.x, groundHeight);
+    size = Vector2(2 * gameRef.size.x, groundHeight);
     position = Vector2(0, gameRef.size.y-groundHeight);
 
     sprite = await Sprite.load('ground.png');
   }
 
+  @override
+  void update(double dt){
+    position.x -= groundScrollingSpeed * dt;
+
+    if (position.x + size.x / 2 <= 0){
+      position.x = 0;
+    }
+
+
+  }
 }

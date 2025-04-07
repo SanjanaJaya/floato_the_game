@@ -5,3 +5,4 @@ const double rocketHeight = 40;
 const double gravity = 100;
 const double jumpStrength = -100;
 const double groundHeight = 200;
+const double groundScrollingSpeed = 100;
