@@ -13,8 +13,8 @@ const double groundScrollingSpeed = 100;
 // Building constants
 const double buildingInterval = 2;
 const double buildingGap = 300;
-const double minBuildingHeight = 125;
-const double maxBuildingHeight = 200;
+const double minBuildingHeight = 225;
+const double maxBuildingHeight = 325;
 const double buildingWidth = 60;
 const List<String> buildingImages = [
   'building1.png',
@@ -22,11 +22,19 @@ const List<String> buildingImages = [
   'building3.png',
   'building4.png',
   'building5.png',
+  'building6.png',
+  'building7.png',
+  'building8.png',
+  'building9.png',
+  'building10.png',
+  'building11.png',
+  'building12.png',
+  'building13.png',
 ];
 
 // Enemy plane constants
-const double enemyPlaneWidth = 110;
-const double enemyPlaneHeight = 65;
+const double enemyPlaneWidth = 90;
+const double enemyPlaneHeight = 45;
 const double enemyPlaneSpeed = 150;
 const double enemySpawnInterval = 3;
 const List<String> enemyPlaneImages = [
@@ -80,3 +88,4 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'levelRange': '350-500',
   },
 };
+
