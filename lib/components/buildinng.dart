@@ -15,12 +15,12 @@ class Building extends SpriteComponent with CollisionCallbacks, HasGameRef<float
 
   @override
   FutureOr<void> onLoad() async {
-    // Randomly select a building image
     final buildingIndex = _random.nextInt(buildingImages.length);
     sprite = await Sprite.load(buildingImages[buildingIndex]);
+    // Make sure anchor is at bottom for proper positioning
+    anchor = Anchor.bottomLeft;
     add(RectangleHitbox());
   }
-
   @override
   void update(double dt) {
     position.x -= groundScrollingSpeed * dt;

@@ -32,7 +32,10 @@ class BuildingManager extends Component with HasGameRef<floato> {
         Random().nextDouble() * (maxBuildingHeight - minBuildingHeight);
 
     final building = Building(
-      Vector2(gameRef.size.x, screenHeight - groundHeight - buildingHeight),
+      Vector2(
+          gameRef.size.x,
+          screenHeight - groundHeight // Remove the "- buildingHeight" from this calculation
+      ),
       Vector2(buildingWidth, buildingHeight),
     );
 
