@@ -13,9 +13,9 @@ const double groundScrollingSpeed = 100;
 // Building constants
 const double buildingInterval = 2;
 const double buildingGap = 300;
-const double minBuildingHeight = 225;
-const double maxBuildingHeight = 325;
-const double buildingWidth = 60;
+const double minBuildingHeight = 250;
+const double maxBuildingHeight = 350;
+const double buildingWidth = 90;
 const List<String> buildingImages = [
   'building1.png',
   'building2.png',
@@ -48,7 +48,7 @@ const List<double> enemyPlaneSpeeds = [150, 170, 130, 200];
 // Difficulty levels
 const Map<int, Map<String, dynamic>> difficultyLevels = {
   0: { // Level 1 (0-49 points)
-    'buildingInterval': 2.0,
+    'buildingInterval': 3.0,
     'buildingGap': 300.0,
     'enemySpawnInterval': 3.0,
     'groundScrollingSpeed': 100.0,
@@ -56,7 +56,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'levelRange': '0-50',
   },
   50: { // Level 2 (50-149 points)
-    'buildingInterval': 1.7,
+    'buildingInterval': 2.75,
     'buildingGap': 280.0,
     'enemySpawnInterval': 2.7,
     'groundScrollingSpeed': 125.0,
@@ -64,7 +64,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'levelRange': '50-150',
   },
   150: { // Level 3 (150-249 points)
-    'buildingInterval': 1.4,
+    'buildingInterval': 2.25,
     'buildingGap': 260.0,
     'enemySpawnInterval': 2.4,
     'groundScrollingSpeed': 150.0,
@@ -72,7 +72,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'levelRange': '150-250',
   },
   250: { // Level 4 (250-349 points)
-    'buildingInterval': 1.1,
+    'buildingInterval': 1.75,
     'buildingGap': 240.0,
     'enemySpawnInterval': 2.1,
     'groundScrollingSpeed': 200.0,
@@ -80,7 +80,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'levelRange': '250-350',
   },
   350: { // Level 5 (350-500+ points)
-    'buildingInterval': 0.8,
+    'buildingInterval': 1,
     'buildingGap': 220.0,
     'enemySpawnInterval': 1.8,
     'groundScrollingSpeed': 225.0,
