@@ -10,6 +10,7 @@ import 'package:floato_the_game/components/score.dart';
 import 'package:floato_the_game/components/enemy_plane.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flame_audio/flame_audio.dart';
 
 class floato extends FlameGame with TapDetector, HasCollisionDetection{
 
@@ -58,6 +59,9 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
 
     isGameOver = true;
     pauseEngine();
+
+    // Play crash sound
+    FlameAudio.play('crash.wav');
 
     showDialog(
       context: buildContext!,
