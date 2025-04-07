@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flame/components.dart';
 import 'package:floato_the_game/game.dart';
 import 'package:flutter/cupertino.dart';

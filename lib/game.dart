@@ -142,7 +142,8 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
     );
   }
 
-  void resetGame(){
+  // Add this to your floato class
+  void resetGame() {
     rocket.position = Vector2(rocketStartX, rocketStartY);
     rocket.velocity = 0;
     score = 0;
@@ -152,7 +153,9 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection{
     children.whereType<Building>().forEach((building) => building.removeFromParent());
     children.whereType<EnemyPlane>().forEach((enemy) => enemy.removeFromParent());
 
-    resumeEngine();
+    if (paused) {
+      resumeEngine();
+    }
   }
 }
 

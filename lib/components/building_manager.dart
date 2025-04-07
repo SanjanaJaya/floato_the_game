@@ -42,13 +42,16 @@ class BuildingManager extends Component with HasGameRef<floato> {
   void spawnEnemy() {
     final double screenHeight = gameRef.size.y;
     final double minY = 100;
-    final double maxY = screenHeight - groundHeight - maxBuildingHeight - 50; // Keep planes above buildings
+    final double maxY = screenHeight - groundHeight - maxBuildingHeight - 50;
 
     final double yPos = minY + Random().nextDouble() * (maxY - minY);
+    final random = Random();
+    final planeType = random.nextInt(4); // Random number 0-3
 
     final enemy = EnemyPlane(
       position: Vector2(gameRef.size.x, yPos),
       size: Vector2(enemyPlaneWidth, enemyPlaneHeight),
+      planeType: planeType,
     );
 
     gameRef.add(enemy);
