@@ -23,3 +23,10 @@ const List<String> enemyPlaneImages = [
   'enemy_plane4.png',
 ];
 const List<double> enemyPlaneSpeeds = [150, 170, 130, 250]; // Different speeds for each plane
+// Add this to your constants.dart file
+const List<String> buildingImages = [
+  'building1.png',
+  'building2.png',
+  'building3.png',
+  'building4.png',
+];
