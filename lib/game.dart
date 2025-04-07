@@ -5,7 +5,7 @@ import 'package:floato_the_game/components/background.dart';
 import 'package:floato_the_game/components/rocket.dart';
 import 'package:floato_the_game/components/ground.dart';
 
-class floato extends FlameGame with TapDetector{
+class floato extends FlameGame with TapDetector, HasCollisionDetection{
 
   late Rocket rocket;
   late Background background;

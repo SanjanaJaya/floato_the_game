@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:floato_the_game/components/ground.dart';
 import 'package:floato_the_game/constants.dart';
+import 'package:floato_the_game/game.dart';
 
-class Rocket extends SpriteComponent{
+class Rocket extends SpriteComponent with CollisionCallbacks{
 
   Rocket() : super(position: Vector2(rocketStartX, rocketStartY),size: Vector2(rocketWidth, rocketHeight));
 
@@ -14,6 +17,8 @@ class Rocket extends SpriteComponent{
   FutureOr<void> onLoad() async {
     // TODO: implement onLoad
     sprite = await Sprite.load('rocket.png');
+
+    add(RectangleHitbox());
   }
 
   void flap(){
@@ -25,5 +30,15 @@ class Rocket extends SpriteComponent{
     velocity += gravity * dt;
 
     position.y += velocity * dt;
+  }
+
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+
+    if(other is Ground){
+      (parent as floato).gameOver();
+    }
   }
 }

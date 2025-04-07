@@ -15,6 +15,8 @@ class Ground extends SpriteComponent with HasGameRef<floato>, CollisionCallbacks
     position = Vector2(0, gameRef.size.y-groundHeight);
 
     sprite = await Sprite.load('ground.png');
+
+    add(RectangleHitbox());
   }
 
   @override
