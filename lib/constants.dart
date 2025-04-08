@@ -104,7 +104,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
   0: { // Level 1 (0-99 points)
     'buildingInterval': 3.0,
     'buildingGap': 300.0,
-    'enemySpawnInterval': 2.0,
+    'enemySpawnInterval': 3.0,
     'groundScrollingSpeed': 100.0,
     'enemySpeedMultiplier': 1.0, // Base speed
     'levelName': 'Level 1',
@@ -113,7 +113,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
   100: { // Level 2 (100-249 points)
     'buildingInterval': 2.75,
     'buildingGap': 280.0,
-    'enemySpawnInterval': 1.7,
+    'enemySpawnInterval': 2.7,
     'groundScrollingSpeed': 125.0,
     'enemySpeedMultiplier': 1.2, // 20% faster
     'levelName': 'Level 2',
@@ -122,7 +122,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
   250: { // Level 3 (250-449 points)
     'buildingInterval': 2.25,
     'buildingGap': 260.0,
-    'enemySpawnInterval': 1.4,
+    'enemySpawnInterval': 2.4,
     'groundScrollingSpeed': 150.0,
     'enemySpeedMultiplier': 1.4, // 40% faster
     'levelName': 'Level 3',
@@ -131,7 +131,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
   450: { // Level 4 (450-699 points)
     'buildingInterval': 1.75,
     'buildingGap': 240.0,
-    'enemySpawnInterval': 1.1,
+    'enemySpawnInterval': 1.5,
     'groundScrollingSpeed': 200.0,
     'enemySpeedMultiplier': 1.6, // 60% faster
     'levelName': 'Level 4',
@@ -140,7 +140,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
   700: { // Level 5 (700-1000+ points)
     'buildingInterval': 1,
     'buildingGap': 220.0,
-    'enemySpawnInterval': 0.3,
+    'enemySpawnInterval': 1.2,
     'groundScrollingSpeed': 225.0,
     'enemySpeedMultiplier': 1.8, // 80% faster
     'levelName': 'Level 5',
