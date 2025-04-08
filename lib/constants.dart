@@ -42,7 +42,7 @@ const List<double> missileSpeeds = [
 
 const List<int> missileDamages = [
   0,  // Rocket 1 doesn't shoot
-  75, // Rocket 2 missile damage
+  10, // Rocket 2 missile damage
   15, // Rocket 3 missile damage
   20, // Rocket 4 missile damage
   25, // Rocket 5 missile damage
@@ -96,7 +96,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
   0: { // Level 1 (0-49 points)
     'buildingInterval': 3.0,
     'buildingGap': 300.0,
-    'enemySpawnInterval': 3.0,
+    'enemySpawnInterval': 2.0,
     'groundScrollingSpeed': 100.0,
     'enemySpeedMultiplier': 1.0, // Base speed
     'levelName': 'Level 1',
@@ -105,7 +105,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
   50: { // Level 2 (50-149 points)
     'buildingInterval': 2.75,
     'buildingGap': 280.0,
-    'enemySpawnInterval': 2.7,
+    'enemySpawnInterval': 1.7,
     'groundScrollingSpeed': 125.0,
     'enemySpeedMultiplier': 1.2, // 20% faster
     'levelName': 'Level 2',
@@ -114,7 +114,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
   150: { // Level 3 (150-249 points)
     'buildingInterval': 2.25,
     'buildingGap': 260.0,
-    'enemySpawnInterval': 2.4,
+    'enemySpawnInterval': 1.4,
     'groundScrollingSpeed': 150.0,
     'enemySpeedMultiplier': 1.4, // 40% faster
     'levelName': 'Level 3',
@@ -123,7 +123,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
   250: { // Level 4 (250-349 points)
     'buildingInterval': 1.75,
     'buildingGap': 240.0,
-    'enemySpawnInterval': 2.1,
+    'enemySpawnInterval': 1.1,
     'groundScrollingSpeed': 200.0,
     'enemySpeedMultiplier': 1.6, // 60% faster
     'levelName': 'Level 4',
@@ -132,7 +132,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
   350: { // Level 5 (350-500+ points)
     'buildingInterval': 1,
     'buildingGap': 220.0,
-    'enemySpawnInterval': 1.8,
+    'enemySpawnInterval': 0.3,
     'groundScrollingSpeed': 225.0,
     'enemySpeedMultiplier': 1.8, // 80% faster
     'levelName': 'Level 5',
