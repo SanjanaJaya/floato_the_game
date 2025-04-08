@@ -25,8 +25,8 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
 
     // Each plane takes up 1200x500 pixels in the sprite sheet
     // We'll assume each animation has multiple frames horizontally
-    final frameCount = 4; // Adjust based on your actual number of frames
-    final spriteSize = Vector2(4800 / frameCount, 500); // Size of each frame
+    final frameCount = 6; // Adjust based on your actual number of frames
+    final spriteSize = Vector2(7200 / frameCount, 500); // Size of each frame
 
     // Create the animation frames
     final frames = List.generate(
