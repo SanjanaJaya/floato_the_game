@@ -35,17 +35,17 @@ const List<String> rocketLevelRequirements = [
 const List<double> missileSpeeds = [
   0,    // Rocket 1 doesn't shoot
   300,  // Rocket 2 missile speed
-  250,  // Rocket 3 missile speed
-  350,  // Rocket 4 missile speed
-  400,  // Rocket 5 missile speed
+  350,  // Rocket 3 missile speed
+  400,  // Rocket 4 missile speed
+  450,  // Rocket 5 missile speed
 ];
 
 const List<int> missileDamages = [
   0,  // Rocket 1 doesn't shoot
-  10, // Rocket 2 missile damage
-  15, // Rocket 3 missile damage
-  20, // Rocket 4 missile damage
-  25, // Rocket 5 missile damage
+  20, // Rocket 2 missile damage
+  25, // Rocket 3 missile damage
+  30, // Rocket 4 missile damage
+  35, // Rocket 5 missile damage
 ];
 
 // Ground constants
