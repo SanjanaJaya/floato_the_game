@@ -57,7 +57,7 @@ const double buildingInterval = 2;
 const double buildingGap = 300;
 const double minBuildingHeight = 250;
 const double maxBuildingHeight = 350;
-const double buildingWidth = 90;
+const double buildingWidth = 100;
 const List<String> buildingImages = [
   'building1.png',
   'building2.png',
@@ -72,6 +72,13 @@ const List<String> buildingImages = [
   'building11.png',
   'building12.png',
   'building13.png',
+  'building14.png',
+  'building15.png',
+  'building16.png',
+  'building17.png',
+  'building18.png',
+  'building19.png',
+  'building20.png',
 ];
 
 // Enemy plane constants
@@ -87,7 +94,7 @@ const List<String> enemyPlaneImages = [
   'enemy_plane5.png',
 ];
 // Base speeds for different plane types
-const List<double> enemyPlaneSpeeds = [150, 170, 130, 200,75];
+const List<double> enemyPlaneSpeeds = [150, 170, 130, 200, 75];
 
 // Enemy plane health values
 const List<int> enemyPlaneHealths = [30, 40, 50, 60, 70];
@@ -101,7 +108,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'groundScrollingSpeed': 100.0,
     'enemySpeedMultiplier': 1.0, // Base speed
     'levelName': 'Level 1',
-    'levelRange': '0-50',
+    'levelRange': '0-100',
   },
   100: { // Level 2 (100-249 points)
     'buildingInterval': 2.75,
@@ -110,7 +117,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'groundScrollingSpeed': 125.0,
     'enemySpeedMultiplier': 1.2, // 20% faster
     'levelName': 'Level 2',
-    'levelRange': '50-150',
+    'levelRange': '100-250',
   },
   250: { // Level 3 (250-449 points)
     'buildingInterval': 2.25,
@@ -119,7 +126,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'groundScrollingSpeed': 150.0,
     'enemySpeedMultiplier': 1.4, // 40% faster
     'levelName': 'Level 3',
-    'levelRange': '150-250',
+    'levelRange': '250-450',
   },
   450: { // Level 4 (450-699 points)
     'buildingInterval': 1.75,
@@ -128,7 +135,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'groundScrollingSpeed': 200.0,
     'enemySpeedMultiplier': 1.6, // 60% faster
     'levelName': 'Level 4',
-    'levelRange': '250-350',
+    'levelRange': '450-700',
   },
   700: { // Level 5 (700-1000+ points)
     'buildingInterval': 1,
@@ -137,6 +144,6 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'groundScrollingSpeed': 225.0,
     'enemySpeedMultiplier': 1.8, // 80% faster
     'levelName': 'Level 5',
-    'levelRange': '350-500',
+    'levelRange': '700-1000',
   },
 };
