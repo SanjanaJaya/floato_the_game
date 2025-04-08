@@ -68,13 +68,13 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     selectedRocket = await PreferencesHelper.getSelectedRocket();
 
     // Get level name based on threshold
-    if (highestLevel >= 350) {
+    if (highestLevel >= 700) {
       levelName = 'Level 5';
-    } else if (highestLevel >= 250) {
+    } else if (highestLevel >= 450) {
       levelName = 'Level 4';
-    } else if (highestLevel >= 150) {
+    } else if (highestLevel >= 250) {
       levelName = 'Level 3';
-    } else if (highestLevel >= 50) {
+    } else if (highestLevel >= 100) {
       levelName = 'Level 2';
     } else {
       levelName = 'Level 1';

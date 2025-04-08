@@ -84,16 +84,17 @@ const List<String> enemyPlaneImages = [
   'enemy_plane2.png',
   'enemy_plane3.png',
   'enemy_plane4.png',
+  'enemy_plane5.png',
 ];
 // Base speeds for different plane types
-const List<double> enemyPlaneSpeeds = [150, 170, 130, 200];
+const List<double> enemyPlaneSpeeds = [150, 170, 130, 200,75];
 
 // Enemy plane health values
-const List<int> enemyPlaneHealths = [30, 40, 50, 60];
+const List<int> enemyPlaneHealths = [30, 40, 50, 60, 70];
 
 // Difficulty levels
 const Map<int, Map<String, dynamic>> difficultyLevels = {
-  0: { // Level 1 (0-49 points)
+  0: { // Level 1 (0-99 points)
     'buildingInterval': 3.0,
     'buildingGap': 300.0,
     'enemySpawnInterval': 2.0,
@@ -102,7 +103,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'levelName': 'Level 1',
     'levelRange': '0-50',
   },
-  50: { // Level 2 (50-149 points)
+  100: { // Level 2 (100-249 points)
     'buildingInterval': 2.75,
     'buildingGap': 280.0,
     'enemySpawnInterval': 1.7,
@@ -111,7 +112,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'levelName': 'Level 2',
     'levelRange': '50-150',
   },
-  150: { // Level 3 (150-249 points)
+  250: { // Level 3 (250-449 points)
     'buildingInterval': 2.25,
     'buildingGap': 260.0,
     'enemySpawnInterval': 1.4,
@@ -120,7 +121,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'levelName': 'Level 3',
     'levelRange': '150-250',
   },
-  250: { // Level 4 (250-349 points)
+  450: { // Level 4 (450-699 points)
     'buildingInterval': 1.75,
     'buildingGap': 240.0,
     'enemySpawnInterval': 1.1,
@@ -129,7 +130,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'levelName': 'Level 4',
     'levelRange': '250-350',
   },
-  350: { // Level 5 (350-500+ points)
+  700: { // Level 5 (700-1000+ points)
     'buildingInterval': 1,
     'buildingGap': 220.0,
     'enemySpawnInterval': 0.3,

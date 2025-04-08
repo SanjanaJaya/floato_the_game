@@ -49,13 +49,13 @@ class PreferencesHelper {
     // Level 1 (0): 1 rocket, Level 2 (50): 2 rockets, etc.
     int unlockCount = 1; // Default: 1 rocket always unlocked
 
-    if (levelThreshold >= 350) {
+    if (levelThreshold >= 700) {
       unlockCount = 5; // Level 5: All 5 rockets
-    } else if (levelThreshold >= 250) {
+    } else if (levelThreshold >= 450) {
       unlockCount = 4; // Level 4: 4 rockets
-    } else if (levelThreshold >= 150) {
+    } else if (levelThreshold >= 250) {
       unlockCount = 3; // Level 3: 3 rockets
-    } else if (levelThreshold >= 50) {
+    } else if (levelThreshold >= 100) {
       unlockCount = 2; // Level 2: 2 rockets
     }
 
