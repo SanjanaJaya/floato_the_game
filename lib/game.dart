@@ -156,10 +156,12 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
         ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          // Replace the Row with a Column to stack buttons vertically
+          Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
+                width: 200, // Fixed width for both buttons
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Colors.orange, Colors.red],
@@ -199,8 +201,9 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(height: 10),
               Container(
+                width: 200, // Fixed width for both buttons
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Colors.blue, Colors.purple],

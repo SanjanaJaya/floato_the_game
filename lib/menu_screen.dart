@@ -72,8 +72,9 @@ class _MenuScreenState extends State<MenuScreen> {
 
   Widget buildMenuContent() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        const Spacer(flex: 2), // Top space
         const Text(
           '',
           style: TextStyle(
@@ -89,56 +90,61 @@ class _MenuScreenState extends State<MenuScreen> {
             ],
           ),
         ),
-        // Increased spacing before buttons
-        const SizedBox(height: 610),
-        ElevatedButton(
-          onPressed: () {
-            // Don't stop the music when starting the game
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => GameWidget(game: floato()),
+        const Spacer(flex: 6), // Middle space - replaces the large SizedBox
+        Padding(
+          padding: const EdgeInsets.only(bottom: 20), // Ensure buttons don't touch bottom
+          child: Column(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // Don't stop the music when starting the game
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GameWidget(game: floato()),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  backgroundColor: Colors.orange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text(
+                  'Start Game',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-            backgroundColor: Colors.orange,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-          ),
-          child: const Text(
-            'Start Game',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        // Increased spacing between buttons
-        const SizedBox(height: 25),
-        ElevatedButton(
-          onPressed: () {
-            setState(() {
-              showCredits = true;
-            });
-          },
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-            backgroundColor: Colors.blueGrey,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-          ),
-          child: const Text(
-            'Credits',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+              const SizedBox(height: 20), // Reduced spacing between buttons
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    showCredits = true;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  backgroundColor: Colors.blueGrey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text(
+                  'Credits',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
