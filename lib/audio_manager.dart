@@ -15,6 +15,7 @@ class AudioManager {
   Future<void> init() async {
     await FlameAudio.audioCache.load('menu_music.wav');
     await FlameAudio.audioCache.load('crash.wav');
+    await FlameAudio.audioCache.load('button_click.wav');
   }
 
   // Play background music
@@ -42,6 +43,11 @@ class AudioManager {
     if (!_isMuted) {
       FlameAudio.play(fileName);
     }
+  }
+
+  // Play button click sound
+  void playButtonClick() {
+    playSfx('button_click.wav');
   }
 
   // Toggle mute/unmute

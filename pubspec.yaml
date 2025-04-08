@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flame:
   flame_audio:
+  shared_preferences:
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +63,11 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/images/bird/rocket1.png
+    - assets/images/bird/rocket2.png
+    - assets/images/bird/rocket3.png
+    - assets/images/bird/rocket4.png
+    - assets/images/bird/rocket5.png
     - assets/audio/
   #   - images/a_dot_ham.jpeg
 

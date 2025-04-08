@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'game.dart';
 import 'audio_manager.dart';
+import 'shared_preferences_helper.dart';
+import 'constants.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -10,15 +12,75 @@ class MenuScreen extends StatefulWidget {
   State<MenuScreen> createState() => _MenuScreenState();
 }
 
-class _MenuScreenState extends State<MenuScreen> {
+class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateMixin {
   bool showCredits = false;
+  bool showRocketSelection = false;
   final AudioManager _audioManager = AudioManager();
+
+  // Animation controller for rocket hover effect
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
+  int highScore = 0;
+  int highestLevel = 0;
+  int unlockedRockets = 1;
+  int selectedRocket = 0;
+  String levelName = 'Level 1';
 
   @override
   void initState() {
     super.initState();
     // Start playing background music when menu loads
     _audioManager.playBackgroundMusic();
+
+    // Setup animation for hover effect
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    _animation = Tween<double>(begin: -5.0, end: 5.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    )..addListener(() {
+      setState(() {});
+    });
+
+    // Make animation repeat back and forth
+    _animationController.repeat(reverse: true);
+
+    // Load saved data
+    _loadSavedData();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadSavedData() async {
+    highScore = await PreferencesHelper.getHighScore();
+    highestLevel = await PreferencesHelper.getHighestLevel();
+    unlockedRockets = await PreferencesHelper.getUnlockedRocketsCount();
+    selectedRocket = await PreferencesHelper.getSelectedRocket();
+
+    // Get level name based on threshold
+    if (highestLevel >= 350) {
+      levelName = 'Level 5';
+    } else if (highestLevel >= 250) {
+      levelName = 'Level 4';
+    } else if (highestLevel >= 150) {
+      levelName = 'Level 3';
+    } else if (highestLevel >= 50) {
+      levelName = 'Level 2';
+    } else {
+      levelName = 'Level 1';
+    }
+
+    setState(() {});
   }
 
   @override
@@ -34,7 +96,11 @@ class _MenuScreenState extends State<MenuScreen> {
         child: Stack(
           children: [
             Center(
-              child: showCredits ? buildCreditsContent() : buildMenuContent(),
+              child: showCredits
+                  ? buildCreditsContent()
+                  : (showRocketSelection
+                  ? buildRocketSelectionContent()
+                  : buildMenuContent()),
             ),
             // Mute button in top-right corner
             Positioned(
@@ -75,34 +141,90 @@ class _MenuScreenState extends State<MenuScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const Spacer(flex: 2), // Top space
-        const Text(
-          '',
-          style: TextStyle(
-            fontSize: 60,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            shadows: [
-              Shadow(
-                blurRadius: 20,
-                color: Colors.black,
-                offset: Offset(2, 2),
+
+        // Game title with animated effect
+        Transform.translate(
+          offset: Offset(0, _animation.value),
+          child: const Text(
+            '',
+            style: TextStyle(
+              fontSize: 60,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              shadows: [
+                Shadow(
+                  blurRadius: 20,
+                  color: Colors.black,
+                  offset: Offset(2, 2),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // Add this SizedBox for spacing
+        const SizedBox(height: 33), // Adjust the height as needed
+
+// High Score and Highest Level Display
+        Container(
+          padding: const EdgeInsets.all(15),
+          margin: const EdgeInsets.symmetric(horizontal: 40),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.7),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.amber, width: 2),
+          ),
+          child: Column(
+            children: [
+              Text(
+                'HIGH SCORE: $highScore',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.amber,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'HIGHEST LEVEL: $levelName',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
         ),
-        const Spacer(flex: 6), // Middle space - replaces the large SizedBox
+
+        const Spacer(flex: 4), // Middle space
+
+        // Animated rocket preview
+        Transform.translate(
+          offset: Offset(0, _animation.value * 1.5),
+          child: Image.asset(
+            'assets/images/bird/${rocketImages[selectedRocket]}',
+            height: 100,
+            width: 100,
+          ),
+        ),
+        const SizedBox(height: 10),
+
         Padding(
           padding: const EdgeInsets.only(bottom: 20), // Ensure buttons don't touch bottom
           child: Column(
             children: [
               ElevatedButton(
                 onPressed: () {
+                  // Play button sound
+                  _audioManager.playSfx('button_click.wav');
+
                   // Don't stop the music when starting the game
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => GameWidget(
-                        game: floato(),
+                        game: floato(selectedRocketType: selectedRocket),
                         overlayBuilderMap: {
                           'pauseButton': (BuildContext context, floato game) {
                             return PauseButton(game: game);
@@ -121,6 +243,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
+                  elevation: 5,
                 ),
                 child: const Text(
                   'Start Game',
@@ -131,9 +254,39 @@ class _MenuScreenState extends State<MenuScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20), // Reduced spacing between buttons
+              const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: () {
+                  // Play button sound
+                  _audioManager.playSfx('button_click.wav');
+
+                  setState(() {
+                    showRocketSelection = true;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  elevation: 5,
+                ),
+                child: const Text(
+                  'Select Bird',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15),
+              ElevatedButton(
+                onPressed: () {
+                  // Play button sound
+                  _audioManager.playSfx('button_click.wav');
+
                   setState(() {
                     showCredits = true;
                   });
@@ -144,6 +297,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
+                  elevation: 5,
                 ),
                 child: const Text(
                   'Credits',
@@ -164,49 +318,268 @@ class _MenuScreenState extends State<MenuScreen> {
   Widget buildCreditsContent() {
     return Container(
       padding: const EdgeInsets.all(20),
-      width: 300,
+      margin: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.7),
+        color: Colors.black.withOpacity(0.8),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.amber, width: 3),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.amber.withOpacity(0.3),
+            blurRadius: 15,
+            spreadRadius: 5,
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
-            'Credits',
+            'CREDITS',
             style: TextStyle(
-              fontSize: 30,
+              fontSize: 36,
               fontWeight: FontWeight.bold,
+              color: Colors.amber,
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Main Developer',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const Text(
+            'Imesh Sanjana',
+            style: TextStyle(
+              fontSize: 18,
               color: Colors.white,
             ),
           ),
           const SizedBox(height: 20),
           const Text(
-            'Main Developer:\nImesh Sanjana\n\n'
-                'Art Designers:\nNethmina Medagedara\nNethsara Werasooriya\nAnjana Herath\n\n'
-                'Music & Sound:\nKavindu Heshan\n\n'
-                'Special Thanks: Flutter and Flame Community',
+            'Graphics and Illustrations',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const Text(
+            'Nethsara Werasooriya',
             style: TextStyle(
               fontSize: 18,
               color: Colors.white,
             ),
-            textAlign: TextAlign.center,
+          ),
+          const Text(
+            'Anjana Herath',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+            ),
+          ),
+          const Text(
+            'Nethmina Medagedara',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 30),
+          const Text(
+            'Audio Effects & Music',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const Text(
+            'Kavindu Heshan',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+            ),
+          ),
           ElevatedButton(
             onPressed: () {
+              // Play button sound
+              _audioManager.playSfx('button_click.wav');
+
               setState(() {
                 showCredits = false;
               });
             },
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              backgroundColor: Colors.orange,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+              backgroundColor: Colors.blueGrey,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              elevation: 5,
             ),
             child: const Text(
-              'Back to Menu',
+              'Back',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildRocketSelectionContent() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.amber, width: 3),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.amber.withOpacity(0.3),
+            blurRadius: 15,
+            spreadRadius: 5,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'SELECT BIRD',
+            style: TextStyle(
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+              color: Colors.amber,
+            ),
+          ),
+          const SizedBox(height: 30),
+          SizedBox(
+            height: 300,
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                childAspectRatio: 0.45,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: 5, // Total number of rockets
+              itemBuilder: (context, index) {
+                final bool isUnlocked = index < unlockedRockets;
+                final bool isSelected = index == selectedRocket;
+
+                return GestureDetector(
+                  onTap: isUnlocked
+                      ? () async {
+                    // Play selection sound
+                    _audioManager.playSfx('button_click.wav');
+
+                    setState(() {
+                      selectedRocket = index;
+                    });
+                    await PreferencesHelper.saveSelectedRocket(index);
+                  }
+                      : null,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? Colors.amber.withOpacity(0.3)
+                          : Colors.black.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isSelected ? Colors.amber : Colors.grey,
+                        width: 2,
+                      ),
+                      boxShadow: isSelected ? [
+                        BoxShadow(
+                          color: Colors.amber.withOpacity(0.3),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                        ),
+                      ] : [],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Animating the rocket with the same hover effect
+                        Transform.translate(
+                          offset: Offset(0, isUnlocked ? _animation.value : 0),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              // Rocket image
+                              Image.asset(
+                                'assets/images/bird/${rocketImages[index]}',
+                                height: 100,
+                                color: isUnlocked ? null : Colors.black.withOpacity(0.7),
+                                colorBlendMode: isUnlocked ? BlendMode.srcIn : BlendMode.srcATop,
+                              ),
+                              // Lock icon for locked rockets
+                              if (!isUnlocked)
+                                const Icon(
+                                  Icons.lock,
+                                  color: Colors.white,
+                                  size: 50,
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          rocketNames[index],
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: isUnlocked ? Colors.white : Colors.grey,
+                          ),
+                        ),
+                        if (!isUnlocked)
+                          Text(
+                            rocketLevelRequirements[index],
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              // Play button sound
+              _audioManager.playSfx('button_click.wav');
+
+              setState(() {
+                showRocketSelection = false;
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+              backgroundColor: Colors.blueGrey,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              elevation: 5,
+            ),
+            child: const Text(
+              'Back',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
@@ -217,7 +590,7 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 }
 
-// Pause button overlay widget
+// PauseButton implementation
 class PauseButton extends StatelessWidget {
   final floato game;
 
@@ -227,28 +600,33 @@ class PauseButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       top: 40,
-      left: 20,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
-          shape: BoxShape.circle,
+      right: 20,
+      child: IconButton(
+        icon: const Icon(
+          Icons.pause_circle_filled,
+          color: Colors.white,
+          size: 40,
         ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.pause,
-            color: Colors.white,
-            size: 30,
+        onPressed: () {
+          game.togglePause();
+        },
+        padding: const EdgeInsets.all(10),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(
+            Colors.black.withOpacity(0.5),
           ),
-          onPressed: () {
-            game.togglePause();
-          },
+          shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-// Pause menu overlay widget
+// PauseMenu implementation
 class PauseMenu extends StatelessWidget {
   final floato game;
 
@@ -256,19 +634,20 @@ class PauseMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AudioManager audioManager = AudioManager();
+
     return Center(
       child: Container(
-        width: 300,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.blueGrey[900],
+          color: Colors.black.withOpacity(0.8),
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.amber, width: 3),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.amber.withOpacity(0.3),
+              blurRadius: 15,
               spreadRadius: 5,
-              blurRadius: 7,
-              offset: const Offset(0, 3),
             ),
           ],
         ),
@@ -276,100 +655,68 @@ class PauseMenu extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              "Game Paused",
+              'PAUSED',
               style: TextStyle(
-                color: Colors.white,
-                fontSize: 28,
+                fontSize: 36,
                 fontWeight: FontWeight.bold,
+                color: Colors.amber,
               ),
             ),
             const SizedBox(height: 30),
-            Container(
-              width: 200,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Colors.green, Colors.teal],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                onPressed: () {
-                  game.togglePause();
-                },
-                child: const Text(
-                  "Resume Game",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 15),
-            Container(
-              width: 200,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Colors.blue, Colors.purple],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                onPressed: () {
-                  // Go back to main menu
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MenuScreen(),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    audioManager.playSfx('button_click.wav');
+                    game.togglePause();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    backgroundColor: Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                  );
-                },
-                child: const Text(
-                  "Back to Menu",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    elevation: 5,
+                  ),
+                  child: const Text(
+                    'Resume',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
+                const SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    audioManager.playSfx('button_click.wav');
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MenuScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 5,
+                  ),
+                  child: const Text(
+                    'Quit',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

@@ -13,6 +13,7 @@ import 'package:floato_the_game/components/score.dart';
 import 'package:floato_the_game/components/enemy_plane.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:flutter/material.dart';
+import 'shared_preferences_helper.dart';
 import 'menu_screen.dart';
 import 'audio_manager.dart';
 
@@ -23,6 +24,9 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
   late BuildingManager buildingManager;
   late ScoreText scoreText;
   final AudioManager _audioManager = AudioManager();
+  final int selectedRocketType;
+
+  floato({this.selectedRocketType = 0});
 
   // Add pause state variables
   bool isPaused = false;
@@ -35,7 +39,7 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
     background = Background(size);
     add(background);
 
-    rocket = Rocket();
+    rocket = Rocket(rocketType: selectedRocketType);
     add(rocket);
 
     ground = Ground();
@@ -136,6 +140,9 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
       levelRange: difficultyLevels[levelThreshold]?['levelRange'] ?? '',
     );
     add(overlay);
+
+    // Save the highest level reached
+    PreferencesHelper.saveHighestLevel(levelThreshold);
   }
 
   void gameOver() {
@@ -143,6 +150,12 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
 
     isGameOver = true;
     pauseEngine();
+
+    // Save high score
+    PreferencesHelper.saveHighScore(score);
+
+    // Save highest level threshold
+    PreferencesHelper.saveHighestLevel(_getCurrentLevelThreshold());
 
     // Remove pause menu if it's showing
     if (overlays.isActive('pauseMenu')) {

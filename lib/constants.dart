@@ -6,6 +6,31 @@ const double rocketHeight = 40;
 const double gravity = 800;
 const double jumpStrength = -300;
 
+// Rocket data
+const List<String> rocketImages = [
+  'rocket1.png',
+  'rocket2.png',
+  'rocket3.png',
+  'rocket4.png',
+  'rocket5.png',
+];
+
+const List<String> rocketNames = [
+  'Rocket',
+  'Speedstar',
+  'Pakaya',
+  'Ponnaya',
+  'Hutta',
+];
+
+const List<String> rocketLevelRequirements = [
+  'Default',
+  'Reach Level 2',
+  'Reach Level 3',
+  'Reach Level 4',
+  'Reach Level 5',
+];
+
 // Ground constants
 const double groundHeight = 100;
 const double groundScrollingSpeed = 100;
