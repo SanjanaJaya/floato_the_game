@@ -6,7 +6,7 @@ import 'package:floato_the_game/components/rocket.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
 
-class EnemyPlane extends SpriteComponent with CollisionCallbacks, HasGameRef<floato> {
+class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGameRef<floato> {
   final int planeType;
   double speed;
 
@@ -19,9 +19,32 @@ class EnemyPlane extends SpriteComponent with CollisionCallbacks, HasGameRef<flo
 
   @override
   FutureOr<void> onLoad() async {
-    // Randomly select one of the enemy plane images
+    // Load the sprite sheet for animations
     final imageIndex = planeType % enemyPlaneImages.length;
-    sprite = await Sprite.load(enemyPlaneImages[imageIndex]);
+    final spriteSheet = await game.images.load(enemyPlaneImages[imageIndex]);
+
+    // Each plane takes up 1200x500 pixels in the sprite sheet
+    // We'll assume each animation has multiple frames horizontally
+    final frameCount = 4; // Adjust based on your actual number of frames
+    final spriteSize = Vector2(4800 / frameCount, 500); // Size of each frame
+
+    // Create the animation frames
+    final frames = List.generate(
+      frameCount,
+          (i) => Sprite(
+        spriteSheet,
+        srcPosition: Vector2(i * spriteSize.x, 0),
+        srcSize: spriteSize,
+      ),
+    );
+
+    // Set up the animation
+    animation = SpriteAnimation.spriteList(
+      frames,
+      stepTime: 0.1, // Adjust animation speed as needed
+      loop: true,
+    );
+
     add(RectangleHitbox());
 
     // Initialize speed based on the current level if it wasn't set
@@ -40,6 +63,8 @@ class EnemyPlane extends SpriteComponent with CollisionCallbacks, HasGameRef<flo
     if (position.x + size.x < 0) {
       removeFromParent();
     }
+
+    super.update(dt); // Important to call super.update for animation
   }
 
   // Add method to update speed during gameplay
