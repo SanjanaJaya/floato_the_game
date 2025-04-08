@@ -3,11 +3,17 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:floato_the_game/components/buildinng.dart';
 import 'package:floato_the_game/components/ground.dart';
+import 'package:floato_the_game/components/missile.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
+import 'package:floato_the_game/audio_manager.dart';
 
 class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRef<floato> {
   final int rocketType;
+  double cooldownTimer = 0;
+  final double shootingCooldown = 0.5; // 0.5 seconds between shots
+  bool canShoot = true;
+  final AudioManager _audioManager = AudioManager();
 
   Rocket({this.rocketType = 0}) : super(
       position: Vector2(rocketStartX, rocketStartY),
@@ -40,10 +46,54 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
     );
 
     add(RectangleHitbox());
+
+    // Debug print to verify rocket type
+    print('Rocket initialized with type: $rocketType');
   }
 
   void flap() {
     velocity = jumpStrength;
+  }
+
+  void shoot() {
+    // Debug print when shoot is called
+    print('Regular shoot called, canShoot: $canShoot, rocketType: $rocketType');
+
+    // Rocket 1 can't shoot
+    if (rocketType == 0 || !canShoot) return;
+
+    _createMissile();
+  }
+
+  // New method to force shoot, always creating a missile
+  void forcedShoot() {
+    // Debug print when forced shoot is called
+    print('Forced shoot called, rocketType: $rocketType');
+
+    // Rocket 1 can't shoot
+    if (rocketType == 0) return;
+
+    _createMissile();
+  }
+
+  // Extract missile creation logic to avoid duplication
+  void _createMissile() {
+    // Create a missile at rocket position
+    final missile = Missile(
+      position: Vector2(position.x + size.x/2, position.y + size.y/2),
+      rocketType: rocketType,
+      speed: missileSpeeds[rocketType],
+      damage: missileDamages[rocketType],
+    );
+
+    gameRef.add(missile);
+
+    // Play sound directly from here to ensure it works
+    _audioManager.playMissileSound(rocketType);
+
+    // Set cooldown
+    canShoot = false;
+    cooldownTimer = 0;
   }
 
   @override
@@ -54,6 +104,14 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
     if (position.y < 0) {
       position.y = 0;
       velocity = 0;
+    }
+
+    // Handle shooting cooldown
+    if (!canShoot) {
+      cooldownTimer += dt;
+      if (cooldownTimer >= shootingCooldown) {
+        canShoot = true;
+      }
     }
 
     super.update(dt); // Don't forget this line to update the animation

@@ -16,6 +16,13 @@ class AudioManager {
     await FlameAudio.audioCache.load('menu_music.wav');
     await FlameAudio.audioCache.load('crash.wav');
     await FlameAudio.audioCache.load('button_click.wav');
+    await FlameAudio.audioCache.load('explosion.wav');
+
+    // Load missile sounds for each rocket type
+    await FlameAudio.audioCache.load('missile_sound1.wav');
+    await FlameAudio.audioCache.load('missile_sound2.wav');
+    await FlameAudio.audioCache.load('missile_sound3.wav');
+    await FlameAudio.audioCache.load('missile_sound4.wav');
   }
 
   // Play background music
@@ -48,6 +55,17 @@ class AudioManager {
   // Play button click sound
   void playButtonClick() {
     playSfx('button_click.wav');
+  }
+
+  // Play missile launch sound based on rocket type
+  void playMissileSound(int rocketType) {
+    // Rocket 1 doesn't have missiles
+    if (rocketType <= 1) return;
+
+    // Play the appropriate missile sound for this rocket type
+    // Rocket types 2-5 correspond to missile sounds 1-4
+    final soundIndex = rocketType - 1;
+    playSfx('missile_sound$soundIndex.wav');
   }
 
   // Toggle mute/unmute

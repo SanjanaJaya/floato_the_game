@@ -31,6 +31,23 @@ const List<String> rocketLevelRequirements = [
   'Reach Level 5',
 ];
 
+// Missile constants
+const List<double> missileSpeeds = [
+  0,    // Rocket 1 doesn't shoot
+  300,  // Rocket 2 missile speed
+  250,  // Rocket 3 missile speed
+  350,  // Rocket 4 missile speed
+  400,  // Rocket 5 missile speed
+];
+
+const List<int> missileDamages = [
+  0,  // Rocket 1 doesn't shoot
+  10, // Rocket 2 missile damage
+  15, // Rocket 3 missile damage
+  20, // Rocket 4 missile damage
+  25, // Rocket 5 missile damage
+];
+
 // Ground constants
 const double groundHeight = 100;
 const double groundScrollingSpeed = 100;
@@ -70,6 +87,9 @@ const List<String> enemyPlaneImages = [
 ];
 // Base speeds for different plane types
 const List<double> enemyPlaneSpeeds = [150, 170, 130, 200];
+
+// Enemy plane health values
+const List<int> enemyPlaneHealths = [30, 40, 50, 60];
 
 // Difficulty levels
 const Map<int, Map<String, dynamic>> difficultyLevels = {

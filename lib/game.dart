@@ -1,5 +1,3 @@
-// Modified game.dart file
-
 import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -11,6 +9,8 @@ import 'package:floato_the_game/components/rocket.dart';
 import 'package:floato_the_game/components/ground.dart';
 import 'package:floato_the_game/components/score.dart';
 import 'package:floato_the_game/components/enemy_plane.dart';
+import 'package:floato_the_game/components/missile.dart';
+import 'package:floato_the_game/components/explosion.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:flutter/material.dart';
 import 'shared_preferences_helper.dart';
@@ -35,7 +35,13 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
   int currentLevelThreshold = 0;
 
   @override
-  FutureOr<void> onLoad() {
+  FutureOr<void> onLoad() async {
+    // Print debug info
+    print('Game initialized with rocket type: $selectedRocketType');
+
+    // Start background music
+    _audioManager.playBackgroundMusic();
+
     background = Background(size);
     add(background);
 
@@ -53,12 +59,44 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
 
     // Add pause button overlay
     overlays.add('pauseButton');
+
+    // Initialize difficulty settings based on starting level
+    updateDifficultySettings();
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
   }
 
   @override
   void onTap() {
-    if (!isGameOver && !isPaused) {
+    // Do nothing - using onTapDown instead for more precise control
+  }
+
+  @override
+  void onTapDown(TapDownInfo info) {
+    if (isGameOver || isPaused) return;
+
+    // Check if tap is on left or right side of screen
+    // Using global position since game position isn't available
+    bool isTapOnLeftSide = info.eventPosition.global.x < size.x / 2;
+
+    // Print debug info
+    print('Tap detected on ${isTapOnLeftSide ? "left" : "right"} side');
+
+    if (isTapOnLeftSide) {
+      // Left side tap: Jump
       rocket.flap();
+    } else {
+      // Right side tap: Shoot if rocket type allows
+      print('Attempting to shoot with rocket type: ${rocket.rocketType}');
+      if (rocket.rocketType > 0) {
+        // Direct call to forcedShoot with simpler logic
+        rocket.forcedShoot();
+      } else {
+        print('Cannot shoot: rocket type is 0');
+      }
     }
   }
 
@@ -71,11 +109,17 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
       resumeEngine();
       isPaused = false;
       overlays.remove('pauseMenu');
+
+      // Resume background music
+      _audioManager.resumeBackgroundMusic();
     } else {
       // Pause the game
       pauseEngine();
       isPaused = true;
       overlays.add('pauseMenu');
+
+      // Pause music (optional)
+      _audioManager.stopBackgroundMusic();
     }
   }
 
@@ -83,6 +127,9 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
     final previousLevel = _getCurrentLevelThreshold();
     score += 1;
     final newLevel = _getCurrentLevelThreshold();
+
+    // Update the score text without calling updateScore
+    scoreText.text = 'Score: $score';
 
     if (newLevel != previousLevel) {
       updateDifficultySettings();
@@ -115,7 +162,7 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
 
   // Calculate enemy plane speed based on plane type and current level
   double getEnemyPlaneSpeed(int planeType) {
-    final baseSpeed = enemyPlaneSpeeds[planeType];
+    final baseSpeed = enemyPlaneSpeeds[planeType % enemyPlaneSpeeds.length];
     final multiplier = getEnemySpeedMultiplier();
     return baseSpeed * multiplier;
   }
@@ -141,8 +188,32 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
     );
     add(overlay);
 
+    // Play level up sound effect
+    _audioManager.playSfx('button_click.wav');
+
     // Save the highest level reached
     PreferencesHelper.saveHighestLevel(levelThreshold);
+  }
+
+  void handleMissileHit(EnemyPlane enemy, int damage) {
+    // Apply damage to enemy
+    enemy.takeDamage(damage);
+
+    // Check if enemy is destroyed
+    if (enemy.health <= 0) {
+      // Play explosion sound
+      _audioManager.playSfx('explosion.wav');
+
+      // Create explosion animation
+      final explosion = Explosion(
+        position: enemy.position,
+        size: Vector2(80, 80),
+      );
+      add(explosion);
+
+      // Increment score
+      incrementScore();
+    }
   }
 
   void gameOver() {
@@ -246,6 +317,7 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
                   ),
                   onPressed: () {
                     Navigator.pop(context);
+                    _audioManager.playButtonClick();
                     resetGame();
                   },
                   child: const Text(
@@ -287,6 +359,7 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
                     ),
                   ),
                   onPressed: () {
+                    _audioManager.playButtonClick();
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -317,16 +390,23 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
     score = 0;
     isGameOver = false;
 
+    // Reset score text
+    scoreText.text = 'Score: 0';
+
     // Reset pause state if game was paused
     if (isPaused) {
       isPaused = false;
       overlays.remove('pauseMenu');
     }
 
+    // Clean up game components
     children.whereType<Building>().forEach((building) => building.removeFromParent());
     children.whereType<EnemyPlane>().forEach((enemy) => enemy.removeFromParent());
     children.whereType<LevelUpNotification>().forEach((notification) => notification.removeFromParent());
+    children.whereType<Missile>().forEach((missile) => missile.removeFromParent());
+    children.whereType<Explosion>().forEach((explosion) => explosion.removeFromParent());
 
+    // Reset to Level 1 difficulty
     updateDifficultySettings();
 
     // Resume background music
@@ -335,6 +415,23 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
     if (paused) {
       resumeEngine();
     }
+  }
+
+  @override
+  void onRemove() {
+    // Clean up resources when game is removed
+    _audioManager.stopBackgroundMusic();
+    super.onRemove();
+  }
+
+  // Method to toggle audio
+  void toggleAudio() {
+    _audioManager.toggleMute();
+  }
+
+  // Check if audio is muted
+  bool isAudioMuted() {
+    return _audioManager.isMuted;
   }
 }
 

@@ -3,19 +3,27 @@ import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:floato_the_game/components/rocket.dart';
+import 'package:floato_the_game/components/health_bar.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
 
 class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGameRef<floato> {
   final int planeType;
   double speed;
+  int health;
+  int maxHealth;
+  late HealthBar healthBar;
 
   EnemyPlane({
     required Vector2 position,
     required Vector2 size,
     required this.planeType,
     this.speed = 0,  // Default value that will be overridden
-  }) : super(position: position, size: size);
+  }) :
+  // Initialize the non-nullable fields in the initializer list
+        maxHealth = enemyPlaneHealths[planeType % enemyPlaneHealths.length],
+        health = enemyPlaneHealths[planeType % enemyPlaneHealths.length],
+        super(position: position, size: size);
 
   @override
   FutureOr<void> onLoad() async {
@@ -53,6 +61,14 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
       final speedMultiplier = gameRef.getEnemySpeedMultiplier();
       speed = baseSpeed * speedMultiplier;
     }
+
+    // Add health bar
+    healthBar = HealthBar(
+      maxHealth: maxHealth,
+      position: Vector2(0, -15), // Position above the plane
+      size: Vector2(size.x, 5),
+    );
+    add(healthBar);
   }
 
   @override
@@ -70,6 +86,18 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
   // Add method to update speed during gameplay
   void updateSpeed(double newSpeed) {
     speed = newSpeed;
+  }
+
+  // Method to handle taking damage from missiles
+  void takeDamage(int damage) {
+    health -= damage;
+    healthBar.updateHealth(health);
+
+    if (health <= 0) {
+      // Plane is destroyed, give player points
+      gameRef.incrementScore();
+      removeFromParent();
+    }
   }
 
   @override
