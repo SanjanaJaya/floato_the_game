@@ -1,3 +1,5 @@
+// Modified game.dart file
+
 import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -102,6 +104,18 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
     return difficultyLevels[_getCurrentLevelThreshold()]?['levelRange'] ?? '0-50';
   }
 
+  // Get the enemy speed multiplier based on current level
+  double getEnemySpeedMultiplier() {
+    return difficultyLevels[_getCurrentLevelThreshold()]?['enemySpeedMultiplier'] ?? 1.0;
+  }
+
+  // Calculate enemy plane speed based on plane type and current level
+  double getEnemyPlaneSpeed(int planeType) {
+    final baseSpeed = enemyPlaneSpeeds[planeType];
+    final multiplier = getEnemySpeedMultiplier();
+    return baseSpeed * multiplier;
+  }
+
   void updateDifficultySettings() {
     final settings = difficultyLevels[_getCurrentLevelThreshold()]!;
     buildingManager.updateDifficulty(
@@ -109,6 +123,11 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
       enemySpawnInterval: settings['enemySpawnInterval'],
     );
     ground.updateScrollingSpeed(settings['groundScrollingSpeed']);
+
+    // Update speeds of existing enemy planes
+    children.whereType<EnemyPlane>().forEach((enemy) {
+      enemy.updateSpeed(getEnemyPlaneSpeed(enemy.planeType));
+    });
   }
 
   void showLevelUpNotification(int levelThreshold) {

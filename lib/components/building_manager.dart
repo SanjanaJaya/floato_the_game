@@ -10,6 +10,7 @@ class BuildingManager extends Component with HasGameRef<floato> {
   double enemySpawnTimer = 0;
   double buildingInterval = difficultyLevels[0]!['buildingInterval'];
   double enemySpawnInterval = difficultyLevels[0]!['enemySpawnInterval'];
+  final random = Random();
 
   @override
   void update(double dt) {
@@ -32,7 +33,7 @@ class BuildingManager extends Component with HasGameRef<floato> {
   void spawnBuilding() {
     final double screenHeight = gameRef.size.y;
     final double buildingHeight = minBuildingHeight +
-        Random().nextDouble() * (maxBuildingHeight - minBuildingHeight);
+        random.nextDouble() * (maxBuildingHeight - minBuildingHeight);
 
     final building = Building(
       Vector2(gameRef.size.x, screenHeight - groundHeight),
@@ -47,14 +48,19 @@ class BuildingManager extends Component with HasGameRef<floato> {
     final double minY = 100;
     final double maxY = screenHeight - groundHeight - maxBuildingHeight - 50;
 
-    final double yPos = minY + Random().nextDouble() * (maxY - minY);
-    final random = Random();
+    final double yPos = minY + random.nextDouble() * (maxY - minY);
     final planeType = random.nextInt(enemyPlaneImages.length);
+
+    // Calculate the correct speed based on the current level
+    final baseSpeed = enemyPlaneSpeeds[planeType % enemyPlaneSpeeds.length];
+    final speedMultiplier = gameRef.getEnemySpeedMultiplier();
+    final adjustedSpeed = baseSpeed * speedMultiplier;
 
     final enemy = EnemyPlane(
       position: Vector2(gameRef.size.x, yPos),
       size: Vector2(enemyPlaneWidth, enemyPlaneHeight),
       planeType: planeType,
+      speed: adjustedSpeed,
     );
 
     gameRef.add(enemy);

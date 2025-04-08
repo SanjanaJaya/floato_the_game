@@ -35,7 +35,7 @@ const List<String> buildingImages = [
 // Enemy plane constants
 const double enemyPlaneWidth = 90;
 const double enemyPlaneHeight = 45;
-const double enemyPlaneSpeed = 150;
+const double enemyPlaneSpeed = 150; // Base speed, will be modified by level
 const double enemySpawnInterval = 3;
 const List<String> enemyPlaneImages = [
   'enemy_plane1.png',
@@ -43,6 +43,7 @@ const List<String> enemyPlaneImages = [
   'enemy_plane3.png',
   'enemy_plane4.png',
 ];
+// Base speeds for different plane types
 const List<double> enemyPlaneSpeeds = [150, 170, 130, 200];
 
 // Difficulty levels
@@ -52,6 +53,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'buildingGap': 300.0,
     'enemySpawnInterval': 3.0,
     'groundScrollingSpeed': 100.0,
+    'enemySpeedMultiplier': 1.0, // Base speed
     'levelName': 'Level 1',
     'levelRange': '0-50',
   },
@@ -60,6 +62,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'buildingGap': 280.0,
     'enemySpawnInterval': 2.7,
     'groundScrollingSpeed': 125.0,
+    'enemySpeedMultiplier': 1.2, // 20% faster
     'levelName': 'Level 2',
     'levelRange': '50-150',
   },
@@ -68,6 +71,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'buildingGap': 260.0,
     'enemySpawnInterval': 2.4,
     'groundScrollingSpeed': 150.0,
+    'enemySpeedMultiplier': 1.4, // 40% faster
     'levelName': 'Level 3',
     'levelRange': '150-250',
   },
@@ -76,6 +80,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'buildingGap': 240.0,
     'enemySpawnInterval': 2.1,
     'groundScrollingSpeed': 200.0,
+    'enemySpeedMultiplier': 1.6, // 60% faster
     'levelName': 'Level 4',
     'levelRange': '250-350',
   },
@@ -84,8 +89,8 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'buildingGap': 220.0,
     'enemySpawnInterval': 1.8,
     'groundScrollingSpeed': 225.0,
+    'enemySpeedMultiplier': 1.8, // 80% faster
     'levelName': 'Level 5',
     'levelRange': '350-500',
   },
 };
-
