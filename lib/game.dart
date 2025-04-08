@@ -11,8 +11,8 @@ import 'package:floato_the_game/components/score.dart';
 import 'package:floato_the_game/components/enemy_plane.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flame_audio/flame_audio.dart';
 import 'menu_screen.dart';
+import 'audio_manager.dart';
 
 class floato extends FlameGame with TapDetector, HasCollisionDetection {
   late Rocket rocket;
@@ -20,6 +20,7 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
   late Ground ground;
   late BuildingManager buildingManager;
   late ScoreText scoreText;
+  final AudioManager _audioManager = AudioManager();
 
   @override
   FutureOr<void> onLoad() {
@@ -103,7 +104,10 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
 
     isGameOver = true;
     pauseEngine();
-    FlameAudio.play('crash.wav');
+
+    // Play crash sound and stop background music
+    _audioManager.playSfx('crash.wav');
+    _audioManager.stopBackgroundMusic();
 
     showDialog(
       context: buildContext!,
@@ -247,6 +251,7 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
     );
   }
 
+
   void resetGame() {
     rocket.position = Vector2(rocketStartX, rocketStartY);
     rocket.velocity = 0;
@@ -258,6 +263,9 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
     children.whereType<LevelUpNotification>().forEach((notification) => notification.removeFromParent());
 
     updateDifficultySettings();
+
+    // Resume background music
+    _audioManager.resumeBackgroundMusic();
 
     if (paused) {
       resumeEngine();

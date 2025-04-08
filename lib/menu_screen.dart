@@ -1,8 +1,7 @@
-// menu_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'game.dart';
-import 'package:flame_audio/flame_audio.dart';
+import 'audio_manager.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -13,6 +12,14 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   bool showCredits = false;
+  final AudioManager _audioManager = AudioManager();
+
+  @override
+  void initState() {
+    super.initState();
+    // Start playing background music when menu loads
+    _audioManager.playBackgroundMusic();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +27,44 @@ class _MenuScreenState extends State<MenuScreen> {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/menu_background.png'),
+            image: AssetImage('assets/images/menu_background.jpg'),
             fit: BoxFit.cover,
           ),
         ),
-        child: Center(
-          child: showCredits ? buildCreditsContent() : buildMenuContent(),
+        child: Stack(
+          children: [
+            Center(
+              child: showCredits ? buildCreditsContent() : buildMenuContent(),
+            ),
+            // Mute button in top-right corner
+            Positioned(
+              top: 40,
+              right: 20,
+              child: IconButton(
+                icon: Icon(
+                  _audioManager.isMuted ? Icons.volume_off : Icons.volume_up,
+                  color: Colors.white,
+                  size: 36,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _audioManager.toggleMute();
+                  });
+                },
+                padding: const EdgeInsets.all(10),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(
+                    Colors.black.withOpacity(0.5),
+                  ),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -36,7 +75,7 @@ class _MenuScreenState extends State<MenuScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
-          'Floato',
+          '',
           style: TextStyle(
             fontSize: 60,
             fontWeight: FontWeight.bold,
@@ -50,9 +89,11 @@ class _MenuScreenState extends State<MenuScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 80),
+        // Increased spacing before buttons
+        const SizedBox(height: 610),
         ElevatedButton(
           onPressed: () {
+            // Don't stop the music when starting the game
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -76,7 +117,8 @@ class _MenuScreenState extends State<MenuScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 30),
+        // Increased spacing between buttons
+        const SizedBox(height: 25),
         ElevatedButton(
           onPressed: () {
             setState(() {
@@ -124,9 +166,9 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Game Developer: Your Name\n\n'
-                'Art Assets: Asset Creator\n\n'
-                'Music & Sound: Sound Designer\n\n'
+            'Main Developer:\nImesh Sanjana\n\n'
+                'Art Designers:\nNethmina Medagedara\nNethsara Werasooriya\nAnjana Herath\n\n'
+                'Music & Sound:\nKavindu Heshan\n\n'
                 'Special Thanks: Flutter and Flame Community',
             style: TextStyle(
               fontSize: 18,
