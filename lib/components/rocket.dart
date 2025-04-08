@@ -6,7 +6,7 @@ import 'package:floato_the_game/components/ground.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
 
-class Rocket extends SpriteComponent with CollisionCallbacks, HasGameRef<floato> {
+class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRef<floato> {
   Rocket() : super(
       position: Vector2(rocketStartX, rocketStartY),
       size: Vector2(rocketWidth, rocketHeight)
@@ -16,7 +16,27 @@ class Rocket extends SpriteComponent with CollisionCallbacks, HasGameRef<floato>
 
   @override
   FutureOr<void> onLoad() async {
-    sprite = await Sprite.load('rocket.png');
+    // Load the sprite sheet
+    final spriteSheet = await gameRef.images.load('rocket.png');
+
+    // Create sprites from the sprite sheet
+    // Your sprite sheet is 6000x800 with 6 frames (each 1000x800)
+    final spriteSize = Vector2(1000, 800);
+    final sprites = List.generate(
+      6, // Number of frames
+          (i) => Sprite(
+        spriteSheet,
+        srcPosition: Vector2(i * spriteSize.x, 0),
+        srcSize: spriteSize,
+      ),
+    );
+
+    // Create and play the animation
+    animation = SpriteAnimation.spriteList(
+      sprites,
+      stepTime: 0.1, // Adjust this value to control animation speed
+    );
+
     add(RectangleHitbox());
   }
 
@@ -33,6 +53,8 @@ class Rocket extends SpriteComponent with CollisionCallbacks, HasGameRef<floato>
       position.y = 0;
       velocity = 0;
     }
+
+    super.update(dt); // Don't forget this line to update the animation
   }
 
   @override
