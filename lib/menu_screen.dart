@@ -411,6 +411,14 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               color: Colors.white,
             ),
           ),
+          const SizedBox(height: 30),
+          // Logo image added here
+          Image.asset(
+            'assets/images/logo.png',
+            height: 100,
+            width: 100,
+          ),
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
               // Play button sound
