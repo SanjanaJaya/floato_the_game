@@ -42,7 +42,7 @@ const List<double> missileSpeeds = [
 
 const List<int> missileDamages = [
   0,  // Rocket 1 doesn't shoot
-  10, // Rocket 2 missile damage
+  75, // Rocket 2 missile damage
   15, // Rocket 3 missile damage
   20, // Rocket 4 missile damage
   25, // Rocket 5 missile damage

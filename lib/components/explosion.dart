@@ -17,13 +17,16 @@ class Explosion extends SpriteAnimationComponent with HasGameRef<floato> {
     // Load explosion spritesheet
     final spriteSheet = await gameRef.images.load('explosion.png');
 
-    // Create animation with 8 frames (adjust based on your actual explosion sprite)
-    final spriteSize = Vector2(64, 64); // Adjust based on your explosion sprite size
+    // Adjust for actual sprite sheet dimensions: 5355x512 with 6 frames
+    final frameWidth = 5355.0 / 6.0; // Calculate single frame width - explicitly using doubles
+    final frameHeight = 512.0; // Height of each frame - explicitly using double
+    final spriteSize = Vector2(frameWidth, frameHeight);
+
     final frames = List.generate(
-      8, // Assuming 8 frames in the explosion animation
+      6, // 6 frames in the explosion animation
           (i) => Sprite(
         spriteSheet,
-        srcPosition: Vector2(i * spriteSize.x, 0),
+        srcPosition: Vector2(i * frameWidth, 0),
         srcSize: spriteSize,
       ),
     );
