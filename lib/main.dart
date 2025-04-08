@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'menu_screen.dart';
+import 'splash_screen.dart';
 import 'audio_manager.dart';
 
 void main() async {
@@ -19,7 +19,7 @@ class Myapp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MenuScreen(),
+      home: SplashScreen(),
     );
   }
 }

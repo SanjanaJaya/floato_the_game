@@ -16,11 +16,11 @@ const List<String> rocketImages = [
 ];
 
 const List<String> rocketNames = [
-  'Rocket',
-  'Speedstar',
-  'Pakaya',
-  'Ponnaya',
-  'Hutta',
+  'Skye',
+  'Nyra',
+  'Seren',
+  'Elowen',
+  'Zephyr',
 ];
 
 const List<String> rocketLevelRequirements = [
@@ -57,7 +57,7 @@ const double buildingInterval = 2;
 const double buildingGap = 300;
 const double minBuildingHeight = 250;
 const double maxBuildingHeight = 350;
-const double buildingWidth = 100;
+const double buildingWidth = 120;
 const List<String> buildingImages = [
   'building1.png',
   'building2.png',
@@ -92,12 +92,13 @@ const List<String> enemyPlaneImages = [
   'enemy_plane3.png',
   'enemy_plane4.png',
   'enemy_plane5.png',
+  'enemy_plane6.png',
 ];
 // Base speeds for different plane types
-const List<double> enemyPlaneSpeeds = [150, 170, 130, 200, 75];
+const List<double> enemyPlaneSpeeds = [150, 170, 130, 200, 100, 75];
 
 // Enemy plane health values
-const List<int> enemyPlaneHealths = [30, 40, 50, 60, 70];
+const List<int> enemyPlaneHealths = [30, 40, 50, 60, 70, 90];
 
 // Difficulty levels
 const Map<int, Map<String, dynamic>> difficultyLevels = {

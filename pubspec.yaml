@@ -37,6 +37,8 @@ dependencies:
   flame:
   flame_audio:
   shared_preferences:
+  flutter_native_splash:
+  video_player:
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +71,10 @@ flutter:
     - assets/images/bird/rocket4.png
     - assets/images/bird/rocket5.png
     - assets/audio/
+    - assets/videos/
+
+
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
