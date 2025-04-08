@@ -388,6 +388,13 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               color: Colors.white,
             ),
           ),
+          const Text(
+            'Dinuwara Wijerathne',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+            ),
+          ),
           const SizedBox(height: 30),
           const Text(
             'Audio Effects & Music',
