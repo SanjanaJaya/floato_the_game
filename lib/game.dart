@@ -22,6 +22,12 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
   late ScoreText scoreText;
   final AudioManager _audioManager = AudioManager();
 
+  // Add pause state variables
+  bool isPaused = false;
+  bool isGameOver = false;
+  int score = 0;
+  int currentLevelThreshold = 0;
+
   @override
   FutureOr<void> onLoad() {
     background = Background(size);
@@ -38,17 +44,34 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
 
     scoreText = ScoreText();
     add(scoreText);
+
+    // Add pause button overlay
+    overlays.add('pauseButton');
   }
 
   @override
   void onTap() {
-    if (!isGameOver) {
+    if (!isGameOver && !isPaused) {
       rocket.flap();
     }
   }
 
-  int score = 0;
-  int currentLevelThreshold = 0;
+  // Add toggle pause method
+  void togglePause() {
+    if (isGameOver) return;
+
+    if (isPaused) {
+      // Resume the game
+      resumeEngine();
+      isPaused = false;
+      overlays.remove('pauseMenu');
+    } else {
+      // Pause the game
+      pauseEngine();
+      isPaused = true;
+      overlays.add('pauseMenu');
+    }
+  }
 
   void incrementScore() {
     final previousLevel = _getCurrentLevelThreshold();
@@ -96,14 +119,16 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
     add(overlay);
   }
 
-  bool isGameOver = false;
-
-  // Only modifying the gameOver method to add a "Back to Menu" button
   void gameOver() {
     if (isGameOver) return;
 
     isGameOver = true;
     pauseEngine();
+
+    // Remove pause menu if it's showing
+    if (overlays.isActive('pauseMenu')) {
+      overlays.remove('pauseMenu');
+    }
 
     // Play crash sound and stop background music
     _audioManager.playSfx('crash.wav');
@@ -254,12 +279,17 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
     );
   }
 
-
   void resetGame() {
     rocket.position = Vector2(rocketStartX, rocketStartY);
     rocket.velocity = 0;
     score = 0;
     isGameOver = false;
+
+    // Reset pause state if game was paused
+    if (isPaused) {
+      isPaused = false;
+      overlays.remove('pauseMenu');
+    }
 
     children.whereType<Building>().forEach((building) => building.removeFromParent());
     children.whereType<EnemyPlane>().forEach((enemy) => enemy.removeFromParent());
