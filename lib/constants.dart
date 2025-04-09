@@ -94,12 +94,13 @@ const List<String> enemyPlaneImages = [
   'enemy_plane5.png',
   'enemy_plane6.png',
   'enemy_plane7.png',
+  'enemy_plane8.png',
 ];
 // Base speeds for different plane types
-const List<double> enemyPlaneSpeeds = [150, 170, 130, 200, 100, 75, 85];
+const List<double> enemyPlaneSpeeds = [150, 170, 130, 200, 100, 75, 85, 110];
 
 // Enemy plane health values
-const List<int> enemyPlaneHealths = [30, 40, 50, 60, 70, 90, 60];
+const List<int> enemyPlaneHealths = [30, 40, 50, 60, 70, 90, 60, 50];
 
 // Difficulty levels
 const Map<int, Map<String, dynamic>> difficultyLevels = {

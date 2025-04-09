@@ -15,6 +15,17 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
   bool canShoot = true;
   final AudioManager _audioManager = AudioManager();
 
+  // Variables for drag-based movement
+  bool isDragging = false;
+  Vector2 targetPosition = Vector2.zero();
+  double movementSpeed = 200.0; // Speed at which rocket moves toward target position
+
+  // Boundaries for movement
+  double minY = 0;  // Top of screen
+  double maxY = 0;  // Will be set based on ground height in onLoad
+  double minX = 80; // Left boundary
+  double maxX = 0;  // Will be set based on screen width in onLoad
+
   Rocket({this.rocketType = 0}) : super(
       position: Vector2(rocketStartX, rocketStartY),
       size: Vector2(rocketWidth, rocketHeight)
@@ -47,12 +58,44 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
 
     add(RectangleHitbox());
 
+    // Initialize boundaries based on game size
+    maxX = gameRef.size.x - size.x;
+    maxY = gameRef.size.y - groundHeight - size.y;
+
+    // Initialize target position to current position
+    targetPosition = position.clone();
+
     // Debug print to verify rocket type
     print('Rocket initialized with type: $rocketType');
   }
 
+  // Traditional flap method - kept for backward compatibility
   void flap() {
     velocity = jumpStrength;
+  }
+
+  // Method to start dragging
+  void startDrag(Vector2 dragPosition) {
+    isDragging = true;
+    updateTargetPosition(dragPosition);
+  }
+
+  // Method to update position during drag
+  void updateDragPosition(Vector2 dragPosition) {
+    if (isDragging) {
+      updateTargetPosition(dragPosition);
+    }
+  }
+
+  // Method to stop dragging
+  void stopDrag() {
+    isDragging = false;
+  }
+
+  // Update target position with constraints
+  void updateTargetPosition(Vector2 newPosition) {
+    targetPosition.x = newPosition.x.clamp(minX, maxX);
+    targetPosition.y = newPosition.y.clamp(minY, maxY);
   }
 
   void shoot() {
@@ -98,12 +141,31 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
 
   @override
   void update(double dt) {
-    velocity += gravity * dt;
-    position.y += velocity * dt;
+    if (isDragging) {
+      // Move toward target position with smooth interpolation
+      final direction = targetPosition - position;
+      if (direction.length > 5) {  // Only move if we're more than 5 pixels away
+        direction.normalize();
+        position += direction * movementSpeed * dt;
 
-    if (position.y < 0) {
-      position.y = 0;
-      velocity = 0;
+        // Clamp position to boundaries
+        position.x = position.x.clamp(minX, maxX);
+        position.y = position.y.clamp(minY, maxY);
+      }
+    } else {
+      // Apply gravity when not being dragged
+      velocity += gravity * dt;
+      position.y += velocity * dt;
+
+      // Keep rocket within bounds
+      if (position.y < minY) {
+        position.y = minY;
+        velocity = 0;
+      }
+      if (position.y > maxY) {
+        position.y = maxY;
+        velocity = 0;
+      }
     }
 
     // Handle shooting cooldown

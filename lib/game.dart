@@ -17,7 +17,7 @@ import 'shared_preferences_helper.dart';
 import 'menu_screen.dart';
 import 'audio_manager.dart';
 
-class floato extends FlameGame with TapDetector, HasCollisionDetection {
+class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDetection {
   late Rocket rocket;
   late Background background;
   late Ground ground;
@@ -25,6 +25,11 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
   late ScoreText scoreText;
   final AudioManager _audioManager = AudioManager();
   final int selectedRocketType;
+
+  // Control zones
+  late Rect dragZone;
+  late Rect shootZone;
+  bool isTouchInDragZone = false;
 
   floato({this.selectedRocketType = 0});
 
@@ -57,6 +62,10 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
     scoreText = ScoreText();
     add(scoreText);
 
+    // Define control zones - left 2/3 for movement, right 1/3 for shooting
+    dragZone = Rect.fromLTWH(0, 0, size.x * 0.66, size.y);
+    shootZone = Rect.fromLTWH(size.x * 0.66, 0, size.x * 0.34, size.y);
+
     // Add pause button overlay
     overlays.add('pauseButton');
 
@@ -69,6 +78,50 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
     super.update(dt);
   }
 
+  // Drag event handlers
+  @override
+  void onDragStart(DragStartEvent event) {
+    if (isGameOver || isPaused) return;
+
+    final touchPosition = event.canvasPosition;
+    isTouchInDragZone = dragZone.contains(Offset(touchPosition.x, touchPosition.y));
+
+    if (isTouchInDragZone) {
+      // Start dragging the rocket
+      rocket.startDrag(touchPosition);
+    }
+  }
+
+  @override
+  void onDragUpdate(DragUpdateEvent event) {
+    if (isGameOver || isPaused) return;
+
+    if (isTouchInDragZone) {
+      // Update rocket position
+      rocket.updateDragPosition(event.canvasEndPosition);
+    }
+  }
+
+  @override
+  void onDragEnd(DragEndEvent event) {
+    if (isGameOver || isPaused) return;
+
+    if (isTouchInDragZone) {
+      // Stop dragging
+      rocket.stopDrag();
+    }
+  }
+
+  @override
+  void onDragCancel(DragCancelEvent event) {
+    if (isGameOver || isPaused) return;
+
+    if (isTouchInDragZone) {
+      // Stop dragging
+      rocket.stopDrag();
+    }
+  }
+
   @override
   void onTap() {
     // Do nothing - using onTapDown instead for more precise control
@@ -78,17 +131,13 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
   void onTapDown(TapDownInfo info) {
     if (isGameOver || isPaused) return;
 
-    // Check if tap is on left or right side of screen
-    // Using global position since game position isn't available
-    bool isTapOnLeftSide = info.eventPosition.global.x < size.x / 2;
+    final touchPosition = info.eventPosition.global;
+    final isTapInShootZone = shootZone.contains(Offset(touchPosition.x, touchPosition.y));
 
     // Print debug info
-    print('Tap detected on ${isTapOnLeftSide ? "left" : "right"} side');
+    print('Tap detected in ${isTapInShootZone ? "shoot" : "drag"} zone');
 
-    if (isTapOnLeftSide) {
-      // Left side tap: Jump
-      rocket.flap();
-    } else {
+    if (isTapInShootZone) {
       // Right side tap: Shoot if rocket type allows
       print('Attempting to shoot with rocket type: ${rocket.rocketType}');
       if (rocket.rocketType > 0) {
@@ -97,6 +146,9 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
       } else {
         print('Cannot shoot: rocket type is 0');
       }
+    } else {
+      // Left side tap (used when not dragging): Jump using the old control method
+      rocket.flap();
     }
   }
 
