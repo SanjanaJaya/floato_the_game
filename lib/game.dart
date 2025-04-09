@@ -36,6 +36,8 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   // Add pause state variables
   bool isPaused = false;
   bool isGameOver = false;
+  // Add tutorial flag
+  bool showingTutorial = false;
   int score = 0;
   int currentLevelThreshold = 0;
 
@@ -74,6 +76,15 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     // Add pause button overlay
     overlays.add('pauseButton');
 
+    // Check if we need to show tutorial
+    bool needsTutorial = await PreferencesHelper.hasTutorialBeenSeen();
+    if (!needsTutorial) {
+      // If tutorial hasn't been seen, pause the game and show tutorial
+      showingTutorial = true;
+      pauseEngine();
+      overlays.add('tutorial');
+    }
+
     // Initialize difficulty settings based on starting level
     updateDifficultySettings();
   }
@@ -81,7 +92,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   // In your game class
   @override
   void update(double dt) {
-    if (!isGameOver && !isPaused) {
+    if (!isGameOver && !isPaused && !showingTutorial) {
       // For Level 5, apply stricter performance management
       if (score >= 700) {
         // Limit update rate if FPS is dropping
@@ -92,6 +103,13 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       }
     }
     super.update(dt);
+  }
+
+  // Method to handle tutorial completion
+  void onTutorialComplete() {
+    showingTutorial = false;
+    overlays.remove('tutorial');
+    resumeEngine();
   }
 
   // Add this method to manage on-screen objects
@@ -135,7 +153,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   // Drag event handlers
   @override
   void onDragStart(DragStartEvent event) {
-    if (isGameOver || isPaused) return;
+    if (isGameOver || isPaused || showingTutorial) return;
 
     final touchPosition = event.canvasPosition;
     isTouchInDragZone = dragZone.contains(Offset(touchPosition.x, touchPosition.y));
@@ -148,7 +166,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
   @override
   void onDragUpdate(DragUpdateEvent event) {
-    if (isGameOver || isPaused) return;
+    if (isGameOver || isPaused || showingTutorial) return;
 
     if (isTouchInDragZone) {
       // Update rocket position
@@ -158,7 +176,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
   @override
   void onDragEnd(DragEndEvent event) {
-    if (isGameOver || isPaused) return;
+    if (isGameOver || isPaused || showingTutorial) return;
 
     if (isTouchInDragZone) {
       // Stop dragging
@@ -168,7 +186,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
   @override
   void onDragCancel(DragCancelEvent event) {
-    if (isGameOver || isPaused) return;
+    if (isGameOver || isPaused || showingTutorial) return;
 
     if (isTouchInDragZone) {
       // Stop dragging
@@ -183,7 +201,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
   @override
   void onTapDown(TapDownInfo info) {
-    if (isGameOver || isPaused) return;
+    if (isGameOver || isPaused || showingTutorial) return;
 
     final touchPosition = info.eventPosition.global;
     final isTapInShootZone = shootZone.contains(Offset(touchPosition.x, touchPosition.y));
@@ -208,7 +226,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
   // Add toggle pause method
   void togglePause() {
-    if (isGameOver) return;
+    if (isGameOver || showingTutorial) return;
 
     if (isPaused) {
       // Resume the game

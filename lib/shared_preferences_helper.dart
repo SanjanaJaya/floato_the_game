@@ -1,82 +1,75 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferencesHelper {
-  static const String highScoreKey = 'highScore';
-  static const String highestLevelKey = 'highestLevel';
-  static const String unlockedRocketsKey = 'unlockedRockets';
-  static const String selectedRocketKey = 'selectedRocket';
-
-  // Save high score
-  static Future<void> saveHighScore(int score) async {
-    final prefs = await SharedPreferences.getInstance();
-    final currentHighScore = prefs.getInt(highScoreKey) ?? 0;
-
-    if (score > currentHighScore) {
-      await prefs.setInt(highScoreKey, score);
-    }
-  }
-
-  // Get high score
+  // Existing methods
   static Future<int> getHighScore() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(highScoreKey) ?? 0;
+    return prefs.getInt('highScore') ?? 0;
   }
 
-  // Save highest level reached
-  static Future<void> saveHighestLevel(int levelThreshold) async {
+  static Future<void> saveHighScore(int score) async {
     final prefs = await SharedPreferences.getInstance();
-    final currentHighestLevel = prefs.getInt(highestLevelKey) ?? 0;
-
-    if (levelThreshold > currentHighestLevel) {
-      await prefs.setInt(highestLevelKey, levelThreshold);
-
-      // Update unlocked rockets based on level
-      await updateUnlockedRockets(levelThreshold);
+    final currentHighScore = prefs.getInt('highScore') ?? 0;
+    if (score > currentHighScore) {
+      await prefs.setInt('highScore', score);
     }
   }
 
-  // Get highest level
   static Future<int> getHighestLevel() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(highestLevelKey) ?? 0;
+    return prefs.getInt('highestLevel') ?? 0;
   }
 
-  // Update unlocked rockets based on level
-  static Future<void> updateUnlockedRockets(int levelThreshold) async {
+  static Future<void> saveHighestLevel(int level) async {
     final prefs = await SharedPreferences.getInstance();
+    final currentHighestLevel = prefs.getInt('highestLevel') ?? 0;
+    if (level > currentHighestLevel) {
+      await prefs.setInt('highestLevel', level);
 
-    // Calculate how many rockets should be unlocked
-    // Level 1 (0): 1 rocket, Level 2 (50): 2 rockets, etc.
-    int unlockCount = 1; // Default: 1 rocket always unlocked
-
-    if (levelThreshold >= 700) {
-      unlockCount = 5; // Level 5: All 5 rockets
-    } else if (levelThreshold >= 450) {
-      unlockCount = 4; // Level 4: 4 rockets
-    } else if (levelThreshold >= 250) {
-      unlockCount = 3; // Level 3: 3 rockets
-    } else if (levelThreshold >= 100) {
-      unlockCount = 2; // Level 2: 2 rockets
+      // Update unlocked rockets based on level
+      await _updateUnlockedRockets(level);
     }
-
-    await prefs.setInt(unlockedRocketsKey, unlockCount);
   }
 
-  // Get number of unlocked rockets
+  static Future<void> _updateUnlockedRockets(int level) async {
+    int unlockedCount = 1; // Default has first rocket
+
+    if (level >= 100) unlockedCount = 2;     // Level 2
+    if (level >= 250) unlockedCount = 3;     // Level 3
+    if (level >= 450) unlockedCount = 4;     // Level 4
+    if (level >= 700) unlockedCount = 5;     // Level 5
+
+    final prefs = await SharedPreferences.getInstance();
+    final currentUnlocked = prefs.getInt('unlockedRockets') ?? 1;
+
+    if (unlockedCount > currentUnlocked) {
+      await prefs.setInt('unlockedRockets', unlockedCount);
+    }
+  }
+
   static Future<int> getUnlockedRocketsCount() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(unlockedRocketsKey) ?? 1; // Default: 1 rocket always unlocked
+    return prefs.getInt('unlockedRockets') ?? 1;
   }
 
-  // Save selected rocket
-  static Future<void> saveSelectedRocket(int rocketIndex) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(selectedRocketKey, rocketIndex);
-  }
-
-  // Get selected rocket
   static Future<int> getSelectedRocket() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(selectedRocketKey) ?? 0; // Default: first rocket
+    return prefs.getInt('selectedRocket') ?? 0;
+  }
+
+  static Future<void> saveSelectedRocket(int rocketIndex) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('selectedRocket', rocketIndex);
+  }
+
+  // New methods for tutorial
+  static Future<bool> hasTutorialBeenSeen() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('tutorialSeen') ?? false;
+  }
+
+  static Future<void> saveTutorialSeen(bool seen) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('tutorialSeen', seen);
   }
 }

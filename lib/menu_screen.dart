@@ -1,3 +1,4 @@
+import 'package:floato_the_game/tutorial_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'game.dart';
@@ -216,7 +217,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
             children: [
               ElevatedButton(
                 onPressed: () {
-
                   // Don't stop the music when starting the game
                   Navigator.pushReplacement(
                     context,
@@ -229,6 +229,13 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                           },
                           'pauseMenu': (BuildContext context, floato game) {
                             return PauseMenu(game: game);
+                          },
+                          'tutorial': (BuildContext context, floato game) {
+                            return TutorialScreen(
+                              onComplete: () {
+                                game.onTutorialComplete();
+                              },
+                            );
                           },
                         },
                       ),
@@ -255,7 +262,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: () {
-
                   setState(() {
                     showRocketSelection = true;
                   });
@@ -280,7 +286,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: () {
-
                   setState(() {
                     showCredits = true;
                   });
@@ -415,7 +420,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-
               setState(() {
                 showCredits = false;
               });
@@ -487,8 +491,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                 return GestureDetector(
                   onTap: isUnlocked
                       ? () async {
-
-
                     setState(() {
                       selectedRocket = index;
                     });
@@ -566,7 +568,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-
               setState(() {
                 showRocketSelection = false;
               });

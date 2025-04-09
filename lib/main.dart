@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flame/game.dart';
 import 'splash_screen.dart';
 import 'audio_manager.dart';
+import 'game.dart';
+import 'tutorial_screen.dart'; // Import the new tutorial screen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
