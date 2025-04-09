@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:floato_the_game/components/rocket.dart';
@@ -7,8 +6,6 @@ import 'package:floato_the_game/components/health_bar.dart';
 import 'package:floato_the_game/components/explosion.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
-// Removed AudioManager import - no longer needed
-// import 'package:floato_the_game/audio_manager.dart';
 
 class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGameRef<floato> {
   final int planeType;
@@ -105,8 +102,6 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
 
       // Plane is destroyed, give player points
       gameRef.incrementScore(3);
-
-      // Removed explosion sound call
 
       // Create explosion at plane position
       final explosion = Explosion(

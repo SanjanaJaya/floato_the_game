@@ -10,7 +10,6 @@ class AudioManager {
   bool _isPlaying = false;
   bool _isInitialized = false;
 
-  // Sound throttling variables
   int _lastExplosionTime = 0;
   static const int _explosionThrottleMs = 200; // Minimum ms between explosion sounds
 
