@@ -5,6 +5,7 @@ import 'game.dart';
 import 'audio_manager.dart';
 import 'shared_preferences_helper.dart';
 import 'constants.dart';
+import 'countdown_overlay.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -166,7 +167,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
         // Add this SizedBox for spacing
         const SizedBox(height: 33), // Adjust the height as needed
 
-// High Score and Highest Level Display
+        // High Score and Highest Level Display
         Container(
           padding: const EdgeInsets.all(15),
           margin: const EdgeInsets.symmetric(horizontal: 40),
@@ -236,6 +237,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                 game.onTutorialComplete();
                               },
                             );
+                          },
+                          'countdown': (BuildContext context, floato game) {
+                            return CountdownOverlay(game: game);
                           },
                         },
                       ),
