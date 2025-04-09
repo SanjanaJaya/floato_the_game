@@ -73,9 +73,9 @@ flutter:
     - assets/images/bird/rocket5.png
     - assets/audio/
     - assets/videos/
-    - assets/images/tutorial/tutorial1.jpg
-    - assets/images/tutorial/tutorial2.jpg
-    - assets/images/tutorial/tutorial3.jpg
+    - assets/images/tutorial/tutorial1.png
+    - assets/images/tutorial/tutorial2.png
+    - assets/images/tutorial/tutorial3.png
 
 
 

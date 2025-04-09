@@ -18,19 +18,19 @@ class _TutorialScreenState extends State<TutorialScreen> {
   // Tutorial content - add your actual content here
   final List<TutorialItem> tutorialItems = [
     TutorialItem(
-      image: 'assets/images/tutorial/tutorial1.jpg',
+      image: 'assets/images/tutorial/tutorial1.png',
       title: 'Welcome to Floato!',
       description: 'Tap and drag on the left side of the screen to move your bird up and down.',
     ),
     TutorialItem(
-      image: 'assets/images/tutorial/tutorial2.jpg',
+      image: 'assets/images/tutorial/tutorial2.png',
       title: 'Avoid Obstacles',
       description: 'Navigate through buildings and avoid enemy planes to survive longer!',
     ),
     TutorialItem(
-      image: 'assets/images/tutorial/tutorial3.jpg',
+      image: 'assets/images/tutorial/tutorial3.png',
       title: 'Special Abilities',
-      description: 'Tap on the right side to shoot missiles and destroy enemy planes (available with advanced birds)!',
+      description: 'Tap on the right side to shoot missiles and destroy enemy planes (Available with advanced birds.Not available with first bird.)',
     ),
   ];
 
@@ -74,6 +74,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: Colors.amber,
+                        decoration: TextDecoration.none,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -96,6 +97,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                         fontSize: 18,
                         color: Colors.white,
                         height: 1.5,
+                        decoration: TextDecoration.none,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -118,6 +120,8 @@ class _TutorialScreenState extends State<TutorialScreen> {
                     },
                     style: TextButton.styleFrom(
                       textStyle: GoogleFonts.montserrat(),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      splashFactory: NoSplash.splashFactory,
                     ),
                     child: Text(
                       'SKIP',
@@ -125,6 +129,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                         fontSize: 18,
                         color: Colors.grey,
                         fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.none,
                       ),
                     ),
                   ),
@@ -147,6 +152,8 @@ class _TutorialScreenState extends State<TutorialScreen> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                       textStyle: GoogleFonts.montserrat(),
+                      elevation: 0,
+                      shadowColor: Colors.transparent,
                     ),
                     child: Text(
                       currentPage < totalPages - 1 ? 'NEXT' : 'START',
@@ -154,6 +161,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
+                        decoration: TextDecoration.none,
                       ),
                     ),
                   ),
