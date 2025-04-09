@@ -39,6 +39,11 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   int score = 0;
   int currentLevelThreshold = 0;
 
+  // Maximum number of objects to track performance
+  int _maxEnemyPlanes = 6;
+  int _maxBuildings = 10;
+  int _maxMissiles = 8;
+
   @override
   FutureOr<void> onLoad() async {
     // Print debug info
@@ -73,9 +78,58 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     updateDifficultySettings();
   }
 
+  // In your game class
   @override
   void update(double dt) {
+    if (!isGameOver && !isPaused) {
+      // For Level 5, apply stricter performance management
+      if (score >= 700) {
+        // Limit update rate if FPS is dropping
+        dt = dt.clamp(0.0, 0.05); // Cap dt to prevent large time jumps
+
+        // Manage game objects more frequently at higher levels
+        manageGameObjects();
+      }
+    }
     super.update(dt);
+  }
+
+  // Add this method to manage on-screen objects
+  void manageGameObjects() {
+    // Limit the number of enemy planes
+    final enemies = children.whereType<EnemyPlane>().toList();
+    if (enemies.length > _maxEnemyPlanes) {
+      // Remove furthest enemies that are off-screen
+      enemies.sort((a, b) => b.position.x.compareTo(a.position.x));
+      for (int i = _maxEnemyPlanes; i < enemies.length; i++) {
+        if (enemies[i].position.x < -enemyPlaneWidth ||
+            enemies[i].position.x > size.x + enemyPlaneWidth) {
+          enemies[i].removeFromParent();
+        }
+      }
+    }
+
+    // Limit the number of buildings
+    final buildings = children.whereType<Building>().toList();
+    if (buildings.length > _maxBuildings) {
+      // Remove furthest buildings that are off-screen
+      buildings.sort((a, b) => b.position.x.compareTo(a.position.x));
+      for (int i = _maxBuildings; i < buildings.length; i++) {
+        if (buildings[i].position.x < -buildingWidth) {
+          buildings[i].removeFromParent();
+        }
+      }
+    }
+
+    // Limit the number of missiles
+    final missiles = children.whereType<Missile>().toList();
+    if (missiles.length > _maxMissiles) {
+      // Remove oldest missiles
+      missiles.sort((a, b) => a.creationTime.compareTo(b.creationTime));
+      for (int i = 0; i < missiles.length - _maxMissiles; i++) {
+        missiles[i].removeFromParent();
+      }
+    }
   }
 
   // Drag event handlers
@@ -237,6 +291,24 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     children.whereType<EnemyPlane>().forEach((enemy) {
       enemy.updateSpeed(getEnemyPlaneSpeed(enemy.planeType));
     });
+
+    // Update max object limits based on difficulty level
+    if (score >= 700) {
+      // Level 5 - stricter limits for performance
+      _maxEnemyPlanes = 5;
+      _maxBuildings = 8;
+      _maxMissiles = 6;
+    } else if (score >= 450) {
+      // Level 4
+      _maxEnemyPlanes = 6;
+      _maxBuildings = 10;
+      _maxMissiles = 8;
+    } else {
+      // Lower levels - more relaxed limits
+      _maxEnemyPlanes = 8;
+      _maxBuildings = 12;
+      _maxMissiles = 10;
+    }
   }
 
   void showLevelUpNotification(int levelThreshold) {
@@ -246,9 +318,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     );
     add(overlay);
 
-    // Play level up sound effect
-    _audioManager.playSfx('button_click.wav');
-
     // Save the highest level reached
     PreferencesHelper.saveHighestLevel(levelThreshold);
   }
@@ -257,21 +326,10 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     // Apply damage to enemy
     enemy.takeDamage(damage);
 
-    // Check if enemy is destroyed
-    if (enemy.health <= 0) {
-      // Play explosion sound
-      _audioManager.playSfx('explosion.wav');
+    // The explosion sound and animation are now handled directly in the EnemyPlane class
+    // This prevents duplication of sound and animation logic
 
-      // Create explosion animation
-      final explosion = Explosion(
-        position: enemy.position,
-        size: Vector2(80, 80),
-      );
-      add(explosion);
-
-      // Increment score by 6 (1 regular point + 5 extra points for destroying)
-      incrementScore(3);
-    }
+    // If the enemy is destroyed, the score is incremented in the takeDamage method
   }
 
   void gameOver() {
@@ -375,7 +433,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
                   ),
                   onPressed: () {
                     Navigator.pop(context);
-                    _audioManager.playButtonClick();
                     resetGame();
                   },
                   child: const Text(
@@ -417,7 +474,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
                     ),
                   ),
                   onPressed: () {
-                    _audioManager.playButtonClick();
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(

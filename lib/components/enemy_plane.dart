@@ -4,8 +4,11 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:floato_the_game/components/rocket.dart';
 import 'package:floato_the_game/components/health_bar.dart';
+import 'package:floato_the_game/components/explosion.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
+// Removed AudioManager import - no longer needed
+// import 'package:floato_the_game/audio_manager.dart';
 
 class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGameRef<floato> {
   final int planeType;
@@ -13,6 +16,8 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
   int health;
   int maxHealth;
   late HealthBar healthBar;
+  // Removed AudioManager instance
+  bool _isDestroyed = false;
 
   EnemyPlane({
     required Vector2 position,
@@ -90,14 +95,32 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
 
   // Method to handle taking damage from missiles
   void takeDamage(int damage) {
+    if (_isDestroyed) return;
+
     health -= damage;
     healthBar.updateHealth(health);
 
-    if (health <= 0) {
-      // Plane is destroyed, give player points (6 points total)
-      // 1 regular point + 5 extra points for destroying
-      gameRef.incrementScore(6);
-      removeFromParent();
+    if (health <= 0 && !_isDestroyed) {
+      _isDestroyed = true; // Mark as destroyed to prevent double processing
+
+      // Plane is destroyed, give player points
+      gameRef.incrementScore(100);
+
+      // Removed explosion sound call
+
+      // Create explosion at plane position
+      final explosion = Explosion(
+        position: Vector2(position.x + size.x/2, position.y + size.y/2),
+        size: Vector2(80, 80),
+      );
+      gameRef.add(explosion);
+
+      // Remove plane after a tiny delay to prevent audio stacking issues
+      Future.delayed(Duration(milliseconds: 10), () {
+        if (isMounted) {
+          removeFromParent();
+        }
+      });
     }
   }
 

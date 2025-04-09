@@ -140,12 +140,12 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'levelName': 'Level 4',
     'levelRange': '450-700',
   },
-  700: { // Level 5 (700-1000+ points)
-    'buildingInterval': 1,
-    'buildingGap': 220.0,
-    'enemySpawnInterval': 1.2,
-    'groundScrollingSpeed': 225.0,
-    'enemySpeedMultiplier': 1.8, // 80% faster
+  700: { // Level 5 (700-1000+ points) - FIXED VALUES
+    'buildingInterval': 1.5, // Changed from 1.0 to 1.5 to reduce building spawn rate
+    'buildingGap': 230.0, // Slight adjustment
+    'enemySpawnInterval': 1.5, // Changed from 1.2 to 1.5 to reduce enemy spawn rate
+    'groundScrollingSpeed': 210.0, // Reduced from 225.0 to be slightly less aggressive
+    'enemySpeedMultiplier': 1.7, // Reduced from 1.8 to make enemies slightly slower
     'levelName': 'Level 5',
     'levelRange': '700-1000',
   },

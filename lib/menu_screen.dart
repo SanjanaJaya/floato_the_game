@@ -216,8 +216,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
             children: [
               ElevatedButton(
                 onPressed: () {
-                  // Play button sound
-                  _audioManager.playSfx('button_click.wav');
 
                   // Don't stop the music when starting the game
                   Navigator.pushReplacement(
@@ -257,8 +255,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: () {
-                  // Play button sound
-                  _audioManager.playSfx('button_click.wav');
 
                   setState(() {
                     showRocketSelection = true;
@@ -284,8 +280,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: () {
-                  // Play button sound
-                  _audioManager.playSfx('button_click.wav');
 
                   setState(() {
                     showCredits = true;
@@ -421,8 +415,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              // Play button sound
-              _audioManager.playSfx('button_click.wav');
 
               setState(() {
                 showCredits = false;
@@ -495,8 +487,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                 return GestureDetector(
                   onTap: isUnlocked
                       ? () async {
-                    // Play selection sound
-                    _audioManager.playSfx('button_click.wav');
+
 
                     setState(() {
                       selectedRocket = index;
@@ -575,8 +566,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              // Play button sound
-              _audioManager.playSfx('button_click.wav');
 
               setState(() {
                 showRocketSelection = false;
@@ -683,7 +672,6 @@ class PauseMenu extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    audioManager.playSfx('button_click.wav');
                     game.togglePause();
                   },
                   style: ElevatedButton.styleFrom(
@@ -706,7 +694,6 @@ class PauseMenu extends StatelessWidget {
                 const SizedBox(width: 20),
                 ElevatedButton(
                   onPressed: () {
-                    audioManager.playSfx('button_click.wav');
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(

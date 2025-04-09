@@ -4,14 +4,17 @@ import 'package:flame/components.dart';
 import 'package:floato_the_game/components/enemy_plane.dart';
 import 'package:floato_the_game/components/explosion.dart';
 import 'package:floato_the_game/game.dart';
-import 'package:floato_the_game/audio_manager.dart';
+// Remove AudioManager import if it's not being used elsewhere in this file
+// import 'package:floato_the_game/audio_manager.dart';
 
 class Missile extends SpriteComponent with CollisionCallbacks, HasGameRef<floato> {
   final int rocketType;
   final double speed;
   final int damage;
-  final AudioManager _audioManager = AudioManager();
   bool _initialized = false;
+
+  // Add creation time field for object management
+  final DateTime creationTime = DateTime.now();
 
   Missile({
     required Vector2 position,
@@ -30,15 +33,12 @@ class Missile extends SpriteComponent with CollisionCallbacks, HasGameRef<floato
   FutureOr<void> onLoad() async {
     try {
       // Load missile sprite based on rocket type
-      final missileIndex = rocketType;  // Changed from rocketType - 1
+      final missileIndex = rocketType;
       print('Loading missile${missileIndex}.png');
       sprite = await Sprite.load('missile${missileIndex}.png');
 
       // Add collision detection
       add(RectangleHitbox());
-
-      // Play missile launch sound - get singleton instance
-      AudioManager().playMissileSound(rocketType);
 
       _initialized = true;
       print('Missile loaded successfully');
@@ -82,11 +82,10 @@ class Missile extends SpriteComponent with CollisionCallbacks, HasGameRef<floato
       );
       gameRef.add(explosion);
 
-      // Play explosion sound
-      _audioManager.playSfx('explosion.wav');
-
       // Remove missile after hit
       removeFromParent();
+
+      // No explosion sound handling needed here
     }
   }
 }

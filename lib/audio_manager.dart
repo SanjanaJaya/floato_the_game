@@ -10,6 +10,10 @@ class AudioManager {
   bool _isPlaying = false;
   bool _isInitialized = false;
 
+  // Sound throttling variables
+  int _lastExplosionTime = 0;
+  static const int _explosionThrottleMs = 200; // Minimum ms between explosion sounds
+
   bool get isMuted => _isMuted;
   bool get isInitialized => _isInitialized;
 
@@ -19,16 +23,16 @@ class AudioManager {
 
     try {
       print('Initializing AudioManager...');
+      // Pre-load audio files
       await FlameAudio.audioCache.loadAll([
         'menu_music.wav',
         'crash.wav',
-        'button_click.wav',
-        'explosion.wav',
-        'missile_sound1.wav',
-        'missile_sound2.wav',
-        'missile_sound3.wav',
-        'missile_sound4.wav'
+        // 'explosion.wav', - Remove explosion sound from loading
       ]);
+
+      // Configure audio cache for better performance
+      FlameAudio.audioCache.prefix = 'assets/audio/';
+
       _isInitialized = true;
       print('AudioManager initialized successfully');
     } catch (e) {
@@ -79,21 +83,14 @@ class AudioManager {
     }
   }
 
-  // Play button click sound
-  void playButtonClick() {
-    playSfx('button_click.wav');
+  // Play crash sound
+  void playCrashSound() {
+    playSfx('crash.wav');
   }
 
-  // Play missile launch sound based on rocket type
-  void playMissileSound(int rocketType) {
-    // Rocket 1 (type 0) doesn't have missiles
-    if (rocketType <= 0) return;
-
-    // Play the appropriate missile sound for this rocket type
-    // Rocket types 1-4 correspond to missile sounds 1-4
-    final soundIndex = rocketType;
-    print('Playing missile sound for rocket type $rocketType: missile_sound$soundIndex.wav');
-    playSfx('missile_sound$soundIndex.wav');
+  // Explosion sound method - now empty to prevent freezing issues
+  void playExplosionSound({int currentLevel = 1}) {
+    // Method intentionally empty - explosion sounds disabled to prevent freezing
   }
 
   // Toggle mute/unmute
