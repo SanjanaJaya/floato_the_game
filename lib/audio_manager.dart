@@ -8,47 +8,74 @@ class AudioManager {
 
   bool _isMuted = false;
   bool _isPlaying = false;
+  bool _isInitialized = false;
 
   bool get isMuted => _isMuted;
+  bool get isInitialized => _isInitialized;
 
   // Initialize audio
   Future<void> init() async {
-    await FlameAudio.audioCache.load('menu_music.wav');
-    await FlameAudio.audioCache.load('crash.wav');
-    await FlameAudio.audioCache.load('button_click.wav');
-    await FlameAudio.audioCache.load('explosion.wav');
+    if (_isInitialized) return;
 
-    // Load missile sounds for each rocket type
-    await FlameAudio.audioCache.load('missile_sound1.wav');
-    await FlameAudio.audioCache.load('missile_sound2.wav');
-    await FlameAudio.audioCache.load('missile_sound3.wav');
-    await FlameAudio.audioCache.load('missile_sound4.wav');
+    try {
+      print('Initializing AudioManager...');
+      await FlameAudio.audioCache.loadAll([
+        'menu_music.wav',
+        'crash.wav',
+        'button_click.wav',
+        'explosion.wav',
+        'missile_sound1.wav',
+        'missile_sound2.wav',
+        'missile_sound3.wav',
+        'missile_sound4.wav'
+      ]);
+      _isInitialized = true;
+      print('AudioManager initialized successfully');
+    } catch (e) {
+      print('Error initializing AudioManager: $e');
+    }
   }
 
   // Play background music
   void playBackgroundMusic() {
-    if (!_isMuted && !_isPlaying) {
-      // Use the standard play method with loop parameter
-      FlameAudio.bgm.initialize();
-      FlameAudio.bgm.play('menu_music.wav');
-      // Enable looping by setting the BGM to repeat
-      FlameAudio.bgm.audioPlayer.setReleaseMode(ReleaseMode.loop);
-      _isPlaying = true;
+    if (!_isMuted && !_isPlaying && _isInitialized) {
+      try {
+        print('Starting background music');
+        // Use the standard play method with loop parameter
+        FlameAudio.bgm.initialize();
+        FlameAudio.bgm.play('menu_music.wav');
+        // Enable looping by setting the BGM to repeat
+        FlameAudio.bgm.audioPlayer.setReleaseMode(ReleaseMode.loop);
+        _isPlaying = true;
+        print('Background music started successfully');
+      } catch (e) {
+        print('Error playing background music: $e');
+      }
     }
   }
 
   // Stop background music
   void stopBackgroundMusic() {
     if (_isPlaying) {
-      FlameAudio.bgm.stop();
-      _isPlaying = false;
+      try {
+        FlameAudio.bgm.stop();
+        _isPlaying = false;
+        print('Background music stopped');
+      } catch (e) {
+        print('Error stopping background music: $e');
+      }
     }
   }
 
   // Play a sound effect once
   void playSfx(String fileName) {
-    if (!_isMuted) {
-      FlameAudio.play(fileName);
+    if (!_isMuted && _isInitialized) {
+      try {
+        print('Playing SFX: $fileName');
+        FlameAudio.play(fileName);
+      } catch (e) {
+        print('Error playing sound effect $fileName: $e');
+      }
     }
   }
 
@@ -59,18 +86,20 @@ class AudioManager {
 
   // Play missile launch sound based on rocket type
   void playMissileSound(int rocketType) {
-    // Rocket 1 doesn't have missiles
-    if (rocketType <= 1) return;
+    // Rocket 1 (type 0) doesn't have missiles
+    if (rocketType <= 0) return;
 
     // Play the appropriate missile sound for this rocket type
-    // Rocket types 2-5 correspond to missile sounds 1-4
-    final soundIndex = rocketType - 1;
+    // Rocket types 1-4 correspond to missile sounds 1-4
+    final soundIndex = rocketType;
+    print('Playing missile sound for rocket type $rocketType: missile_sound$soundIndex.wav');
     playSfx('missile_sound$soundIndex.wav');
   }
 
   // Toggle mute/unmute
   void toggleMute() {
     _isMuted = !_isMuted;
+    print('Audio muted: $_isMuted');
 
     if (_isMuted) {
       if (_isPlaying) {
@@ -84,7 +113,7 @@ class AudioManager {
 
   // Resume music if it was playing before
   void resumeBackgroundMusic() {
-    if (!_isMuted && !_isPlaying) {
+    if (!_isMuted && !_isPlaying && _isInitialized) {
       playBackgroundMusic();
     }
   }

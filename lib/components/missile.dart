@@ -30,16 +30,15 @@ class Missile extends SpriteComponent with CollisionCallbacks, HasGameRef<floato
   FutureOr<void> onLoad() async {
     try {
       // Load missile sprite based on rocket type
-      // Rocket 1 doesn't have missiles, starting from rocket 2
-      final missileIndex = rocketType - 1; // Adjust index since rocket 1 doesn't have missiles
+      final missileIndex = rocketType;  // Changed from rocketType - 1
       print('Loading missile${missileIndex}.png');
       sprite = await Sprite.load('missile${missileIndex}.png');
 
       // Add collision detection
       add(RectangleHitbox());
 
-      // Play missile launch sound
-      _audioManager.playMissileSound(rocketType);
+      // Play missile launch sound - get singleton instance
+      AudioManager().playMissileSound(rocketType);
 
       _initialized = true;
       print('Missile loaded successfully');

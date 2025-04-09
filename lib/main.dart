@@ -5,9 +5,12 @@ import 'audio_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize audio manager
+  // Initialize audio manager and ensure it completes
   final audioManager = AudioManager();
   await audioManager.init();
+
+  // Add a delay to ensure audio initialization is complete
+  await Future.delayed(Duration(milliseconds: 500));
 
   runApp(const Myapp());
 }

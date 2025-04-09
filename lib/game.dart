@@ -123,13 +123,19 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
     }
   }
 
-  void incrementScore() {
+  void incrementScore([int points = 1]) {
     final previousLevel = _getCurrentLevelThreshold();
-    score += 1;
-    final newLevel = _getCurrentLevelThreshold();
 
-    // Update the score text without calling updateScore
+    // Debug print to verify score increment
+    print('Score increasing from $score to ${score + points}');
+
+    // Update score with the specified points
+    score += points;
+
+    // Update the score text
     scoreText.text = 'Score: $score';
+
+    final newLevel = _getCurrentLevelThreshold();
 
     if (newLevel != previousLevel) {
       updateDifficultySettings();
@@ -211,8 +217,8 @@ class floato extends FlameGame with TapDetector, HasCollisionDetection {
       );
       add(explosion);
 
-      // Increment score
-      incrementScore();
+      // Increment score by 6 (1 regular point + 5 extra points for destroying)
+      incrementScore(3);
     }
   }
 

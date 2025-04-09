@@ -94,8 +94,9 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
     healthBar.updateHealth(health);
 
     if (health <= 0) {
-      // Plane is destroyed, give player points
-      gameRef.incrementScore();
+      // Plane is destroyed, give player points (6 points total)
+      // 1 regular point + 5 extra points for destroying
+      gameRef.incrementScore(6);
       removeFromParent();
     }
   }

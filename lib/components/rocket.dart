@@ -88,8 +88,8 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
 
     gameRef.add(missile);
 
-    // Play sound directly from here to ensure it works
-    _audioManager.playMissileSound(rocketType);
+    // Let the missile play its own sound when loaded
+    // We don't need to play sound here as it's done in missile.onLoad()
 
     // Set cooldown
     canShoot = false;
