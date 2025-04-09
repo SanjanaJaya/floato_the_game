@@ -1,7 +1,3 @@
-// Import the Google Mobile Ads SDK at the top of your file
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-
-// Your existing imports remain unchanged
 import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -35,11 +31,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   late Rect shootZone;
   bool isTouchInDragZone = false;
 
-  // AdMob variables
-  InterstitialAd? _interstitialAd;
-  bool _isAdLoaded = false;
-  final String _adUnitId = 'ca-app-pub-2235164538831559/9810398642';
-
   floato({this.selectedRocketType = 0});
 
   // Add pause state variables
@@ -61,9 +52,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   FutureOr<void> onLoad() async {
     // Print debug info
     print('Game initialized with rocket type: $selectedRocketType');
-
-    // Initialize AdMob SDK
-    _loadInterstitialAd();
 
     // Start background music
     _audioManager.playBackgroundMusic();
@@ -104,63 +92,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
     // Initialize difficulty settings based on starting level
     updateDifficultySettings();
-  }
-
-  // Method to load an interstitial ad
-  void _loadInterstitialAd() {
-    InterstitialAd.load(
-      adUnitId: _adUnitId,
-      request: const AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (InterstitialAd ad) {
-          _interstitialAd = ad;
-          _isAdLoaded = true;
-          print('Interstitial ad loaded successfully');
-
-          // Set callback for ad events
-          _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (InterstitialAd ad) {
-              print('Ad dismissed');
-              // Dispose the ad when it's dismissed
-              ad.dispose();
-              _isAdLoaded = false;
-              // Load a new ad for next time
-              _loadInterstitialAd();
-              // After ad is dismissed, reset the game
-              _actuallyResetGame();
-            },
-            onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-              print('Ad failed to show: ${error.message}');
-              ad.dispose();
-              _isAdLoaded = false;
-              // Load a new ad for next time
-              _loadInterstitialAd();
-              // If ad fails to show, still reset the game
-              _actuallyResetGame();
-            },
-            onAdShowedFullScreenContent: (InterstitialAd ad) {
-              print('Ad showed fullscreen content');
-            },
-          );
-        },
-        onAdFailedToLoad: (LoadAdError error) {
-          print('Interstitial ad failed to load: ${error.message}');
-          _isAdLoaded = false;
-          // Try to load another ad after a delay
-          Future.delayed(const Duration(minutes: 1), _loadInterstitialAd);
-        },
-      ),
-    );
-  }
-
-  // Show loaded ad
-  void _showInterstitialAd() {
-    if (_isAdLoaded && _interstitialAd != null) {
-      _interstitialAd!.show();
-    } else {
-      print('Ad not loaded yet, resetting game immediately');
-      _actuallyResetGame();
-    }
   }
 
   // Show countdown overlay and pause the game
@@ -543,8 +474,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
                   ),
                   onPressed: () {
                     Navigator.pop(context);
-                    // Changed this to show ad before resetting game
-                    _showInterstitialAd();
+                    resetGame();
                   },
                   child: const Text(
                     "Play Again",
@@ -609,14 +539,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     );
   }
 
-  // Modified to show ad before resetting
   void resetGame() {
-    // Show ad and let the callback handle the actual reset
-    _showInterstitialAd();
-  }
-
-  // Actual reset logic moved to a separate method that will be called after ad is shown
-  void _actuallyResetGame() {
     rocket.position = Vector2(rocketStartX, rocketStartY);
     rocket.velocity = 0;
     score = 0;
@@ -656,7 +579,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   void onRemove() {
     // Clean up resources when game is removed
     _audioManager.stopBackgroundMusic();
-    _interstitialAd?.dispose();
     super.onRemove();
   }
 
