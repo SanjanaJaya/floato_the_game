@@ -5,11 +5,13 @@ import 'package:flame/components.dart';
 class LevelUpNotification extends PositionComponent with HasGameRef {
   final String levelName;
   final String levelRange;
+  final String environmentName;
   Timer? _timer;
 
   LevelUpNotification({
     required this.levelName,
     required this.levelRange,
+    required this.environmentName,
   });
 
   @override
@@ -24,7 +26,26 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
   void render(Canvas canvas) {
     super.render(canvas);
 
-    final text = TextPainter(
+    final welcomeText = TextPainter(
+      text: TextSpan(
+        text: 'Welcome to $environmentName!',
+        style: const TextStyle(
+          color: Colors.cyan,
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+          shadows: [
+            Shadow(
+              blurRadius: 10,
+              color: Colors.black,
+              offset: Offset(2, 2),
+            ),
+          ],
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    final levelText = TextPainter(
       text: TextSpan(
         text: '$levelName REACHED!\n$levelRange',
         style: const TextStyle(
@@ -43,10 +64,18 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
       textDirection: TextDirection.ltr,
     )..layout();
 
-    text.paint(
+    welcomeText.paint(
       canvas,
       Offset(
-        (gameRef.size.x - text.width) / 2,
+        (gameRef.size.x - welcomeText.width) / 2,
+        gameRef.size.y / 3 - 40,
+      ),
+    );
+
+    levelText.paint(
+      canvas,
+      Offset(
+        (gameRef.size.x - levelText.width) / 2,
         gameRef.size.y / 3,
       ),
     );

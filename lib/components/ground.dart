@@ -6,16 +6,24 @@ import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
 
 class Ground extends SpriteComponent with HasGameRef<floato>, CollisionCallbacks {
-  Ground() : super();
-
   double scrollingSpeed = difficultyLevels[0]!['groundScrollingSpeed'];
+  String currentGround = groundImages[0];
+
+  Ground() : super();
 
   @override
   FutureOr<void> onLoad() async {
     size = Vector2(2 * gameRef.size.x, groundHeight);
     position = Vector2(0, gameRef.size.y - groundHeight);
-    sprite = await Sprite.load('ground.jpg');
+    await updateGround(0);
     add(RectangleHitbox());
+  }
+
+  Future<void> updateGround(int levelThreshold) async {
+    final settings = difficultyLevels[levelThreshold]!;
+    currentGround = settings['groundImage'];
+    scrollingSpeed = settings['groundScrollingSpeed'];
+    sprite = await Sprite.load(currentGround);
   }
 
   @override

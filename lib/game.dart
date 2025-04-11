@@ -12,6 +12,7 @@ import 'package:floato_the_game/components/enemy_plane.dart';
 import 'package:floato_the_game/components/missile.dart';
 import 'package:floato_the_game/components/explosion.dart';
 import 'package:floato_the_game/constants.dart';
+import 'package:floato_the_game/level_up_notification.dart';
 import 'package:flutter/material.dart';
 import 'shared_preferences_helper.dart';
 import 'menu_screen.dart';
@@ -33,24 +34,21 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
   floato({this.selectedRocketType = 0});
 
-  // Add pause state variables
+  // Game state variables
   bool isPaused = false;
   bool isGameOver = false;
-  // Add tutorial flag
   bool showingTutorial = false;
-  // Add countdown flag
   bool showingCountdown = false;
   int score = 0;
   int currentLevelThreshold = 0;
 
-  // Maximum number of objects to track performance
+  // Performance management
   int _maxEnemyPlanes = 6;
   int _maxBuildings = 10;
   int _maxMissiles = 8;
 
   @override
   FutureOr<void> onLoad() async {
-    // Print debug info
     print('Game initialized with rocket type: $selectedRocketType');
 
     // Start background music
@@ -71,64 +69,50 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     scoreText = ScoreText();
     add(scoreText);
 
-    // Define control zones - left 2/3 for movement, right 1/3 for shooting
+    // Define control zones
     dragZone = Rect.fromLTWH(0, 0, size.x * 0.66, size.y);
     shootZone = Rect.fromLTWH(size.x * 0.66, 0, size.x * 0.34, size.y);
 
     // Add pause button overlay
     overlays.add('pauseButton');
 
-    // Check if we need to show tutorial
+    // Check if tutorial is needed
     bool needsTutorial = await PreferencesHelper.hasTutorialBeenSeen();
     if (!needsTutorial) {
-      // If tutorial hasn't been seen, pause the game and show tutorial
       showingTutorial = true;
       pauseEngine();
       overlays.add('tutorial');
     } else {
-      // If no tutorial needed, show countdown instead
       showCountdown();
     }
 
-    // Initialize difficulty settings based on starting level
+    // Initialize difficulty settings
     updateDifficultySettings();
   }
 
-  // Show countdown overlay and pause the game
   void showCountdown() {
     showingCountdown = true;
     pauseEngine();
     overlays.add('countdown');
   }
 
-  // Method to be called after countdown completes
   void startGameAfterCountdown() {
     showingCountdown = false;
     resumeEngine();
-
-    // Play a "go" sound if you have one
     _audioManager.playSfx('go.wav');
   }
 
-  // In your game class
   @override
   void update(double dt) {
     if (!isGameOver && !isPaused && !showingTutorial && !showingCountdown) {
-      // Apply performance optimization based on current level threshold
       final levelThreshold = _getCurrentLevelThreshold();
 
-      // For higher levels, apply stronger performance management
-      if (levelThreshold >= 350) { // Level 4 or 5
-        // Limit update rate if dt is too high (indicates slowdown)
-        dt = dt.clamp(0.0, 0.04); // Stricter cap than before
-
-        // More frequent object management for higher levels
+      // Performance optimization based on level
+      if (levelThreshold >= 350) {
+        dt = dt.clamp(0.0, 0.04);
         manageGameObjects();
-      } else if (levelThreshold >= 200) { // Level 3
-        // Modest performance optimization
+      } else if (levelThreshold >= 200) {
         dt = dt.clamp(0.0, 0.05);
-
-        // Manage objects occasionally
         if (DateTime.now().millisecondsSinceEpoch % 5 == 0) {
           manageGameObjects();
         }
@@ -141,28 +125,27 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     final levelThreshold = _getCurrentLevelThreshold();
 
     // Set object limits based on current level
-    if (levelThreshold >= 600) { // Level 5
+    if (levelThreshold >= 600) {
       _maxEnemyPlanes = 4;
       _maxBuildings = 7;
       _maxMissiles = 5;
-    } else if (levelThreshold >= 350) { // Level 4
+    } else if (levelThreshold >= 350) {
       _maxEnemyPlanes = 5;
       _maxBuildings = 8;
       _maxMissiles = 6;
-    } else if (levelThreshold >= 200) { // Level 3
+    } else if (levelThreshold >= 200) {
       _maxEnemyPlanes = 6;
       _maxBuildings = 9;
       _maxMissiles = 7;
-    } else { // Level 1-2
+    } else {
       _maxEnemyPlanes = 7;
       _maxBuildings = 10;
       _maxMissiles = 8;
     }
 
-    // Limit the number of enemy planes
+    // Limit enemy planes
     final enemies = children.whereType<EnemyPlane>().toList();
     if (enemies.length > _maxEnemyPlanes) {
-      // Remove furthest enemies that are off-screen
       enemies.sort((a, b) => b.position.x.compareTo(a.position.x));
       for (int i = _maxEnemyPlanes; i < enemies.length; i++) {
         if (enemies[i].position.x < -enemyPlaneWidth * 1.5 ||
@@ -172,10 +155,9 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       }
     }
 
-    // Limit the number of buildings
+    // Limit buildings
     final buildings = children.whereType<Building>().toList();
     if (buildings.length > _maxBuildings) {
-      // Remove furthest buildings that are off-screen
       buildings.sort((a, b) => b.position.x.compareTo(a.position.x));
       for (int i = _maxBuildings; i < buildings.length; i++) {
         if (buildings[i].position.x < -buildingWidth * 1.5) {
@@ -184,20 +166,18 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       }
     }
 
-    // Limit the number of missiles
+    // Limit missiles
     final missiles = children.whereType<Missile>().toList();
     if (missiles.length > _maxMissiles) {
-      // Remove oldest missiles
       missiles.sort((a, b) => a.creationTime.compareTo(b.creationTime));
       for (int i = 0; i < missiles.length - _maxMissiles; i++) {
         missiles[i].removeFromParent();
       }
     }
 
-    // Limit the number of explosion effects (new)
+    // Limit explosions
     final explosions = children.whereType<Explosion>().toList();
     if (explosions.length > 8) {
-      // Remove oldest explosions
       explosions.sort((a, b) => a.creationTime.compareTo(b.creationTime));
       for (int i = 0; i < explosions.length - 8; i++) {
         explosions[i].removeFromParent();
@@ -205,7 +185,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     }
   }
 
-  // Drag event handlers
+  // Input handling methods
   @override
   void onDragStart(DragStartEvent event) {
     if (isGameOver || isPaused || showingTutorial || showingCountdown) return;
@@ -214,7 +194,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     isTouchInDragZone = dragZone.contains(Offset(touchPosition.x, touchPosition.y));
 
     if (isTouchInDragZone) {
-      // Start dragging the rocket
       rocket.startDrag(touchPosition);
     }
   }
@@ -224,7 +203,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     if (isGameOver || isPaused || showingTutorial || showingCountdown) return;
 
     if (isTouchInDragZone) {
-      // Update rocket position
       rocket.updateDragPosition(event.canvasEndPosition);
     }
   }
@@ -234,7 +212,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     if (isGameOver || isPaused || showingTutorial || showingCountdown) return;
 
     if (isTouchInDragZone) {
-      // Stop dragging
       rocket.stopDrag();
     }
   }
@@ -244,14 +221,8 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     if (isGameOver || isPaused || showingTutorial || showingCountdown) return;
 
     if (isTouchInDragZone) {
-      // Stop dragging
       rocket.stopDrag();
     }
-  }
-
-  @override
-  void onTap() {
-    // Do nothing - using onTapDown instead for more precise control
   }
 
   @override
@@ -261,118 +232,79 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     final touchPosition = info.eventPosition.global;
     final isTapInShootZone = shootZone.contains(Offset(touchPosition.x, touchPosition.y));
 
-    // Print debug info
-    print('Tap detected in ${isTapInShootZone ? "shoot" : "drag"} zone');
-
     if (isTapInShootZone) {
-      // Right side tap: Shoot if rocket type allows
-      print('Attempting to shoot with rocket type: ${rocket.rocketType}');
       if (rocket.rocketType > 0) {
-        // Direct call to forcedShoot with simpler logic
         rocket.forcedShoot();
-      } else {
-        print('Cannot shoot: rocket type is 0');
       }
     } else {
-      // Left side tap (used when not dragging): Jump using the old control method
       rocket.flap();
     }
   }
 
-  // Add toggle pause method
   void togglePause() {
     if (isGameOver || showingTutorial || showingCountdown) return;
 
     if (isPaused) {
-      // Resume the game
       resumeEngine();
       isPaused = false;
       overlays.remove('pauseMenu');
-
-      // Resume background music
       _audioManager.resumeBackgroundMusic();
     } else {
-      // Pause the game
       pauseEngine();
       isPaused = true;
       overlays.add('pauseMenu');
-
-      // Pause music (optional)
       _audioManager.stopBackgroundMusic();
     }
   }
 
   void onTutorialComplete() {
-    print('Tutorial completed');
     showingTutorial = false;
     overlays.remove('tutorial');
-
-    // Save that tutorial has been seen
     PreferencesHelper.saveTutorialSeen(true);
-
-    // Show countdown after tutorial
     showCountdown();
   }
 
   void incrementScore([int points = 1]) {
     final previousLevel = _getCurrentLevelThreshold();
 
-    // Debug print to verify score increment
-    print('Score increasing from $score to ${score + points}');
-
-    // Update score with the specified points
     score += points;
-
-    // Update the score text
     scoreText.text = 'Score: $score';
 
     final newLevel = _getCurrentLevelThreshold();
 
     if (newLevel != previousLevel) {
       updateDifficultySettings();
-      showLevelUpNotification(newLevel);
+      showLevelUpNotification(newLevel, background.currentEnvironmentName);
 
-      // Provide a small breathing space when reaching a new level
-      // by removing some enemies to give player a moment of relief
-      if (newLevel >= 200) { // Only for higher levels
+      if (newLevel >= 200) {
         _clearSomeEnemies();
       }
     }
   }
 
-// Add this helper method
   void _clearSomeEnemies() {
     final enemies = children.whereType<EnemyPlane>().toList();
     if (enemies.isNotEmpty) {
-      // Remove up to half of the enemies that are close to the player
       final enemiesToRemove = (enemies.length / 2).floor();
       if (enemiesToRemove > 0) {
-        // Sort by distance to player (closest first)
         enemies.sort((a, b) {
           final distA = (a.position - rocket.position).length;
           final distB = (b.position - rocket.position).length;
           return distA.compareTo(distB);
         });
 
-        // Remove some of the closest enemies
         for (int i = 0; i < enemiesToRemove; i++) {
           if (i < enemies.length) {
-            // Add explosion effect
-            final explosion = Explosion(
+            add(Explosion(
               position: enemies[i].position,
-              size: Vector2(100, 100), // Adjust size as needed for your explosion animation
-            );
-            add(explosion);
-
-            // Remove enemy
+              size: Vector2(100, 100),
+            ));
             enemies[i].removeFromParent();
           }
         }
       }
     }
   }
-
-
 
   int _getCurrentLevelThreshold() {
     final thresholds = difficultyLevels.keys.toList()..sort((a, b) => b.compareTo(a));
@@ -392,12 +324,10 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     return difficultyLevels[_getCurrentLevelThreshold()]?['levelRange'] ?? '0-50';
   }
 
-  // Get the enemy speed multiplier based on current level
   double getEnemySpeedMultiplier() {
     return difficultyLevels[_getCurrentLevelThreshold()]?['enemySpeedMultiplier'] ?? 1.0;
   }
 
-  // Calculate enemy plane speed based on plane type and current level
   double getEnemyPlaneSpeed(int planeType) {
     final baseSpeed = enemyPlaneSpeeds[planeType % enemyPlaneSpeeds.length];
     final multiplier = getEnemySpeedMultiplier();
@@ -405,56 +335,52 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   }
 
   void updateDifficultySettings() {
-    final settings = difficultyLevels[_getCurrentLevelThreshold()]!;
+    final levelThreshold = _getCurrentLevelThreshold();
+    final settings = difficultyLevels[levelThreshold]!;
+
+    // Update background and ground
+    background.updateBackground(levelThreshold);
+    ground.updateGround(levelThreshold);
+
     buildingManager.updateDifficulty(
       buildingInterval: settings['buildingInterval'],
       enemySpawnInterval: settings['enemySpawnInterval'],
     );
     ground.updateScrollingSpeed(settings['groundScrollingSpeed']);
 
-    // Update speeds of existing enemy planes
+    // Update existing enemies
     children.whereType<EnemyPlane>().forEach((enemy) {
       enemy.updateSpeed(getEnemyPlaneSpeed(enemy.planeType));
     });
 
-    // Update max object limits based on difficulty level
+    // Update performance limits
     if (score >= 700) {
-      // Level 5 - stricter limits for performance
       _maxEnemyPlanes = 5;
       _maxBuildings = 8;
       _maxMissiles = 6;
     } else if (score >= 450) {
-      // Level 4
       _maxEnemyPlanes = 6;
       _maxBuildings = 10;
       _maxMissiles = 8;
     } else {
-      // Lower levels - more relaxed limits
       _maxEnemyPlanes = 8;
       _maxBuildings = 12;
       _maxMissiles = 10;
     }
   }
 
-  void showLevelUpNotification(int levelThreshold) {
+  void showLevelUpNotification(int levelThreshold, String environmentName) {
     final overlay = LevelUpNotification(
       levelName: difficultyLevels[levelThreshold]?['levelName'] ?? 'New Level',
       levelRange: difficultyLevels[levelThreshold]?['levelRange'] ?? '',
+      environmentName: environmentName,
     );
     add(overlay);
-
-    // Save the highest level reached
     PreferencesHelper.saveHighestLevel(levelThreshold);
   }
 
   void handleMissileHit(EnemyPlane enemy, int damage) {
-    // Apply damage to enemy
     enemy.takeDamage(damage);
-
-    // The explosion sound and animation are now handled directly in the EnemyPlane class
-    // This prevents duplication of sound and animation logic
-
-    // If the enemy is destroyed, the score is incremented in the takeDamage method
   }
 
   void gameOver() {
@@ -463,18 +389,13 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     isGameOver = true;
     pauseEngine();
 
-    // Save high score
     PreferencesHelper.saveHighScore(score);
-
-    // Save highest level threshold
     PreferencesHelper.saveHighestLevel(_getCurrentLevelThreshold());
 
-    // Remove pause menu if it's showing
     if (overlays.isActive('pauseMenu')) {
       overlays.remove('pauseMenu');
     }
 
-    // Play crash sound and stop background music
     _audioManager.playSfx('crash.wav');
     _audioManager.stopBackgroundMusic();
 
@@ -520,17 +441,24 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
                   fontSize: 20,
                 ),
               ),
+              const SizedBox(height: 8),
+              Text(
+                "Environment: ${background.currentEnvironmentName}",
+                style: const TextStyle(
+                  color: Colors.lightBlueAccent,
+                  fontSize: 18,
+                ),
+              ),
             ],
           ),
         ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
-          // Replace the Row with a Column to stack buttons vertically
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 200, // Fixed width for both buttons
+                width: 200,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Colors.orange, Colors.red],
@@ -572,7 +500,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
               ),
               const SizedBox(height: 10),
               Container(
-                width: 200, // Fixed width for both buttons
+                width: 200,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Colors.blue, Colors.purple],
@@ -629,108 +557,40 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     score = 0;
     isGameOver = false;
 
-    // Reset score text
     scoreText.text = 'Score: 0';
 
-    // Reset pause state if game was paused
     if (isPaused) {
       isPaused = false;
       overlays.remove('pauseMenu');
     }
 
-    // Clean up game components
     children.whereType<Building>().forEach((building) => building.removeFromParent());
     children.whereType<EnemyPlane>().forEach((enemy) => enemy.removeFromParent());
     children.whereType<LevelUpNotification>().forEach((notification) => notification.removeFromParent());
     children.whereType<Missile>().forEach((missile) => missile.removeFromParent());
     children.whereType<Explosion>().forEach((explosion) => explosion.removeFromParent());
 
-    // Reset to Level 1 difficulty
     updateDifficultySettings();
-
-    // Resume background music
     _audioManager.resumeBackgroundMusic();
 
     if (paused) {
       resumeEngine();
     }
 
-    // Show countdown before starting the game again
     showCountdown();
   }
 
   @override
   void onRemove() {
-    // Clean up resources when game is removed
     _audioManager.stopBackgroundMusic();
     super.onRemove();
   }
 
-  // Method to toggle audio
   void toggleAudio() {
     _audioManager.toggleMute();
   }
 
-  // Check if audio is muted
   bool isAudioMuted() {
     return _audioManager.isMuted;
-  }
-}
-
-class LevelUpNotification extends Component with HasGameRef<floato> {
-  final String levelName;
-  final String levelRange;
-  Timer? _timer;
-
-  LevelUpNotification({
-    required this.levelName,
-    required this.levelRange,
-  });
-
-  @override
-  Future<void> onLoad() async {
-    _timer = Timer(2.5, onTick: () => removeFromParent());
-  }
-
-  @override
-  void render(Canvas canvas) {
-    final text = TextPainter(
-      text: TextSpan(
-        text: '$levelName REACHED!\n$levelRange',
-        style: const TextStyle(
-          color: Colors.amber,
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          shadows: [
-            Shadow(
-              blurRadius: 10,
-              color: Colors.black,
-              offset: Offset(2, 2),
-            ),
-          ],
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-
-    text.paint(
-      canvas,
-      Offset(
-        (gameRef.size.x - text.width) / 2,
-        gameRef.size.y / 3,
-      ),
-    );
-  }
-
-  @override
-  void update(double dt) {
-    _timer?.update(dt);
-    super.update(dt);
-  }
-
-  @override
-  void onRemove() {
-    _timer?.stop();
-    super.onRemove();
   }
 }

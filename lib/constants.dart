@@ -53,6 +53,31 @@ const List<int> missileDamages = [
 const double groundHeight = 100;
 const double groundScrollingSpeed = 100;
 
+// Background and ground images for each level
+const List<String> backgroundImages = [
+  'background_level1.jpg',
+  'background_level2.jpg',
+  'background_level3.jpg',
+  'background_level4.jpg',
+  'background_level5.jpg',
+];
+
+const List<String> groundImages = [
+  'ground_level1.jpg',
+  'ground_level2.jpg',
+  'ground_level3.jpg',
+  'ground_level4.jpg',
+  'ground_level5.jpg',
+];
+
+const List<String> levelNames = [
+  'Anuradhapura',
+  'Jaffna',
+  'Galle',
+  'Nuwara Eliya',
+  'Sigiriya'
+];
+
 // Building constants
 const double buildingInterval = 2;
 const double buildingGap = 300;
@@ -114,6 +139,9 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'enemySpeedMultiplier': 0.9, // Slightly slower than original
     'levelName': 'Level 1',
     'levelRange': '0-80',
+    'backgroundImage': 'background_level1.jpg',
+    'groundImage': 'ground_level1.jpg',
+    'environmentName': 'Forest',
   },
   80: { // Level 2 (80-199 points) - Gentle introduction to challenge
     'buildingInterval': 2.75,
@@ -123,6 +151,9 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'enemySpeedMultiplier': 1.0, // Base speed
     'levelName': 'Level 2',
     'levelRange': '80-200',
+    'backgroundImage': 'background_level2.jpg',
+    'groundImage': 'ground_level2.jpg',
+    'environmentName': 'Desert',
   },
   200: { // Level 3 (200-349 points) - Moderate challenge
     'buildingInterval': 2.4,
@@ -132,6 +163,9 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'enemySpeedMultiplier': 1.2, // 20% faster
     'levelName': 'Level 3',
     'levelRange': '200-350',
+    'backgroundImage': 'background_level3.jpg',
+    'groundImage': 'ground_level3.jpg',
+    'environmentName': 'Arctic',
   },
   350: { // Level 4 (350-599 points) - Advanced challenge
     'buildingInterval': 2.0,
@@ -141,6 +175,9 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'enemySpeedMultiplier': 1.4, // 40% faster
     'levelName': 'Level 4',
     'levelRange': '350-600',
+    'backgroundImage': 'background_level4.jpg',
+    'groundImage': 'ground_level4.jpg',
+    'environmentName': 'Volcano',
   },
   600: { // Level 5 (600+ points) - Expert level with performance optimizations
     'buildingInterval': 1.75, // Increased from 1.5 to reduce CPU load
@@ -150,5 +187,8 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'enemySpeedMultiplier': 1.6, // Reduced from 1.7 for better playability
     'levelName': 'Level 5',
     'levelRange': '600+',
+    'backgroundImage': 'background_level5.jpg',
+    'groundImage': 'ground_level5.jpg',
+    'environmentName': 'Space',
   },
 };

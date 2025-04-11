@@ -30,14 +30,11 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
   int selectedRocket = 0;
   String levelName = 'Level 1';
 
-  // This should replace the initState method in your _MenuScreenState class
   @override
   void initState() {
     super.initState();
-    // Start playing background music when menu loads
     _audioManager.playBackgroundMusic();
 
-    // Setup animation for hover effect
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -52,23 +49,16 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
       setState(() {});
     });
 
-    // Make animation repeat back and forth
     _animationController.repeat(reverse: true);
-
-    // Load saved data
     _loadSavedData();
-
-    // Check for newly unlocked birds
     _checkForNewlyUnlockedBird();
   }
 
-// Add this new method to your _MenuScreenState class
   Future<void> _checkForNewlyUnlockedBird() async {
     final hasNewBird = await PreferencesHelper.hasNewBirdUnlocked();
     if (hasNewBird) {
       final newBirdIndex = await PreferencesHelper.getNewlyUnlockedBird();
       if (newBirdIndex > 0) {
-        // Small delay to allow the menu to build first
         Future.delayed(const Duration(milliseconds: 500), () {
           showDialog(
             context: context,
@@ -97,7 +87,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     unlockedRockets = await PreferencesHelper.getUnlockedRocketsCount();
     selectedRocket = await PreferencesHelper.getSelectedRocket();
 
-    // Get level name based on threshold
     if (highestLevel >= 700) {
       levelName = 'Level 5';
     } else if (highestLevel >= 450) {
@@ -132,7 +121,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                   ? buildRocketSelectionContent()
                   : buildMenuContent()),
             ),
-            // Mute button in top-right corner
             Positioned(
               top: 40,
               right: 20,
@@ -170,9 +158,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Spacer(flex: 2), // Top space
-
-        // Game title with animated effect
+        const Spacer(flex: 2),
         Transform.translate(
           offset: Offset(0, _animation.value),
           child: const Text(
@@ -191,11 +177,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
             ),
           ),
         ),
-
-        // Add this SizedBox for spacing
-        const SizedBox(height: 33), // Adjust the height as needed
-
-        // High Score and Highest Level Display
+        const SizedBox(height: 33),
         Container(
           padding: const EdgeInsets.all(15),
           margin: const EdgeInsets.symmetric(horizontal: 40),
@@ -226,10 +208,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
             ],
           ),
         ),
-
-        const Spacer(flex: 4), // Middle space
-
-        // Animated rocket preview
+        const Spacer(flex: 4),
         Transform.translate(
           offset: Offset(0, _animation.value * 1.5),
           child: Image.asset(
@@ -239,14 +218,12 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
           ),
         ),
         const SizedBox(height: 10),
-
         Padding(
-          padding: const EdgeInsets.only(bottom: 20), // Ensure buttons don't touch bottom
+          padding: const EdgeInsets.only(bottom: 20),
           child: Column(
             children: [
               ElevatedButton(
                 onPressed: () {
-                  // Don't stop the music when starting the game
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -443,7 +420,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
             ),
           ),
           const SizedBox(height: 30),
-          // Logo image added here
           Image.asset(
             'assets/images/logo.png',
             height: 100,
@@ -505,17 +481,17 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               color: Colors.amber,
             ),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           SizedBox(
-            height: 300,
+            height: MediaQuery.of(context).size.height * 0.5,
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
-                childAspectRatio: 0.45,
+                childAspectRatio: 0.85,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
               ),
-              itemCount: 5, // Total number of rockets
+              itemCount: 5,
               itemBuilder: (context, index) {
                 final bool isUnlocked = index < unlockedRockets;
                 final bool isSelected = index == selectedRocket;
@@ -530,6 +506,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                   }
                       : null,
                   child: Container(
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? Colors.amber.withOpacity(0.3)
@@ -539,57 +516,69 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                         color: isSelected ? Colors.amber : Colors.grey,
                         width: 2,
                       ),
-                      boxShadow: isSelected ? [
+                      boxShadow: isSelected
+                          ? [
                         BoxShadow(
                           color: Colors.amber.withOpacity(0.3),
                           blurRadius: 10,
                           spreadRadius: 2,
                         ),
-                      ] : [],
+                      ]
+                          : [],
                     ),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Animating the rocket with the same hover effect
-                        Transform.translate(
-                          offset: Offset(0, isUnlocked ? _animation.value : 0),
-                          child: Stack(
-                            alignment: Alignment.center,
+                        Expanded(
+                          child: Transform.translate(
+                            offset: Offset(0, isUnlocked ? _animation.value : 0),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/images/bird/${rocketImages[index]}',
+                                  fit: BoxFit.contain,
+                                  color: isUnlocked ? null : Colors.black.withOpacity(0.7),
+                                  colorBlendMode: isUnlocked ? BlendMode.srcIn : BlendMode.srcATop,
+                                ),
+                                if (!isUnlocked)
+                                  const Icon(
+                                    Icons.lock,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Column(
                             children: [
-                              // Rocket image
-                              Image.asset(
-                                'assets/images/bird/${rocketImages[index]}',
-                                height: 100,
-                                color: isUnlocked ? null : Colors.black.withOpacity(0.7),
-                                colorBlendMode: isUnlocked ? BlendMode.srcIn : BlendMode.srcATop,
+                              Text(
+                                rocketNames[index],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: isUnlocked ? Colors.white : Colors.grey,
+                                ),
                               ),
-                              // Lock icon for locked rockets
                               if (!isUnlocked)
-                                const Icon(
-                                  Icons.lock,
-                                  color: Colors.white,
-                                  size: 50,
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    rocketLevelRequirements[index],
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                 ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        Text(
-                          rocketNames[index],
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: isUnlocked ? Colors.white : Colors.grey,
-                          ),
-                        ),
-                        if (!isUnlocked)
-                          Text(
-                            rocketLevelRequirements[index],
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
                       ],
                     ),
                   ),
@@ -627,7 +616,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
   }
 }
 
-// PauseButton implementation
 class PauseButton extends StatelessWidget {
   final floato game;
 
@@ -663,7 +651,6 @@ class PauseButton extends StatelessWidget {
   }
 }
 
-// PauseMenu implementation
 class PauseMenu extends StatelessWidget {
   final floato game;
 
