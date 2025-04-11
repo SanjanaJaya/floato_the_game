@@ -114,37 +114,59 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   @override
   void update(double dt) {
     if (!isGameOver && !isPaused && !showingTutorial && !showingCountdown) {
-      // For Level 5, apply stricter performance management
-      if (score >= 700) {
-        // Limit update rate if FPS is dropping
-        dt = dt.clamp(0.0, 0.05); // Cap dt to prevent large time jumps
+      // Apply performance optimization based on current level threshold
+      final levelThreshold = _getCurrentLevelThreshold();
 
-        // Manage game objects more frequently at higher levels
+      // For higher levels, apply stronger performance management
+      if (levelThreshold >= 350) { // Level 4 or 5
+        // Limit update rate if dt is too high (indicates slowdown)
+        dt = dt.clamp(0.0, 0.04); // Stricter cap than before
+
+        // More frequent object management for higher levels
         manageGameObjects();
+      } else if (levelThreshold >= 200) { // Level 3
+        // Modest performance optimization
+        dt = dt.clamp(0.0, 0.05);
+
+        // Manage objects occasionally
+        if (DateTime.now().millisecondsSinceEpoch % 5 == 0) {
+          manageGameObjects();
+        }
       }
     }
     super.update(dt);
   }
 
-  // Method to handle tutorial completion
-  void onTutorialComplete() {
-    showingTutorial = false;
-    overlays.remove('tutorial');
-
-    // Show countdown after tutorial
-    showCountdown();
-  }
-
-  // Add this method to manage on-screen objects
   void manageGameObjects() {
+    final levelThreshold = _getCurrentLevelThreshold();
+
+    // Set object limits based on current level
+    if (levelThreshold >= 600) { // Level 5
+      _maxEnemyPlanes = 4;
+      _maxBuildings = 7;
+      _maxMissiles = 5;
+    } else if (levelThreshold >= 350) { // Level 4
+      _maxEnemyPlanes = 5;
+      _maxBuildings = 8;
+      _maxMissiles = 6;
+    } else if (levelThreshold >= 200) { // Level 3
+      _maxEnemyPlanes = 6;
+      _maxBuildings = 9;
+      _maxMissiles = 7;
+    } else { // Level 1-2
+      _maxEnemyPlanes = 7;
+      _maxBuildings = 10;
+      _maxMissiles = 8;
+    }
+
     // Limit the number of enemy planes
     final enemies = children.whereType<EnemyPlane>().toList();
     if (enemies.length > _maxEnemyPlanes) {
       // Remove furthest enemies that are off-screen
       enemies.sort((a, b) => b.position.x.compareTo(a.position.x));
       for (int i = _maxEnemyPlanes; i < enemies.length; i++) {
-        if (enemies[i].position.x < -enemyPlaneWidth ||
-            enemies[i].position.x > size.x + enemyPlaneWidth) {
+        if (enemies[i].position.x < -enemyPlaneWidth * 1.5 ||
+            enemies[i].position.x > size.x + enemyPlaneWidth * 1.5) {
           enemies[i].removeFromParent();
         }
       }
@@ -156,7 +178,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       // Remove furthest buildings that are off-screen
       buildings.sort((a, b) => b.position.x.compareTo(a.position.x));
       for (int i = _maxBuildings; i < buildings.length; i++) {
-        if (buildings[i].position.x < -buildingWidth) {
+        if (buildings[i].position.x < -buildingWidth * 1.5) {
           buildings[i].removeFromParent();
         }
       }
@@ -169,6 +191,16 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       missiles.sort((a, b) => a.creationTime.compareTo(b.creationTime));
       for (int i = 0; i < missiles.length - _maxMissiles; i++) {
         missiles[i].removeFromParent();
+      }
+    }
+
+    // Limit the number of explosion effects (new)
+    final explosions = children.whereType<Explosion>().toList();
+    if (explosions.length > 8) {
+      // Remove oldest explosions
+      explosions.sort((a, b) => a.creationTime.compareTo(b.creationTime));
+      for (int i = 0; i < explosions.length - 8; i++) {
+        explosions[i].removeFromParent();
       }
     }
   }
@@ -270,6 +302,18 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     }
   }
 
+  void onTutorialComplete() {
+    print('Tutorial completed');
+    showingTutorial = false;
+    overlays.remove('tutorial');
+
+    // Save that tutorial has been seen
+    PreferencesHelper.saveTutorialSeen(true);
+
+    // Show countdown after tutorial
+    showCountdown();
+  }
+
   void incrementScore([int points = 1]) {
     final previousLevel = _getCurrentLevelThreshold();
 
@@ -287,8 +331,48 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     if (newLevel != previousLevel) {
       updateDifficultySettings();
       showLevelUpNotification(newLevel);
+
+      // Provide a small breathing space when reaching a new level
+      // by removing some enemies to give player a moment of relief
+      if (newLevel >= 200) { // Only for higher levels
+        _clearSomeEnemies();
+      }
     }
   }
+
+// Add this helper method
+  void _clearSomeEnemies() {
+    final enemies = children.whereType<EnemyPlane>().toList();
+    if (enemies.isNotEmpty) {
+      // Remove up to half of the enemies that are close to the player
+      final enemiesToRemove = (enemies.length / 2).floor();
+      if (enemiesToRemove > 0) {
+        // Sort by distance to player (closest first)
+        enemies.sort((a, b) {
+          final distA = (a.position - rocket.position).length;
+          final distB = (b.position - rocket.position).length;
+          return distA.compareTo(distB);
+        });
+
+        // Remove some of the closest enemies
+        for (int i = 0; i < enemiesToRemove; i++) {
+          if (i < enemies.length) {
+            // Add explosion effect
+            final explosion = Explosion(
+              position: enemies[i].position,
+              size: Vector2(100, 100), // Adjust size as needed for your explosion animation
+            );
+            add(explosion);
+
+            // Remove enemy
+            enemies[i].removeFromParent();
+          }
+        }
+      }
+    }
+  }
+
+
 
   int _getCurrentLevelThreshold() {
     final thresholds = difficultyLevels.keys.toList()..sort((a, b) => b.compareTo(a));

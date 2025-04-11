@@ -6,6 +6,7 @@ import 'audio_manager.dart';
 import 'shared_preferences_helper.dart';
 import 'constants.dart';
 import 'countdown_overlay.dart';
+import 'bird_unlock_notification.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -29,6 +30,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
   int selectedRocket = 0;
   String levelName = 'Level 1';
 
+  // This should replace the initState method in your _MenuScreenState class
   @override
   void initState() {
     super.initState();
@@ -55,6 +57,32 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
 
     // Load saved data
     _loadSavedData();
+
+    // Check for newly unlocked birds
+    _checkForNewlyUnlockedBird();
+  }
+
+// Add this new method to your _MenuScreenState class
+  Future<void> _checkForNewlyUnlockedBird() async {
+    final hasNewBird = await PreferencesHelper.hasNewBirdUnlocked();
+    if (hasNewBird) {
+      final newBirdIndex = await PreferencesHelper.getNewlyUnlockedBird();
+      if (newBirdIndex > 0) {
+        // Small delay to allow the menu to build first
+        Future.delayed(const Duration(milliseconds: 500), () {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => BirdUnlockNotification(
+              birdIndex: newBirdIndex,
+              onClose: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          );
+        });
+      }
+    }
   }
 
   @override

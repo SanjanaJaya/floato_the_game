@@ -3,13 +3,15 @@ import 'package:flame/components.dart';
 import 'package:floato_the_game/game.dart';
 
 class Explosion extends SpriteAnimationComponent with HasGameRef<floato> {
+  final DateTime creationTime = DateTime.now(); // Add this line
+
   Explosion({
     required Vector2 position,
     required Vector2 size,
   }) : super(
     position: position,
     size: size,
-    removeOnFinish: true, // Remove component when animation finishes
+    removeOnFinish: true,
   );
 
   @override

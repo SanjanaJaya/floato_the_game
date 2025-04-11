@@ -23,29 +23,30 @@ const List<String> rocketNames = [
   'Zephyr',
 ];
 
+// Updated requirements with more meaningful descriptions
 const List<String> rocketLevelRequirements = [
   'Default',
-  'Reach Level 2',
-  'Reach Level 3',
-  'Reach Level 4',
-  'Reach Level 5',
+  'Score 80+ (Level 1)',
+  'Score 200+ (Level 2)',
+  'Score 350+ (Level 3)',
+  'Score 600+ (Level 4)',
 ];
 
-// Missile constants
+// Updated missile capabilities to be more distinctive
 const List<double> missileSpeeds = [
   0,    // Rocket 1 doesn't shoot
   300,  // Rocket 2 missile speed
-  350,  // Rocket 3 missile speed
-  400,  // Rocket 4 missile speed
-  450,  // Rocket 5 missile speed
+  400,  // Rocket 3 missile speed - increased from 350
+  450,  // Rocket 4 missile speed - increased from 400
+  500,  // Rocket 5 missile speed - increased from 450
 ];
 
 const List<int> missileDamages = [
   0,  // Rocket 1 doesn't shoot
-  30, // Rocket 2 missile damage
-  40, // Rocket 3 missile damage
-  50, // Rocket 4 missile damage
-  75, // Rocket 5 missile damage
+  25, // Rocket 2 missile damage - decreased from 30
+  35, // Rocket 3 missile damage - decreased from 40
+  50, // Rocket 4 missile damage - unchanged
+  80, // Rocket 5 missile damage - increased from 75
 ];
 
 // Ground constants
@@ -96,57 +97,58 @@ const List<String> enemyPlaneImages = [
   'enemy_plane7.png',
   'enemy_plane8.png',
 ];
-// Base speeds for different plane types
-const List<double> enemyPlaneSpeeds = [150, 170, 130, 200, 100, 75, 85, 110];
 
-// Enemy plane health values
-const List<int> enemyPlaneHealths = [30, 40, 50, 60, 70, 90, 60, 50];
+// Adjusted base speeds for different plane types to be more balanced
+const List<double> enemyPlaneSpeeds = [130, 150, 120, 170, 100, 80, 90, 110];
 
-// Difficulty levels
+// Adjusted health values to create better balance with new missile damages
+const List<int> enemyPlaneHealths = [25, 35, 45, 55, 65, 80, 50, 40];
+
+// Optimized difficulty levels with smoother progression and better performance scaling
 const Map<int, Map<String, dynamic>> difficultyLevels = {
-  0: { // Level 1 (0-99 points)
-    'buildingInterval': 3.0,
-    'buildingGap': 300.0,
-    'enemySpawnInterval': 3.0,
-    'groundScrollingSpeed': 100.0,
-    'enemySpeedMultiplier': 1.0, // Base speed
+  0: { // Level 1 (0-79 points) - Beginner friendly
+    'buildingInterval': 3.25,
+    'buildingGap': 320.0,
+    'enemySpawnInterval': 3.5,
+    'groundScrollingSpeed': 90.0,
+    'enemySpeedMultiplier': 0.9, // Slightly slower than original
     'levelName': 'Level 1',
-    'levelRange': '0-100',
+    'levelRange': '0-80',
   },
-  100: { // Level 2 (100-249 points)
+  80: { // Level 2 (80-199 points) - Gentle introduction to challenge
     'buildingInterval': 2.75,
-    'buildingGap': 280.0,
-    'enemySpawnInterval': 2.7,
-    'groundScrollingSpeed': 125.0,
-    'enemySpeedMultiplier': 1.2, // 20% faster
+    'buildingGap': 300.0,
+    'enemySpawnInterval': 2.8,
+    'groundScrollingSpeed': 110.0,
+    'enemySpeedMultiplier': 1.0, // Base speed
     'levelName': 'Level 2',
-    'levelRange': '100-250',
+    'levelRange': '80-200',
   },
-  250: { // Level 3 (250-449 points)
-    'buildingInterval': 2.25,
-    'buildingGap': 260.0,
-    'enemySpawnInterval': 2.4,
-    'groundScrollingSpeed': 150.0,
-    'enemySpeedMultiplier': 1.4, // 40% faster
+  200: { // Level 3 (200-349 points) - Moderate challenge
+    'buildingInterval': 2.4,
+    'buildingGap': 280.0,
+    'enemySpawnInterval': 2.5,
+    'groundScrollingSpeed': 130.0,
+    'enemySpeedMultiplier': 1.2, // 20% faster
     'levelName': 'Level 3',
-    'levelRange': '250-450',
+    'levelRange': '200-350',
   },
-  450: { // Level 4 (450-699 points)
-    'buildingInterval': 1.75,
-    'buildingGap': 240.0,
-    'enemySpawnInterval': 1.5,
-    'groundScrollingSpeed': 200.0,
-    'enemySpeedMultiplier': 1.6, // 60% faster
+  350: { // Level 4 (350-599 points) - Advanced challenge
+    'buildingInterval': 2.0,
+    'buildingGap': 260.0,
+    'enemySpawnInterval': 2.0,
+    'groundScrollingSpeed': 160.0,
+    'enemySpeedMultiplier': 1.4, // 40% faster
     'levelName': 'Level 4',
-    'levelRange': '450-700',
+    'levelRange': '350-600',
   },
-  700: { // Level 5 (700-1000+ points) - FIXED VALUES
-    'buildingInterval': 1.5, // Changed from 1.0 to 1.5 to reduce building spawn rate
-    'buildingGap': 230.0, // Slight adjustment
-    'enemySpawnInterval': 1.5, // Changed from 1.2 to 1.5 to reduce enemy spawn rate
-    'groundScrollingSpeed': 210.0, // Reduced from 225.0 to be slightly less aggressive
-    'enemySpeedMultiplier': 1.7, // Reduced from 1.8 to make enemies slightly slower
+  600: { // Level 5 (600+ points) - Expert level with performance optimizations
+    'buildingInterval': 1.75, // Increased from 1.5 to reduce CPU load
+    'buildingGap': 240.0,
+    'enemySpawnInterval': 1.8, // Increased from 1.5 to reduce enemy count
+    'groundScrollingSpeed': 180.0, // Reduced to keep the game playable
+    'enemySpeedMultiplier': 1.6, // Reduced from 1.7 for better playability
     'levelName': 'Level 5',
-    'levelRange': '700-1000',
+    'levelRange': '600+',
   },
 };

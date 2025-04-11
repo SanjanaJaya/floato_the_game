@@ -1,23 +1,23 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:flame/components.dart';
 
 class LevelUpNotification extends PositionComponent with HasGameRef {
-  final int level;
-  final VoidCallback onFinish;
+  final String levelName;
+  final String levelRange;
+  Timer? _timer;
 
   LevelUpNotification({
-    required this.level,
-    required this.onFinish,
+    required this.levelName,
+    required this.levelRange,
   });
 
   @override
   Future<void> onLoad() async {
     super.onLoad();
 
-    // Display the notification for 2 seconds
-    await Future.delayed(const Duration(seconds: 2));
-    removeFromParent();
-    onFinish();
+    // Display notification for 2.5 seconds then remove
+    _timer = Timer(2.5, onTick: () => removeFromParent());
   }
 
   @override
@@ -26,9 +26,9 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
 
     final text = TextPainter(
       text: TextSpan(
-        text: 'LEVEL UP!\nReached $level points',
+        text: '$levelName REACHED!\n$levelRange',
         style: const TextStyle(
-          color: Colors.white,
+          color: Colors.amber,
           fontSize: 32,
           fontWeight: FontWeight.bold,
           shadows: [
@@ -50,5 +50,17 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
         gameRef.size.y / 3,
       ),
     );
+  }
+
+  @override
+  void update(double dt) {
+    _timer?.update(dt);
+    super.update(dt);
+  }
+
+  @override
+  void onRemove() {
+    _timer?.stop();
+    super.onRemove();
   }
 }
