@@ -110,7 +110,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   void incrementCoins(int amount) {
     coins += amount;
     PreferencesHelper.saveCoins(coins);
-    PreferencesHelper.updateUnlockedRockets(coins);
     coinDisplay.text = 'Coins: $coins'; // Update the coin display
   }
 

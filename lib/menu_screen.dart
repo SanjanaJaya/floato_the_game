@@ -52,28 +52,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
 
     _animationController.repeat(reverse: true);
     _loadSavedData();
-    _checkForNewlyUnlockedBird();
-  }
-
-  Future<void> _checkForNewlyUnlockedBird() async {
-    final hasNewBird = await PreferencesHelper.hasNewBirdUnlocked();
-    if (hasNewBird) {
-      final newBirdIndex = await PreferencesHelper.getNewlyUnlockedBird();
-      if (newBirdIndex > 0) {
-        Future.delayed(const Duration(milliseconds: 500), () {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) => BirdUnlockNotification(
-              birdIndex: newBirdIndex,
-              onClose: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          );
-        });
-      }
-    }
   }
 
   @override
@@ -522,7 +500,45 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                     });
                     await PreferencesHelper.saveSelectedRocket(index);
                   }
-                      : null,
+                      : () async {
+                    if (coins >= birdUnlockCosts[index]!) {
+                      // Deduct coins
+                      coins -= birdUnlockCosts[index]!;
+                      await PreferencesHelper.saveCoins(coins);
+
+                      // Unlock the bird
+                      unlockedRockets = index + 1;
+                      await PreferencesHelper.saveUnlockedRockets(unlockedRockets);
+
+                      // Select the newly unlocked bird
+                      selectedRocket = index;
+                      await PreferencesHelper.saveSelectedRocket(index);
+
+                      setState(() {});
+
+                      // Show unlock notification
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => BirdUnlockNotification(
+                          birdIndex: index,
+                          onClose: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Not enough coins! Need ${birdUnlockCosts[index]! - coins} more',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  },
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(

@@ -43,8 +43,7 @@ class _BirdUnlockNotificationState extends State<BirdUnlockNotification>
     // Make animation repeat back and forth
     _animationController.repeat(reverse: true);
 
-    // Clear the new bird unlocked flag
-    PreferencesHelper.clearNewBirdUnlocked();
+
   }
 
   @override

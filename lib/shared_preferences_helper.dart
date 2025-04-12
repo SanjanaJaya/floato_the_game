@@ -1,8 +1,7 @@
-import 'package:floato_the_game/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferencesHelper {
-  // Existing methods
+  // High score methods
   static Future<int> getHighScore() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt('highScore') ?? 0;
@@ -16,6 +15,7 @@ class PreferencesHelper {
     }
   }
 
+  // Level progress methods
   static Future<int> getHighestLevel() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt('highestLevel') ?? 0;
@@ -29,25 +29,15 @@ class PreferencesHelper {
     }
   }
 
-  // Changed from private to public
-  static Future<void> updateUnlockedRockets(int coins) async {
-    int unlockedCount = 1; // Default has first rocket
-    if (coins >= birdUnlockCosts[1]!) unlockedCount = 2;
-    if (coins >= birdUnlockCosts[2]!) unlockedCount = 3;
-    if (coins >= birdUnlockCosts[3]!) unlockedCount = 4;
-    if (coins >= birdUnlockCosts[4]!) unlockedCount = 5;
-    final prefs = await SharedPreferences.getInstance();
-    final currentUnlocked = prefs.getInt('unlockedRockets') ?? 1;
-    if (unlockedCount > currentUnlocked) {
-      await prefs.setInt('unlockedRockets', unlockedCount);
-      await prefs.setBool('newBirdUnlocked', true);
-      await prefs.setInt('newlyUnlockedBird', unlockedCount - 1);
-    }
-  }
-
+  // Bird unlock methods - modified for manual purchase system
   static Future<int> getUnlockedRocketsCount() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt('unlockedRockets') ?? 1;
+    return prefs.getInt('unlockedRockets') ?? 1; // Default to first bird unlocked
+  }
+
+  static Future<void> saveUnlockedRockets(int count) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('unlockedRockets', count);
   }
 
   static Future<int> getSelectedRocket() async {
@@ -60,6 +50,7 @@ class PreferencesHelper {
     await prefs.setInt('selectedRocket', rocketIndex);
   }
 
+  // Coin methods
   static Future<int> getCoins() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt('coins') ?? 0;
@@ -70,7 +61,7 @@ class PreferencesHelper {
     await prefs.setInt('coins', coins);
   }
 
-  // New methods for tutorial
+  // Tutorial methods
   static Future<bool> hasTutorialBeenSeen() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('tutorialSeen') ?? false;
@@ -79,23 +70,5 @@ class PreferencesHelper {
   static Future<void> saveTutorialSeen(bool seen) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('tutorialSeen', seen);
-  }
-
-  // Check if there's a new bird unlocked
-  static Future<bool> hasNewBirdUnlocked() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('newBirdUnlocked') ?? false;
-  }
-
-  // Get the index of newly unlocked bird
-  static Future<int> getNewlyUnlockedBird() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt('newlyUnlockedBird') ?? -1;
-  }
-
-  // Clear the new bird unlocked flag
-  static Future<void> clearNewBirdUnlocked() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('newBirdUnlocked', false);
   }
 }
