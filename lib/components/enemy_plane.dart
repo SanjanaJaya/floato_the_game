@@ -12,7 +12,7 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
   double speed;
   int health;
   int maxHealth;
-  late HealthBar healthBar;
+  late HealthBar3D healthBar;
   // Removed AudioManager instance
   bool _isDestroyed = false;
 
@@ -65,7 +65,7 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
     }
 
     // Add health bar
-    healthBar = HealthBar(
+    healthBar = HealthBar3D(
       maxHealth: maxHealth,
       position: Vector2(0, -15), // Position above the plane
       size: Vector2(size.x, 5),

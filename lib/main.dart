@@ -3,20 +3,18 @@ import 'package:flame/game.dart';
 import 'splash_screen.dart';
 import 'audio_manager.dart';
 import 'game.dart';
-import 'tutorial_screen.dart'; // Import the new tutorial screen
-
+import 'tutorial_screen.dart';
+import 'loading_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize audio manager and ensure it completes
-  final audioManager = AudioManager();
-  await audioManager.init();
-
-  // Add a delay to ensure audio initialization is complete
-  await Future.delayed(Duration(milliseconds: 500));
-
-  runApp(const Myapp());
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(), // Start with the splash screen
+    ),
+  );
 }
 
 class Myapp extends StatelessWidget {

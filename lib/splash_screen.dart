@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import 'menu_screen.dart';
+import 'loading_screen.dart'; // Add this import
 import 'audio_manager.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -50,19 +51,28 @@ class _SplashScreenState extends State<SplashScreen> {
     // Add listener for video completion
     _controller.addListener(() {
       if (!_controller.value.isPlaying && _controller.value.position >= _controller.value.duration) {
-        // Video has completed playing, navigate to menu screen
-        _navigateToMenuScreen();
+        // Video has completed playing, navigate to loading screen
+        _navigateToLoadingScreen();
       }
     });
   }
 
-  void _navigateToMenuScreen() {
+  void _navigateToLoadingScreen() {
     // Dispose the video controller first
     _controller.dispose();
 
-    // Navigate to the menu screen and replace the splash screen
+    // Navigate to the loading screen and replace the splash screen
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => MenuScreen()),
+      MaterialPageRoute(
+        builder: (context) => LoadingScreen(
+          onInitialization: () async {
+            // Initialize audio manager and ensure it completes
+            final audioManager = AudioManager();
+            await audioManager.init();
+            await Future.delayed(const Duration(milliseconds: 500));
+          },
+        ),
+      ),
     );
   }
 
