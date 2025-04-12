@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:floato_the_game/constants.dart';
-import 'package:floato_the_game/shared_preferences_helper.dart';
 
 class BirdUnlockNotification extends StatefulWidget {
   final Function onClose;

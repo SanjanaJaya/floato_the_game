@@ -30,7 +30,18 @@ class CoinManager extends Component with HasGameRef<floato> {
     final spawnY = _random.nextDouble() * (screenHeight * 0.66) + (screenHeight * 0.1);
     final spawnX = screenWidth + 50; // Start off screen to the right
 
-    final coinValue = coinValues[_random.nextInt(coinValues.length)];
+    // Determine coin type based on probability
+    final coinTypeRoll = _random.nextDouble();
+    String coinType;
+    if (coinTypeRoll < 0.1) { // 10% chance for gold
+      coinType = 'gold';
+    } else if (coinTypeRoll < 0.4) { // 30% chance for silver
+      coinType = 'silver';
+    } else { // 60% chance for bronze
+      coinType = 'bronze';
+    }
+
+    final coinValue = coinTypes[coinType]!;
 
     gameRef.add(Coin(
       position: Vector2(spawnX, spawnY),
@@ -38,6 +49,7 @@ class CoinManager extends Component with HasGameRef<floato> {
         gameRef.incrementCoins(coinValue);
       },
       value: coinValue,
+      type: coinType,
     ));
   }
 }

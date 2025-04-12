@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 class Coin extends SpriteAnimationComponent with HasGameRef {
   final VoidCallback onCollected;
   final int value;
+  final String type;
 
   Coin({
     required Vector2 position,
     required this.onCollected,
     required this.value,
+    required this.type,
   }) : super(position: position, size: Vector2.all(30));
 
   @override
@@ -17,7 +19,7 @@ class Coin extends SpriteAnimationComponent with HasGameRef {
     super.onLoad();
 
     final spriteSheet = SpriteSheet(
-      image: await gameRef.images.load('coin_sheet.png'),
+      image: await gameRef.images.load('${type}_coin_sheet.png'),
       srcSize: Vector2(418, 418), // Each frame is 418x418
     );
 

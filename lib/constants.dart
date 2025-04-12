@@ -195,11 +195,15 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
 // Coin constants
 const double coinSize = 30;
 const double coinSpawnInterval = 2.0; // Spawn a coin every 2 seconds on average
-const List<int> coinValues = [1, 2, 5]; // Different coin values
+const Map<String, int> coinTypes = {
+  'bronze': 2,
+  'silver': 4,
+  'gold': 8,
+};
 const Map<int, int> birdUnlockCosts = {
   0: 0,    // First bird is free
-  1: 100,  // Second bird costs 100 coins
-  2: 250,  // Third bird costs 250 coins
-  3: 500,  // Fourth bird costs 500 coins
-  4: 1000, // Fifth bird costs 1000 coins
+  1: 150,  // Second bird costs 100 coins
+  2: 500,  // Third bird costs 250 coins
+  3: 1500,  // Fourth bird costs 500 coins
+  4: 5000, // Fifth bird costs 1000 coins
 };
