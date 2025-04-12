@@ -26,6 +26,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
 
   int highScore = 0;
   int highestLevel = 0;
+  int coins = 0;
   int unlockedRockets = 1;
   int selectedRocket = 0;
   String levelName = 'Level 1';
@@ -84,6 +85,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
   Future<void> _loadSavedData() async {
     highScore = await PreferencesHelper.getHighScore();
     highestLevel = await PreferencesHelper.getHighestLevel();
+    coins = await PreferencesHelper.getCoins();
     unlockedRockets = await PreferencesHelper.getUnlockedRocketsCount();
     selectedRocket = await PreferencesHelper.getSelectedRocket();
 
@@ -195,6 +197,22 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                   fontWeight: FontWeight.bold,
                   color: Colors.amber,
                 ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.monetization_on, color: Colors.yellow, size: 20),
+                  const SizedBox(width: 5),
+                  Text(
+                    '$coins',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.yellow,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 4),
               Text(
@@ -568,11 +586,11 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
                                   child: Text(
-                                    rocketLevelRequirements[index],
+                                    '${birdUnlockCosts[index]} coins',
                                     textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.grey,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: coins >= birdUnlockCosts[index]! ? Colors.green : Colors.grey,
                                     ),
                                   ),
                                 ),

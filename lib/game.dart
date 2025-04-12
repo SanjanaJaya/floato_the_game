@@ -11,6 +11,8 @@ import 'package:floato_the_game/components/score.dart';
 import 'package:floato_the_game/components/enemy_plane.dart';
 import 'package:floato_the_game/components/missile.dart';
 import 'package:floato_the_game/components/explosion.dart';
+import 'package:floato_the_game/components/coin_manager.dart';
+import 'package:floato_the_game/coin.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/level_up_notification.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +44,10 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   int score = 0;
   int currentLevelThreshold = 0;
 
+  // Coin related variables
+  int coins = 0;
+  late CoinManager coinManager;
+
   // Performance management
   int _maxEnemyPlanes = 6;
   int _maxBuildings = 10;
@@ -53,6 +59,11 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
     // Start background music
     _audioManager.playBackgroundMusic();
+
+    // Initialize coins
+    coins = await PreferencesHelper.getCoins();
+    coinManager = CoinManager();
+    add(coinManager);
 
     background = Background(size);
     add(background);
@@ -90,6 +101,22 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     updateDifficultySettings();
   }
 
+  void incrementCoins(int amount) {
+    coins += amount;
+    PreferencesHelper.saveCoins(coins);
+    PreferencesHelper.updateUnlockedRockets(coins); // Now calling the public method
+  }
+
+  void checkCoinCollisions() {
+    final coins = children.whereType<Coin>().toList();
+    for (final coin in coins) {
+      if (rocket.toRect().overlaps(coin.toRect())) {
+        _audioManager.playSfx('coin_collect.wav');
+        coin.collect();
+      }
+    }
+  }
+
   void showCountdown() {
     showingCountdown = true;
     pauseEngine();
@@ -104,7 +131,9 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
   @override
   void update(double dt) {
-    if (!isGameOver && !isPaused && !showingTutorial && !showingCountdown) {
+    if (!isGameOver && !isPaused) {
+      checkCoinCollisions();
+
       final levelThreshold = _getCurrentLevelThreshold();
 
       // Performance optimization based on level
@@ -449,6 +478,14 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
                   fontSize: 18,
                 ),
               ),
+              const SizedBox(height: 8),
+              Text(
+                "Coins collected: $coins",
+                style: const TextStyle(
+                  color: Colors.yellow,
+                  fontSize: 18,
+                ),
+              ),
             ],
           ),
         ),
@@ -569,6 +606,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     children.whereType<LevelUpNotification>().forEach((notification) => notification.removeFromParent());
     children.whereType<Missile>().forEach((missile) => missile.removeFromParent());
     children.whereType<Explosion>().forEach((explosion) => explosion.removeFromParent());
+    children.whereType<Coin>().forEach((coin) => coin.removeFromParent());
 
     updateDifficultySettings();
     _audioManager.resumeBackgroundMusic();

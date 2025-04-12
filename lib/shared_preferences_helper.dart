@@ -1,3 +1,4 @@
+import 'package:floato_the_game/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferencesHelper {
@@ -25,32 +26,22 @@ class PreferencesHelper {
     final currentHighestLevel = prefs.getInt('highestLevel') ?? 0;
     if (level > currentHighestLevel) {
       await prefs.setInt('highestLevel', level);
-
-      // Update unlocked rockets based on level
-      await _updateUnlockedRockets(level);
     }
   }
 
-  static Future<void> _updateUnlockedRockets(int level) async {
+  // Changed from private to public
+  static Future<void> updateUnlockedRockets(int coins) async {
     int unlockedCount = 1; // Default has first rocket
-
-    // Updated unlock thresholds to match new difficulty levels
-    if (level >= 80) unlockedCount = 2;      // Level 2
-    if (level >= 200) unlockedCount = 3;     // Level 3
-    if (level >= 350) unlockedCount = 4;     // Level 4
-    if (level >= 600) unlockedCount = 5;     // Level 5
-
+    if (coins >= birdUnlockCosts[1]!) unlockedCount = 2;
+    if (coins >= birdUnlockCosts[2]!) unlockedCount = 3;
+    if (coins >= birdUnlockCosts[3]!) unlockedCount = 4;
+    if (coins >= birdUnlockCosts[4]!) unlockedCount = 5;
     final prefs = await SharedPreferences.getInstance();
     final currentUnlocked = prefs.getInt('unlockedRockets') ?? 1;
-
     if (unlockedCount > currentUnlocked) {
       await prefs.setInt('unlockedRockets', unlockedCount);
-
-      // Add a flag to show "new bird unlocked" notification
-      if (unlockedCount > currentUnlocked) {
-        await prefs.setBool('newBirdUnlocked', true);
-        await prefs.setInt('newlyUnlockedBird', unlockedCount - 1); // Store index of newly unlocked bird
-      }
+      await prefs.setBool('newBirdUnlocked', true);
+      await prefs.setInt('newlyUnlockedBird', unlockedCount - 1);
     }
   }
 
@@ -67,6 +58,16 @@ class PreferencesHelper {
   static Future<void> saveSelectedRocket(int rocketIndex) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('selectedRocket', rocketIndex);
+  }
+
+  static Future<int> getCoins() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('coins') ?? 0;
+  }
+
+  static Future<void> saveCoins(int coins) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('coins', coins);
   }
 
   // New methods for tutorial
