@@ -12,6 +12,7 @@ import 'package:floato_the_game/components/enemy_plane.dart';
 import 'package:floato_the_game/components/missile.dart';
 import 'package:floato_the_game/components/explosion.dart';
 import 'package:floato_the_game/components/coin_manager.dart';
+import 'package:floato_the_game/coin_display.dart';
 import 'package:floato_the_game/coin.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/level_up_notification.dart';
@@ -26,6 +27,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   late Ground ground;
   late BuildingManager buildingManager;
   late ScoreText scoreText;
+  late CoinDisplay coinDisplay;
   final AudioManager _audioManager = AudioManager();
   final int selectedRocketType;
 
@@ -80,6 +82,10 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     scoreText = ScoreText();
     add(scoreText);
 
+    // Initialize coin display
+    coinDisplay = CoinDisplay();
+    add(coinDisplay);
+
     // Define control zones
     dragZone = Rect.fromLTWH(0, 0, size.x * 0.66, size.y);
     shootZone = Rect.fromLTWH(size.x * 0.66, 0, size.x * 0.34, size.y);
@@ -104,7 +110,8 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   void incrementCoins(int amount) {
     coins += amount;
     PreferencesHelper.saveCoins(coins);
-    PreferencesHelper.updateUnlockedRockets(coins); // Now calling the public method
+    PreferencesHelper.updateUnlockedRockets(coins);
+    coinDisplay.text = 'Coins: $coins'; // Update the coin display
   }
 
   void checkCoinCollisions() {
@@ -112,6 +119,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     for (final coin in coins) {
       if (rocket.toRect().overlaps(coin.toRect())) {
         _audioManager.playSfx('coin_collect.wav');
+        incrementCoins(coin.value); // Use incrementCoins to ensure proper updates
         coin.collect();
       }
     }
@@ -589,12 +597,14 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   }
 
   void resetGame() {
+    // Don't reset coins here - they should persist between games
     rocket.position = Vector2(rocketStartX, rocketStartY);
     rocket.velocity = 0;
     score = 0;
     isGameOver = false;
 
     scoreText.text = 'Score: 0';
+    coinDisplay.text = 'Coins: $coins'; // Update coin display with current coins
 
     if (isPaused) {
       isPaused = false;
