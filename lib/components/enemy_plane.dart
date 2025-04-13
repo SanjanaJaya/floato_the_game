@@ -6,6 +6,7 @@ import 'package:floato_the_game/components/health_bar.dart';
 import 'package:floato_the_game/components/explosion.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
+import 'package:floato_the_game/special_ability.dart';
 
 class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGameRef<floato> {
   final int planeType;
@@ -13,7 +14,6 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
   int health;
   int maxHealth;
   late HealthBar3D healthBar;
-  // Removed AudioManager instance
   bool _isDestroyed = false;
 
   EnemyPlane({
@@ -22,7 +22,6 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
     required this.planeType,
     this.speed = 0,  // Default value that will be overridden
   }) :
-  // Initialize the non-nullable fields in the initializer list
         maxHealth = enemyPlaneHealths[planeType % enemyPlaneHealths.length],
         health = enemyPlaneHealths[planeType % enemyPlaneHealths.length],
         super(position: position, size: size);
@@ -75,14 +74,18 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
 
   @override
   void update(double dt) {
-    // Use the calculated speed with level multiplier
-    position.x -= speed * dt;
+    // Get the actual speed considering slow motion ability
+    double effectiveSpeed = speed;
+    if (gameRef.currentAbility == AbilityType.slowMotion) {
+      effectiveSpeed *= 0.5; // Half speed during slow motion
+    }
+
+    position.x -= effectiveSpeed * dt;
 
     if (position.x + size.x < 0) {
       removeFromParent();
     }
-
-    super.update(dt); // Important to call super.update for animation
+    super.update(dt);
   }
 
   // Add method to update speed during gameplay

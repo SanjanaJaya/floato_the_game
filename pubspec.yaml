@@ -77,6 +77,10 @@ flutter:
     - assets/images/tutorial/tutorial1.png
     - assets/images/tutorial/tutorial2.png
     - assets/images/tutorial/tutorial3.png
+    - assets/images/abilities/double_score.png
+    - assets/images/abilities/invincibility.png
+    - assets/images/abilities/slow_motion.png
+    - assets/images/abilities/rapid_fire.png
 
 
 

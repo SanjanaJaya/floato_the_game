@@ -7,6 +7,8 @@ import 'package:floato_the_game/components/missile.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
 import 'package:floato_the_game/audio_manager.dart';
+import 'package:floato_the_game/special_ability.dart';
+import 'package:floato_the_game/components/ability_indicator.dart';
 
 class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRef<floato> {
   final int rocketType;
@@ -32,6 +34,9 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
   );
 
   double velocity = 0;
+
+  // Add invincibility check
+  bool get isInvincible => gameRef.currentAbility == AbilityType.invincibility;
 
   @override
   FutureOr<void> onLoad() async {
@@ -141,6 +146,16 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
 
   @override
   void update(double dt) {
+    // Add this at the start of your update method
+    if (gameRef.currentAbility == AbilityType.rapidFire && rocketType == 0) {
+      // Skye can shoot when rapid fire is active
+      if (canShoot) {
+        _createMissile();
+        canShoot = false;
+        cooldownTimer = 0;
+      }
+    }
+
     if (isDragging) {
       // Move toward target position with smooth interpolation
       final direction = targetPosition - position;
@@ -182,6 +197,10 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
+
+    // Skip collision if invincible
+    if (isInvincible) return;
+
     if (other is Ground || other is Building) {
       gameRef.gameOver();
     }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
@@ -12,6 +13,7 @@ import 'package:floato_the_game/components/enemy_plane.dart';
 import 'package:floato_the_game/components/missile.dart';
 import 'package:floato_the_game/components/explosion.dart';
 import 'package:floato_the_game/components/coin_manager.dart';
+import 'package:floato_the_game/components/ability_indicator.dart';
 import 'package:floato_the_game/coin_display.dart';
 import 'package:floato_the_game/coin.dart';
 import 'package:floato_the_game/constants.dart';
@@ -20,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'shared_preferences_helper.dart';
 import 'menu_screen.dart';
 import 'audio_manager.dart';
+import 'special_ability.dart';
 
 class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDetection {
   late Rocket rocket;
@@ -54,6 +57,14 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   int _maxEnemyPlanes = 6;
   int _maxBuildings = 10;
   int _maxMissiles = 8;
+
+  // Ability system variables
+  Timer? _abilityTimer;
+  AbilityType? currentAbility;
+  double _abilityDuration = 0;
+
+  // Add this to the floato class
+  double get abilityDuration => _abilityDuration;
 
   @override
   FutureOr<void> onLoad() async {
@@ -93,6 +104,8 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     // Add pause button overlay
     overlays.add('pauseButton');
 
+    add(AbilityIndicator());
+
     // Check if tutorial is needed
     bool needsTutorial = await PreferencesHelper.hasTutorialBeenSeen();
     if (!needsTutorial) {
@@ -124,6 +137,16 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     }
   }
 
+  void checkAbilityCollisions() {
+    final abilities = children.whereType<SpecialAbility>().toList();
+    for (final ability in abilities) {
+      if (rocket.toRect().overlaps(ability.toRect())) {
+        activateAbility(ability.type);
+        ability.removeFromParent();
+      }
+    }
+  }
+
   void showCountdown() {
     showingCountdown = true;
     pauseEngine();
@@ -136,10 +159,67 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     _audioManager.playSfx('go.wav');
   }
 
+  void spawnRandomAbility() {
+    if (currentAbility != null) return; // Don't spawn if ability is active
+
+    final random = Random();
+    if (random.nextDouble() < 0.01) { // 1% chance per frame
+      final abilityType = AbilityType.values[random.nextInt(AbilityType.values.length)];
+      final yPos = random.nextDouble() * (size.y - 100) + 50;
+
+      final ability = SpecialAbility(
+        position: Vector2(size.x, yPos),
+        type: abilityType,
+      );
+      add(ability);
+    }
+  }
+
+  void activateAbility(AbilityType type) {
+    currentAbility = type;
+    _audioManager.playSfx('ability_collected.wav');
+
+    // Set duration based on ability type
+    switch (type) {
+      case AbilityType.doubleScore:
+        _abilityDuration = 10.0;
+        break;
+      case AbilityType.invincibility:
+        _abilityDuration = 8.0;
+        break;
+      case AbilityType.slowMotion:
+        _abilityDuration = 12.0;
+        break;
+      case AbilityType.rapidFire:
+        _abilityDuration = 15.0;
+        break;
+    }
+
+    _abilityTimer = Timer(_abilityDuration, onTick: () {
+      currentAbility = null;
+      _abilityTimer = null;
+    });
+  }
+
+  void updateAbilityTimer(double dt) {
+    if (_abilityTimer != null) {
+      _abilityTimer!.update(dt);
+      _abilityDuration -= dt;
+    }
+  }
+
   @override
   void update(double dt) {
     if (!isGameOver && !isPaused) {
+      spawnRandomAbility();
+      updateAbilityTimer(dt);
       checkCoinCollisions();
+      checkAbilityCollisions();
+
+      // Apply slow motion effect if active
+      if (currentAbility == AbilityType.slowMotion) {
+        dt *= 0.5; // Slow time to half speed
+      }
 
       final levelThreshold = _getCurrentLevelThreshold();
 
@@ -269,7 +349,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     final isTapInShootZone = shootZone.contains(Offset(touchPosition.x, touchPosition.y));
 
     if (isTapInShootZone) {
-      if (rocket.rocketType > 0) {
+      if (rocket.rocketType > 0 || currentAbility == AbilityType.rapidFire) {
         rocket.forcedShoot();
       }
     } else {
@@ -303,7 +383,10 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   void incrementScore([int points = 1]) {
     final previousLevel = _getCurrentLevelThreshold();
 
-    score += points;
+    // Apply score multiplier if double score ability is active
+    final multiplier = currentAbility == AbilityType.doubleScore ? 2 : 1;
+    score += points * multiplier;
+
     scoreText.text = 'Score: $score';
 
     final newLevel = _getCurrentLevelThreshold();
@@ -361,7 +444,14 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   }
 
   double getEnemySpeedMultiplier() {
-    return difficultyLevels[_getCurrentLevelThreshold()]?['enemySpeedMultiplier'] ?? 1.0;
+    double baseMultiplier = difficultyLevels[_getCurrentLevelThreshold()]?['enemySpeedMultiplier'] ?? 1.0;
+
+    // Apply slow motion effect if active
+    if (currentAbility == AbilityType.slowMotion) {
+      baseMultiplier *= 0.5; // Half speed during slow motion
+    }
+
+    return baseMultiplier;
   }
 
   double getEnemyPlaneSpeed(int planeType) {
@@ -420,6 +510,11 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   }
 
   void gameOver() {
+    // If invincibility is active, prevent game over
+    if (currentAbility == AbilityType.invincibility) {
+      return;
+    }
+
     if (isGameOver) return;
 
     isGameOver = true;
@@ -602,6 +697,11 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     score = 0;
     isGameOver = false;
 
+    // Reset ability state
+    currentAbility = null;
+    _abilityTimer = null;
+    _abilityDuration = 0;
+
     scoreText.text = 'Score: 0';
     coinDisplay.text = 'Coins: $coins'; // Update coin display with current coins
 
@@ -616,6 +716,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     children.whereType<Missile>().forEach((missile) => missile.removeFromParent());
     children.whereType<Explosion>().forEach((explosion) => explosion.removeFromParent());
     children.whereType<Coin>().forEach((coin) => coin.removeFromParent());
+    children.whereType<SpecialAbility>().forEach((ability) => ability.removeFromParent());
 
     updateDifficultySettings();
     _audioManager.resumeBackgroundMusic();
