@@ -179,7 +179,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     currentAbility = type;
     _audioManager.playSfx('ability_collected.wav');
 
-    // Set duration based on ability type
     switch (type) {
       case AbilityType.doubleScore:
         _abilityDuration = 10.0;
@@ -192,12 +191,25 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
         break;
       case AbilityType.rapidFire:
         _abilityDuration = 15.0;
+        // Reset shooting cooldown for all rockets during rapid fire
+        if (rocket.rocketType == 0) {
+          rocket.shootingCooldown = 0.1; // Very fast for Skye
+        } else {
+          rocket.shootingCooldown = 0.2; // Fast for other rockets too
+        }
+        rocket.canShoot = true; // Make sure we can shoot immediately
         break;
     }
 
     _abilityTimer = Timer(_abilityDuration, onTick: () {
+      // Clean up when ability expires
       currentAbility = null;
       _abilityTimer = null;
+      // Reset cooldowns
+      rocket.shootingCooldown = 0.5;
+      if (rocket.rocketType == 0) {
+        rocket.canShoot = false;
+      }
     });
   }
 

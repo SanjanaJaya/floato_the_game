@@ -13,20 +13,24 @@ import 'package:floato_the_game/components/ability_indicator.dart';
 class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRef<floato> {
   final int rocketType;
   double cooldownTimer = 0;
-  final double shootingCooldown = 0.5; // 0.5 seconds between shots
+  double shootingCooldown = 0.5; // Made non-final so we can modify it
   bool canShoot = true;
   final AudioManager _audioManager = AudioManager();
 
   // Variables for drag-based movement
   bool isDragging = false;
   Vector2 targetPosition = Vector2.zero();
-  double movementSpeed = 200.0; // Speed at which rocket moves toward target position
+  double movementSpeed = 200.0;
 
   // Boundaries for movement
-  double minY = 0;  // Top of screen
-  double maxY = 0;  // Will be set based on ground height in onLoad
-  double minX = 80; // Left boundary
-  double maxX = 0;  // Will be set based on screen width in onLoad
+  double minY = 0;
+  double maxY = 0;
+  double minX = 80;
+  double maxX = 0;
+
+  // Rapid fire controls
+  Timer? _rapidFireTimer;
+  double _rapidFireInterval = 0.2; // How often to shoot during rapid fire
 
   Rocket({this.rocketType = 0}) : super(
       position: Vector2(rocketStartX, rocketStartY),
@@ -35,19 +39,14 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
 
   double velocity = 0;
 
-  // Add invincibility check
   bool get isInvincible => gameRef.currentAbility == AbilityType.invincibility;
 
   @override
   FutureOr<void> onLoad() async {
-    // Load the sprite sheet
     final spriteSheet = await gameRef.images.load(rocketImages[rocketType]);
-
-    // Create sprites from the sprite sheet
-    // Your sprite sheet is 6000x800 with 6 frames (each 1000x800)
     final spriteSize = Vector2(1000, 800);
     final sprites = List.generate(
-      6, // Number of frames
+      6,
           (i) => Sprite(
         spriteSheet,
         srcPosition: Vector2(i * spriteSize.x, 0),
@@ -55,124 +54,134 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
       ),
     );
 
-    // Create and play the animation
     animation = SpriteAnimation.spriteList(
       sprites,
-      stepTime: 0.1, // Adjust this value to control animation speed
+      stepTime: 0.1,
     );
 
     add(RectangleHitbox());
-
-    // Initialize boundaries based on game size
     maxX = gameRef.size.x - size.x;
     maxY = gameRef.size.y - groundHeight - size.y;
-
-    // Initialize target position to current position
     targetPosition = position.clone();
-
-    // Debug print to verify rocket type
     print('Rocket initialized with type: $rocketType');
   }
 
-  // Traditional flap method - kept for backward compatibility
   void flap() {
     velocity = jumpStrength;
   }
 
-  // Method to start dragging
   void startDrag(Vector2 dragPosition) {
     isDragging = true;
     updateTargetPosition(dragPosition);
   }
 
-  // Method to update position during drag
   void updateDragPosition(Vector2 dragPosition) {
     if (isDragging) {
       updateTargetPosition(dragPosition);
     }
   }
 
-  // Method to stop dragging
   void stopDrag() {
     isDragging = false;
   }
 
-  // Update target position with constraints
   void updateTargetPosition(Vector2 newPosition) {
     targetPosition.x = newPosition.x.clamp(minX, maxX);
     targetPosition.y = newPosition.y.clamp(minY, maxY);
   }
 
   void shoot() {
-    // Debug print when shoot is called
-    print('Regular shoot called, canShoot: $canShoot, rocketType: $rocketType');
+    if (!canShoot) return;
 
-    // Rocket 1 can't shoot
-    if (rocketType == 0 || !canShoot) return;
+    // Check if we can shoot based on rocket type and abilities
+    if (rocketType == 0 && gameRef.currentAbility != AbilityType.rapidFire) return;
 
     _createMissile();
   }
 
-  // New method to force shoot, always creating a missile
   void forcedShoot() {
-    // Debug print when forced shoot is called
-    print('Forced shoot called, rocketType: $rocketType');
-
-    // Rocket 1 can't shoot
-    if (rocketType == 0) return;
-
+    // Allow shooting for any rocket type
     _createMissile();
   }
 
-  // Extract missile creation logic to avoid duplication
   void _createMissile() {
-    // Create a missile at rocket position
+    // For rapid fire, all rockets should shoot
+    final isRapidFireActive = gameRef.currentAbility == AbilityType.rapidFire;
+
+    // Determine missile properties
+    final missileType = rocketType;
+    double missileSpeed = missileSpeeds[rocketType];
+    int missileDamage = missileDamages[rocketType];
+
+    // Apply rapid fire modifiers
+    if (isRapidFireActive) {
+      missileSpeed *= 1.5;  // 50% faster during rapid fire
+      missileDamage *= 2;   // Double damage during rapid fire
+
+      // Make sure Skye has non-zero values during rapid fire
+      if (rocketType == 0) {
+        // Give Skye a base damage during rapid fire if it was 0
+        if (missileDamage == 0) missileDamage = 15;
+        // Give Skye a base speed during rapid fire if it was 0
+        if (missileSpeed == 0) missileSpeed = 250;
+      }
+    }
+
+    // Create missile at the correct position
     final missile = Missile(
       position: Vector2(position.x + size.x/2, position.y + size.y/2),
-      rocketType: rocketType,
-      speed: missileSpeeds[rocketType],
-      damage: missileDamages[rocketType],
+      rocketType: missileType,
+      speed: missileSpeed,
+      damage: missileDamage,
     );
 
     gameRef.add(missile);
-
-    // Let the missile play its own sound when loaded
-    // We don't need to play sound here as it's done in missile.onLoad()
-
-    // Set cooldown
     canShoot = false;
     cooldownTimer = 0;
   }
 
+  void _activateRapidFire() {
+    // Clear any existing timer
+    _rapidFireTimer?.stop();
+
+    // Create a new timer for automatic firing during rapid fire
+    _rapidFireTimer = Timer(
+        _rapidFireInterval,
+        onTick: () {
+          if (gameRef.currentAbility == AbilityType.rapidFire) {
+            forcedShoot();
+          } else {
+            _rapidFireTimer?.stop();
+          }
+        },
+        repeat: true
+    );
+  }
+
   @override
   void update(double dt) {
-    // Add this at the start of your update method
-    if (gameRef.currentAbility == AbilityType.rapidFire && rocketType == 0) {
-      // Skye can shoot when rapid fire is active
-      if (canShoot) {
-        _createMissile();
-        canShoot = false;
-        cooldownTimer = 0;
-      }
+    // Check if rapid fire was just activated
+    if (gameRef.currentAbility == AbilityType.rapidFire && _rapidFireTimer == null) {
+      _activateRapidFire();
+    }
+
+    // Update rapid fire timer if active
+    if (_rapidFireTimer != null) {
+      _rapidFireTimer!.update(dt);
     }
 
     if (isDragging) {
-      // Move toward target position with smooth interpolation
       final direction = targetPosition - position;
-      if (direction.length > 5) {  // Only move if we're more than 5 pixels away
+      if (direction.length > 5) {
         direction.normalize();
         position += direction * movementSpeed * dt;
-
-        // Clamp position to boundaries
         position.x = position.x.clamp(minX, maxX);
         position.y = position.y.clamp(minY, maxY);
       }
     } else {
-      // Apply gravity when not being dragged
       velocity += gravity * dt;
       position.y += velocity * dt;
 
-      // Keep rocket within bounds
       if (position.y < minY) {
         position.y = minY;
         velocity = 0;
@@ -183,7 +192,6 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
       }
     }
 
-    // Handle shooting cooldown
     if (!canShoot) {
       cooldownTimer += dt;
       if (cooldownTimer >= shootingCooldown) {
@@ -191,14 +199,12 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
       }
     }
 
-    super.update(dt); // Don't forget this line to update the animation
+    super.update(dt);
   }
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-
-    // Skip collision if invincible
     if (isInvincible) return;
 
     if (other is Ground || other is Building) {

@@ -5,14 +5,11 @@ import 'package:floato_the_game/components/enemy_plane.dart';
 import 'package:floato_the_game/components/explosion.dart';
 import 'package:floato_the_game/game.dart';
 
-
 class Missile extends SpriteComponent with CollisionCallbacks, HasGameRef<floato> {
   final int rocketType;
   final double speed;
   final int damage;
   bool _initialized = false;
-
-  // Add creation time field for object management
   final DateTime creationTime = DateTime.now();
 
   Missile({
@@ -22,46 +19,36 @@ class Missile extends SpriteComponent with CollisionCallbacks, HasGameRef<floato
     required this.damage,
   }) : super(
     position: position,
-    size: Vector2(30, 15), // Default size, can be adjusted based on missile type
-  ) {
-    // Print debug info on creation
-    print('Creating missile for rocket type: $rocketType, speed: $speed, damage: $damage');
-  }
+    size: rocketType == 0 ? Vector2(20, 10) : Vector2(30, 15), // Smaller missiles for Skye
+  );
 
   @override
   FutureOr<void> onLoad() async {
     try {
-      // Load missile sprite based on rocket type
-      final missileIndex = rocketType;
-      print('Loading missile${missileIndex}.png');
-      sprite = await Sprite.load('missile${missileIndex}.png');
+      // Load basic missile for Skye (type 0)
+      if (rocketType == 0) {
+        sprite = await Sprite.load('basic_missile.png'); // Add this asset
+      }
+      // Load specialized missiles for other rockets
+      else {
+        sprite = await Sprite.load('missile$rocketType.png');
+      }
 
-      // Add collision detection
       add(RectangleHitbox());
-
       _initialized = true;
-      print('Missile loaded successfully');
     } catch (e) {
       print('Error loading missile: $e');
+      removeFromParent();
     }
   }
 
   @override
   void update(double dt) {
-    if (!_initialized) {
-      print('Warning: Updating missile before initialization');
-      return;
-    }
-
-    // Move missile forward
+    if (!_initialized) return;
     position.x += speed * dt;
-
-    // Remove missile if it goes off screen
     if (position.x > gameRef.size.x) {
-      print('Missile went off screen, removing');
       removeFromParent();
     }
-
     super.update(dt);
   }
 
@@ -70,21 +57,22 @@ class Missile extends SpriteComponent with CollisionCallbacks, HasGameRef<floato
     super.onCollision(intersectionPoints, other);
 
     if (other is EnemyPlane) {
-      print('Missile hit enemy plane');
-      // Apply damage to enemy plane
+      // Ensure damage is applied
       other.takeDamage(damage);
 
-      // Create explosion at impact point
-      final explosion = Explosion(
-        position: Vector2(position.x, position.y),
-        size: Vector2(50, 50),
+      // Add explosion at the collision point
+      final explosionPos = Vector2(
+        (intersectionPoints.first.x + intersectionPoints.last.x) / 2,
+        (intersectionPoints.first.y + intersectionPoints.last.y) / 2,
       );
-      gameRef.add(explosion);
 
-      // Remove missile after hit
+      gameRef.add(Explosion(
+        position: explosionPos,
+        size: Vector2(50, 50),
+      ));
+
+      // Remove missile after hitting a plane
       removeFromParent();
-
-      // No explosion sound handling needed here
     }
   }
 }
