@@ -1,12 +1,14 @@
 import 'package:floato_the_game/tutorial_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'game.dart';
 import 'audio_manager.dart';
 import 'shared_preferences_helper.dart';
 import 'constants.dart';
 import 'countdown_overlay.dart';
 import 'bird_unlock_notification.dart';
+import 'language_manager.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -18,6 +20,7 @@ class MenuScreen extends StatefulWidget {
 class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateMixin {
   bool showCredits = false;
   bool showRocketSelection = false;
+  bool _isSinhala = false;
   final AudioManager _audioManager = AudioManager();
 
   // Animation controller for rocket hover effect
@@ -60,6 +63,16 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     super.dispose();
   }
 
+  // Add this method to toggle between languages
+  void _toggleLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isSinhala = !_isSinhala;
+      LanguageManager.changeLanguage(_isSinhala ? LanguageManager.sinhala : LanguageManager.english);
+      prefs.setBool('isSinhala', _isSinhala);
+    });
+  }
+
   Future<void> _loadSavedData() async {
     highScore = await PreferencesHelper.getHighScore();
     highestLevel = await PreferencesHelper.getHighestLevel();
@@ -68,15 +81,15 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     selectedRocket = await PreferencesHelper.getSelectedRocket();
 
     if (highestLevel >= 700) {
-      levelName = 'Level 5';
+      levelName = LanguageManager.getText('level5');
     } else if (highestLevel >= 450) {
-      levelName = 'Level 4';
+      levelName = LanguageManager.getText('level4');
     } else if (highestLevel >= 250) {
-      levelName = 'Level 3';
+      levelName = LanguageManager.getText('level3');
     } else if (highestLevel >= 100) {
-      levelName = 'Level 2';
+      levelName = LanguageManager.getText('level2');
     } else {
-      levelName = 'Level 1';
+      levelName = LanguageManager.getText('level1');
     }
 
     setState(() {});
@@ -101,6 +114,34 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                   ? buildRocketSelectionContent()
                   : buildMenuContent()),
             ),
+            // Language toggle button
+            Positioned(
+              top: 40,
+              left: 20,
+              child: IconButton(
+                icon: Text(
+                  _isSinhala ? 'EN' : 'SI',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onPressed: _toggleLanguage,
+                padding: const EdgeInsets.all(10),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(
+                    Colors.black.withOpacity(0.5),
+                  ),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Audio button
             Positioned(
               top: 40,
               right: 20,
@@ -169,7 +210,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
           child: Column(
             children: [
               Text(
-                'HIGH SCORE: $highScore',
+                '${LanguageManager.getText('highScore')}: $highScore',
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -194,7 +235,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               ),
               const SizedBox(height: 4),
               Text(
-                'HIGHEST LEVEL: $levelName',
+                '${LanguageManager.getText('highestLevel')}: $levelName',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -255,9 +296,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                   ),
                   elevation: 5,
                 ),
-                child: const Text(
-                  'Start Game',
-                  style: TextStyle(
+                child: Text(
+                  LanguageManager.getText('startGame'),
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -279,9 +320,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                   ),
                   elevation: 5,
                 ),
-                child: const Text(
-                  'Select Bird',
-                  style: TextStyle(
+                child: Text(
+                  LanguageManager.getText('selectBird'),
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -303,9 +344,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                   ),
                   elevation: 5,
                 ),
-                child: const Text(
-                  'Credits',
-                  style: TextStyle(
+                child: Text(
+                  LanguageManager.getText('credits'),
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -338,79 +379,79 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            'CREDITS',
-            style: TextStyle(
+          Text(
+            LanguageManager.getText('credits').toUpperCase(),
+            style: const TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.bold,
               color: Colors.amber,
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Main Developer',
-            style: TextStyle(
+          Text(
+            LanguageManager.getText('mainDeveloper'),
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
-          const Text(
-            'Imesh Sanjana',
-            style: TextStyle(
+          Text(
+            LanguageManager.getText('Imesh Sanjana'),
+            style: const TextStyle(
               fontSize: 18,
               color: Colors.white,
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Graphics and Illustrations',
-            style: TextStyle(
+          Text(
+            LanguageManager.getText('graphicsAndIllustrations'),
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
-          const Text(
-            'Nethsara Werasooriya',
-            style: TextStyle(
+          Text(
+            LanguageManager.getText('Nethsara Werasooriya'),
+            style: const TextStyle(
               fontSize: 18,
               color: Colors.white,
             ),
           ),
-          const Text(
-            'Anjana Herath',
-            style: TextStyle(
+          Text(
+            LanguageManager.getText('Anjana Herath'),
+            style: const TextStyle(
               fontSize: 18,
               color: Colors.white,
             ),
           ),
-          const Text(
-            'Nethmina Medagedara',
-            style: TextStyle(
+          Text(
+            LanguageManager.getText('Nethmina Medagedara'),
+            style: const TextStyle(
               fontSize: 18,
               color: Colors.white,
             ),
           ),
-          const Text(
-            'Dinuwara Wijerathne',
-            style: TextStyle(
+          Text(
+            LanguageManager.getText('Dinuwara Wijerathne'),
+            style: const TextStyle(
               fontSize: 18,
               color: Colors.white,
             ),
           ),
           const SizedBox(height: 30),
-          const Text(
-            'Audio Effects & Music',
-            style: TextStyle(
+          Text(
+            LanguageManager.getText('audioEffectsAndMusic'),
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
-          const Text(
-            'Kavindu Heshan',
-            style: TextStyle(
+          Text(
+            LanguageManager.getText('Kavindu Heshan'),
+            style: const TextStyle(
               fontSize: 18,
               color: Colors.white,
             ),
@@ -436,9 +477,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               ),
               elevation: 5,
             ),
-            child: const Text(
-              'Back',
-              style: TextStyle(
+            child: Text(
+              LanguageManager.getText('back'),
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -469,9 +510,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            'SELECT BIRD',
-            style: TextStyle(
+          Text(
+            LanguageManager.getText('selectBird').toUpperCase(),
+            style: const TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.bold,
               color: Colors.amber,
@@ -531,7 +572,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            'Not enough coins! Need ${birdUnlockCosts[index]! - coins} more',
+                            '${LanguageManager.getText('notEnoughCoins')}! ${LanguageManager.getText('need')} ${birdUnlockCosts[index]! - coins} ${LanguageManager.getText('more')}',
                             style: const TextStyle(color: Colors.white),
                           ),
                           backgroundColor: Colors.red,
@@ -590,7 +631,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                           child: Column(
                             children: [
                               Text(
-                                rocketNames[index],
+                                LanguageManager.getText('bird${index}Name'),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 14,
@@ -602,7 +643,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
                                   child: Text(
-                                    '${birdUnlockCosts[index]} coins',
+                                    '${birdUnlockCosts[index]} ${LanguageManager.getText('coins')}',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 12,
@@ -635,9 +676,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               ),
               elevation: 5,
             ),
-            child: const Text(
-              'Back',
-              style: TextStyle(
+            child: Text(
+              LanguageManager.getText('back'),
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -712,9 +753,9 @@ class PauseMenu extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'PAUSED',
-              style: TextStyle(
+            Text(
+              LanguageManager.getText('paused').toUpperCase(),
+              style: const TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
                 color: Colors.amber,
@@ -736,9 +777,9 @@ class PauseMenu extends StatelessWidget {
                     ),
                     elevation: 5,
                   ),
-                  child: const Text(
-                    'Resume',
-                    style: TextStyle(
+                  child: Text(
+                    LanguageManager.getText('resume'),
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -763,9 +804,9 @@ class PauseMenu extends StatelessWidget {
                     ),
                     elevation: 5,
                   ),
-                  child: const Text(
-                    'Quit',
-                    style: TextStyle(
+                  child: Text(
+                    LanguageManager.getText('quit'),
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,

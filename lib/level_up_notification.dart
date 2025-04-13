@@ -1,6 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
-import 'package:flame/components.dart';
+import 'language_manager.dart';
 
 class LevelUpNotification extends PositionComponent with HasGameRef {
   final String levelName;
@@ -28,8 +28,8 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
 
     final welcomeText = TextPainter(
       text: TextSpan(
-        text: 'Welcome to $environmentName!',
-        style: const TextStyle(
+        text: '${LanguageManager.getText('welcomeTo')} $environmentName!',
+        style: TextStyle(
           color: Colors.cyan,
           fontSize: 28,
           fontWeight: FontWeight.bold,
@@ -42,13 +42,15 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
           ],
         ),
       ),
-      textDirection: TextDirection.ltr,
+      textDirection: LanguageManager.currentLanguage == LanguageManager.sinhala
+          ? TextDirection.rtl
+          : TextDirection.ltr,
     )..layout();
 
     final levelText = TextPainter(
       text: TextSpan(
-        text: '$levelName REACHED!\n$levelRange',
-        style: const TextStyle(
+        text: '$levelName ${LanguageManager.getText('levelReached')}\n$levelRange',
+        style: TextStyle(
           color: Colors.amber,
           fontSize: 32,
           fontWeight: FontWeight.bold,
@@ -61,7 +63,9 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
           ],
         ),
       ),
-      textDirection: TextDirection.ltr,
+      textDirection: LanguageManager.currentLanguage == LanguageManager.sinhala
+          ? TextDirection.rtl
+          : TextDirection.ltr,
     )..layout();
 
     welcomeText.paint(

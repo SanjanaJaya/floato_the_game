@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:floato_the_game/constants.dart';
+import 'language_manager.dart';
 
 class BirdUnlockNotification extends StatefulWidget {
   final Function onClose;
@@ -41,8 +42,6 @@ class _BirdUnlockNotificationState extends State<BirdUnlockNotification>
 
     // Make animation repeat back and forth
     _animationController.repeat(reverse: true);
-
-
   }
 
   @override
@@ -75,9 +74,9 @@ class _BirdUnlockNotificationState extends State<BirdUnlockNotification>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'NEW BIRD UNLOCKED!',
-              style: TextStyle(
+            Text(
+              LanguageManager.getText('newBirdUnlocked'),
+              style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.amber,
@@ -141,9 +140,9 @@ class _BirdUnlockNotificationState extends State<BirdUnlockNotification>
                 ),
                 elevation: 5,
               ),
-              child: const Text(
-                'Awesome!',
-                style: TextStyle(
+              child: Text(
+                LanguageManager.getText('awesome'),
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
