@@ -26,7 +26,8 @@ class AudioManager {
       await FlameAudio.audioCache.loadAll([
         'menu_music.wav',
         'crash.wav',
-        // 'explosion.wav', - Remove explosion sound from loading
+        'ability_collected.wav',
+
       ]);
 
       // Configure audio cache for better performance
@@ -86,6 +87,7 @@ class AudioManager {
   void playCrashSound() {
     playSfx('crash.wav');
   }
+
 
   // Explosion sound method - now empty to prevent freezing issues
   void playExplosionSound({int currentLevel = 1}) {
