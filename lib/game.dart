@@ -63,6 +63,12 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   AbilityType? currentAbility;
   double _abilityDuration = 0;
 
+  // Performance monitoring
+  final List<double> _fpsHistory = [];
+  static const int _fpsHistoryMaxSize = 30; // Track last 30 frames
+  static const double _lowFpsThreshold = 40.0; // FPS below this is considered low performance
+  int _lastPerformanceCheckTime = 0;
+
   // Add this to the floato class
   double get abilityDuration => _abilityDuration;
 
@@ -94,10 +100,8 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     add(scoreText);
 
     // Initialize coin display with image
-    // In game.dart's onLoad method
     coinDisplay = CoinDisplay();
     add(coinDisplay);
-// Remove the immediate updateCoins call, as it will happen automatically in update()
 
     // Define control zones
     dragZone = Rect.fromLTWH(0, 0, size.x * 0.66, size.y);
@@ -125,17 +129,23 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   void incrementCoins(int amount) {
     coins += amount;
     PreferencesHelper.saveCoins(coins);
-    coinDisplay.updateCoins(coins); // Use the new update method
+    coinDisplay.updateCoins(coins);
   }
 
   void checkCoinCollisions() {
     final coins = children.whereType<Coin>().toList();
+    int coinsCollected = 0;
+
     for (final coin in coins) {
       if (rocket.toRect().overlaps(coin.toRect())) {
-        _audioManager.playSfx('coin_collect.wav');
         incrementCoins(coin.value);
         coin.collect();
+        coinsCollected++;
       }
+    }
+
+    if (coinsCollected > 0) {
+      _audioManager.playSfx('coin_collect.wav');
     }
   }
 
@@ -225,10 +235,30 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   @override
   void update(double dt) {
     if (!isGameOver && !isPaused) {
+      // Performance monitoring - add FPS to history
+      if (dt > 0) {
+        final fps = 1 / dt;
+        _fpsHistory.add(fps);
+        if (_fpsHistory.length > _fpsHistoryMaxSize) {
+          _fpsHistory.removeAt(0);
+        }
+
+        // Check performance and update audio settings when needed
+        final now = DateTime.now().millisecondsSinceEpoch;
+        if (now - _lastPerformanceCheckTime > 2000) { // Check every 2 seconds
+          _lastPerformanceCheckTime = now;
+          _updatePerformanceSettings();
+        }
+      }
+
+      // Process any pending audio events
+      _audioManager.processSoundQueue();
+
       spawnRandomAbility();
       updateAbilityTimer(dt);
-      checkCoinCollisions();
-      checkAbilityCollisions();
+
+      // Batch collision checks
+      _batchCollisionChecks();
 
       // Apply slow motion effect if active
       if (currentAbility == AbilityType.slowMotion) {
@@ -251,8 +281,67 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     super.update(dt);
   }
 
+  // Batch collision checks instead of checking each frame
+  void _batchCollisionChecks() {
+    // Check if we're in a performance-critical situation
+    final isPerformanceCritical = _isPerformanceCritical();
+
+    // Use time-based throttling for collision checks
+    final now = DateTime.now().millisecondsSinceEpoch;
+
+    // Skip frequent checks during performance issues
+    if (isPerformanceCritical && now % 3 != 0) {
+      return;
+    }
+
+    checkCoinCollisions();
+    checkAbilityCollisions();
+  }
+
+  // Check if game is in a performance-critical state
+  bool _isPerformanceCritical() {
+    if (_fpsHistory.length < 5) return false;
+
+    // Calculate average recent FPS
+    double sum = 0;
+    for (int i = _fpsHistory.length - 5; i < _fpsHistory.length; i++) {
+      sum += _fpsHistory[i];
+    }
+    final avgFps = sum / 5;
+
+    return avgFps < _lowFpsThreshold;
+  }
+
+  // Update performance settings based on current conditions
+  void _updatePerformanceSettings() {
+    if (_fpsHistory.length < 10) return;
+
+    // Calculate average FPS
+    double sum = 0;
+    for (final fps in _fpsHistory) {
+      sum += fps;
+    }
+    final avgFps = sum / _fpsHistory.length;
+
+    // Update audio manager performance mode
+    final shouldBeInLowPerfMode = avgFps < _lowFpsThreshold;
+
+    if (shouldBeInLowPerfMode != _audioManager.isLowPerfMode) {
+      _audioManager.setLowPerformanceMode(shouldBeInLowPerfMode);
+      print('Audio performance mode changed: Low Performance = $shouldBeInLowPerfMode (FPS: $avgFps)');
+    }
+  }
+
   void manageGameObjects() {
     final levelThreshold = _getCurrentLevelThreshold();
+    final isPerformanceCritical = _isPerformanceCritical();
+
+    // Make more aggressive limits during performance issues
+    if (isPerformanceCritical) {
+      _maxEnemyPlanes = (_maxEnemyPlanes * 0.7).floor();
+      _maxBuildings = (_maxBuildings * 0.7).floor();
+      _maxMissiles = (_maxMissiles * 0.7).floor();
+    }
 
     // Set object limits based on current level
     if (levelThreshold >= 600) {
@@ -271,6 +360,13 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       _maxEnemyPlanes = 7;
       _maxBuildings = 10;
       _maxMissiles = 8;
+    }
+
+    // Further reduce during extreme performance issues
+    if (isPerformanceCritical) {
+      _maxEnemyPlanes = max(3, _maxEnemyPlanes);
+      _maxBuildings = max(5, _maxBuildings);
+      _maxMissiles = max(3, _maxMissiles);
     }
 
     // Limit enemy planes
@@ -384,6 +480,9 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       isPaused = true;
       overlays.add('pauseMenu');
       _audioManager.stopBackgroundMusic();
+
+      // Clear audio queues when paused
+      _audioManager.processSoundQueue();
     }
   }
 
@@ -744,8 +843,15 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
   @override
   void onRemove() {
-    _audioManager.stopBackgroundMusic();
+    // Ensure audio resources are properly disposed
+    _audioManager.dispose();
     super.onRemove();
+  }
+
+  // Add this method to clean up resources when game is paused for a long time
+  void cleanupResources() {
+    _fpsHistory.clear();
+    _audioManager.dispose();
   }
 
   void toggleAudio() {
