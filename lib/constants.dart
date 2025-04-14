@@ -131,60 +131,60 @@ const List<int> enemyPlaneHealths = [25, 35, 45, 55, 65, 80, 50, 40];
 
 // Optimized difficulty levels with smoother progression and better performance scaling
 const Map<int, Map<String, dynamic>> difficultyLevels = {
-  0: { // Level 1 (0-79 points) - Beginner friendly
-    'buildingInterval': 3.25,
-    'buildingGap': 320.0,
-    'enemySpawnInterval': 3.5,
-    'groundScrollingSpeed': 90.0,
-    'enemySpeedMultiplier': 0.9, // Slightly slower than original
+  0: { // Level 1 (0-79 points) - Very beginner friendly
+    'buildingInterval': 4.0,
+    'buildingGap': 350.0,
+    'enemySpawnInterval': 4.5,
+    'groundScrollingSpeed': 75.0,
+    'enemySpeedMultiplier': 0.7, // Much slower than original
     'levelName': 'Level 1',
     'levelRange': '0-80',
     'backgroundImage': 'background_level1.jpg',
     'groundImage': 'ground_level1.jpg',
     'environmentName': 'Forest',
   },
-  80: { // Level 2 (80-199 points) - Gentle introduction to challenge
-    'buildingInterval': 2.75,
-    'buildingGap': 300.0,
-    'enemySpawnInterval': 2.8,
-    'groundScrollingSpeed': 110.0,
-    'enemySpeedMultiplier': 1.0, // Base speed
+  80: { // Level 2 (80-199 points) - Easy challenge
+    'buildingInterval': 3.5,
+    'buildingGap': 325.0,
+    'enemySpawnInterval': 3.8,
+    'groundScrollingSpeed': 90.0,
+    'enemySpeedMultiplier': 0.8, // Slower than original
     'levelName': 'Level 2',
     'levelRange': '80-200',
     'backgroundImage': 'background_level2.jpg',
     'groundImage': 'ground_level2.jpg',
     'environmentName': 'Desert',
   },
-  200: { // Level 3 (200-349 points) - Moderate challenge
-    'buildingInterval': 2.4,
-    'buildingGap': 280.0,
-    'enemySpawnInterval': 2.5,
-    'groundScrollingSpeed': 130.0,
-    'enemySpeedMultiplier': 1.2, // 20% faster
+  200: { // Level 3 (200-349 points) - Mild challenge
+    'buildingInterval': 3.0,
+    'buildingGap': 300.0,
+    'enemySpawnInterval': 3.2,
+    'groundScrollingSpeed': 105.0,
+    'enemySpeedMultiplier': 0.9, // Slightly slower
     'levelName': 'Level 3',
     'levelRange': '200-350',
     'backgroundImage': 'background_level3.jpg',
     'groundImage': 'ground_level3.jpg',
     'environmentName': 'Arctic',
   },
-  350: { // Level 4 (350-599 points) - Advanced challenge
-    'buildingInterval': 2.0,
-    'buildingGap': 260.0,
-    'enemySpawnInterval': 2.0,
-    'groundScrollingSpeed': 160.0,
-    'enemySpeedMultiplier': 1.4, // 40% faster
+  350: { // Level 4 (350-599 points) - Moderate challenge
+    'buildingInterval': 2.7,
+    'buildingGap': 285.0,
+    'enemySpawnInterval': 2.8,
+    'groundScrollingSpeed': 120.0,
+    'enemySpeedMultiplier': 1.0, // Base speed
     'levelName': 'Level 4',
     'levelRange': '350-600',
     'backgroundImage': 'background_level4.jpg',
     'groundImage': 'ground_level4.jpg',
     'environmentName': 'Volcano',
   },
-  600: { // Level 5 (600+ points) - Expert level with performance optimizations
-    'buildingInterval': 1.75, // Increased from 1.5 to reduce CPU load
-    'buildingGap': 240.0,
-    'enemySpawnInterval': 1.8, // Increased from 1.5 to reduce enemy count
-    'groundScrollingSpeed': 180.0, // Reduced to keep the game playable
-    'enemySpeedMultiplier': 1.6, // Reduced from 1.7 for better playability
+  600: { // Level 5 (600+ points) - Challenging but more manageable
+    'buildingInterval': 2.5,
+    'buildingGap': 270.0,
+    'enemySpawnInterval': 2.5,
+    'groundScrollingSpeed': 135.0,
+    'enemySpeedMultiplier': 1.1, // Only 10% faster than base
     'levelName': 'Level 5',
     'levelRange': '600+',
     'backgroundImage': 'background_level5.jpg',

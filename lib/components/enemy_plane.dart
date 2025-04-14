@@ -106,7 +106,7 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
       _isDestroyed = true; // Mark as destroyed to prevent double processing
 
       // Plane is destroyed, give player points
-      gameRef.incrementScore(3);
+      gameRef.incrementScore(100);
 
       // Play explosion sound only when plane is completely destroyed
       _audioManager.playSfx('explosion.ogg');
