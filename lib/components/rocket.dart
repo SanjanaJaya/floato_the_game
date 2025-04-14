@@ -144,6 +144,14 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
     // Clear any existing timer
     _rapidFireTimer?.stop();
 
+    // Reset shooting cooldown for all rockets during rapid fire
+    if (rocketType == 0) {
+      shootingCooldown = 0.1; // Very fast for Skye
+    } else {
+      shootingCooldown = 0.2; // Fast for other rockets too
+    }
+    canShoot = true; // Make sure we can shoot immediately
+
     // Create a new timer for automatic firing during rapid fire
     _rapidFireTimer = Timer(
         _rapidFireInterval,
@@ -152,6 +160,8 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
             forcedShoot();
           } else {
             _rapidFireTimer?.stop();
+            // Reset to normal cooldown when ability ends
+            shootingCooldown = rocketType == 0 ? 0.5 : 0.5;
           }
         },
         repeat: true
@@ -160,13 +170,18 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
 
   @override
   void update(double dt) {
+    // Apply slow motion effect to dt if needed
+    if (gameRef.currentAbility == AbilityType.slowMotion) {
+      dt *= 0.5;
+    }
+
     // Check if rapid fire was just activated
     if (gameRef.currentAbility == AbilityType.rapidFire && _rapidFireTimer == null) {
       _activateRapidFire();
     }
 
     // Update rapid fire timer if active
-    if (_rapidFireTimer != null) {
+    if (_rapidFireTimer != null && gameRef.currentAbility == AbilityType.rapidFire) {
       _rapidFireTimer!.update(dt);
     }
 
