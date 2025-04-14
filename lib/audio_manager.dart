@@ -10,19 +10,28 @@ class AudioManager {
   bool _isMuted = false;
   bool _isPlaying = false;
   bool _isInitialized = false;
-  bool _isLowPerfMode = false; // For automatic performance management
+  bool _isLowPerfMode = false;
 
-  // Sound throttling maps for various sounds
+  // List of all audio files to preload
+  static const List<String> _audioFiles = [
+    'menu_music.ogg',
+    'crash.ogg',
+    'ability_collected.ogg',
+    'coin_collect.ogg',
+    'go.ogg',
+    'explosion.ogg'
+  ];
+
+  // Sound throttling and priority maps
   final Map<String, int> _lastSoundTimes = {};
   static const Map<String, int> _soundThrottleMs = {
     'crash.ogg': 500,
     'ability_collected.ogg': 300,
-    'coin_collect.ogg': 150, // Increased from 100ms to reduce frequency
+    'coin_collect.ogg': 150,
     'explosion.ogg': 200,
-    'go.ogg': 0, // Critical sound - no throttling
+    'go.ogg': 0,
   };
 
-  // Audio priority levels (higher number = higher priority)
   static const Map<String, int> _soundPriority = {
     'crash.ogg': 10,
     'ability_collected.ogg': 8,
@@ -33,59 +42,65 @@ class AudioManager {
 
   // Cache for preloaded audio files
   final List<String> _preloadedFiles = [];
-
-  // Sound request queue for batching audio events
   final Queue<String> _soundQueue = Queue<String>();
   int _lastSoundProcessingTime = 0;
-  static const int _soundBatchingIntervalMs = 50; // Process sounds in batches
-  static const int _maxQueuedSounds = 5; // Limit queue size
+  static const int _soundBatchingIntervalMs = 50;
+  static const int _maxQueuedSounds = 5;
 
-  // Counters for analytics
+  // Stats
   int _totalSoundsPlayed = 0;
   int _skippedSounds = 0;
 
   bool get isMuted => _isMuted;
   bool get isInitialized => _isInitialized;
   bool get isLowPerfMode => _isLowPerfMode;
+  List<String> get preloadedFiles => List.unmodifiable(_preloadedFiles);
 
-  // Initialize audio
+  // Initialize audio with all files
   Future<void> init() async {
     if (_isInitialized) return;
 
     try {
-      print('Initializing AudioManager...');
-
-      // List of audio files to preload
-      final audioFiles = [
-        'menu_music.ogg',
-        'crash.ogg',
-        'ability_collected.ogg',
-        'coin_collect.ogg',
-        'go.ogg',
-        'explosion.ogg' // Added to preload list
-      ];
-
-      // Configure audio cache for better performance
+      print('[AudioManager] Initializing with ${_audioFiles.length} audio files...');
       FlameAudio.audioCache.prefix = 'assets/audio/';
 
-
-      // Load audio files one by one to avoid overloading
-      for (final file in audioFiles) {
+      // Load all audio files sequentially to avoid overwhelming the system
+      for (final file in _audioFiles) {
         try {
           await FlameAudio.audioCache.load(file);
           _preloadedFiles.add(file);
+          print('[AudioManager] Successfully preloaded $file');
         } catch (e) {
-          print('Failed to preload $file: $e');
+          print('[AudioManager] Failed to preload $file: $e');
+          // Continue with other files even if one fails
         }
       }
 
       _isInitialized = true;
-      print('AudioManager initialized successfully with ${_preloadedFiles.length} audio files');
+      print('[AudioManager] Initialization complete. ${_preloadedFiles.length}/${_audioFiles.length} files loaded');
     } catch (e) {
-      print('Error initializing AudioManager: $e');
-      // Fallback to basic mode if initialization fails
+      print('[AudioManager] Critical initialization error: $e');
       _isInitialized = true;
       _isLowPerfMode = true;
+    }
+  }
+
+  // NEW METHOD: Play all preloaded sounds (for testing)
+  Future<void> playAllPreloadedSounds() async {
+    if (!_isInitialized) {
+      print('[AudioManager] Not initialized yet');
+      return;
+    }
+
+    print('[AudioManager] Playing all preloaded sounds...');
+
+    // Play each sound with a small delay between them
+    for (final file in _preloadedFiles) {
+      if (file == 'menu_music.ogg') continue; // Skip background music
+
+      print('[AudioManager] Playing $file');
+      _playSound(file);
+      await Future.delayed(const Duration(milliseconds: 500));
     }
   }
 
@@ -98,16 +113,14 @@ class AudioManager {
       FlameAudio.bgm.play('menu_music.ogg', volume: 0.7);
       FlameAudio.bgm.audioPlayer.setReleaseMode(ReleaseMode.loop);
       _isPlaying = true;
-      print('Background music started successfully');
     } catch (e) {
       print('Error playing background music: $e');
-      // Try again after a short delay
       Future.delayed(const Duration(seconds: 2), () {
         if (!_isPlaying && !_isMuted) {
           try {
             FlameAudio.bgm.play('menu_music.ogg', volume: 0.6);
             _isPlaying = true;
-          } catch (_) {} // Silently fail on second attempt
+          } catch (_) {}
         }
       });
     }
@@ -122,7 +135,6 @@ class AudioManager {
       _isPlaying = false;
     } catch (e) {
       print('Error stopping background music: $e');
-      // Force reset the playing state to avoid getting stuck
       _isPlaying = false;
     }
   }
@@ -147,8 +159,6 @@ class AudioManager {
         _soundQueue.remove(lowestPrioritySound);
         _soundQueue.add(fileName);
         _skippedSounds++;
-      } else {
-        _skippedSounds++;
       }
     }
 
@@ -170,7 +180,6 @@ class AudioManager {
     if (_soundQueue.length > 1) {
       final sortedSounds = _soundQueue.toList()
         ..sort((a, b) => _getSoundPriority(b).compareTo(_getSoundPriority(a)));
-
       _soundQueue.clear();
       _soundQueue.addAll(sortedSounds);
     }
@@ -187,8 +196,6 @@ class AudioManager {
       if (now - lastTime >= throttleTime) {
         _playSound(sound);
         processed++;
-      } else {
-        _skippedSounds++;
       }
     }
 
@@ -200,13 +207,16 @@ class AudioManager {
 
   // Actually play the sound
   void _playSound(String fileName) {
-    if (!_preloadedFiles.contains(fileName)) {
-      return; // Skip non-preloaded sounds
-    }
+    if (!_preloadedFiles.contains(fileName)) return;
 
     try {
       final volume = _isLowPerfMode ? 0.6 : 0.8;
-      FlameAudio.play(fileName, volume: volume);
+      if (fileName == 'menu_music.ogg') {
+        // Handle background music differently
+        FlameAudio.bgm.play(fileName, volume: volume);
+      } else {
+        FlameAudio.play(fileName, volume: volume);
+      }
       _lastSoundTimes[fileName] = DateTime.now().millisecondsSinceEpoch;
       _totalSoundsPlayed++;
     } catch (e) {
@@ -240,6 +250,26 @@ class AudioManager {
     playSfx('crash.ogg');
   }
 
+  // Play ability collected sound
+  void playAbilityCollectedSound() {
+    playSfx('ability_collected.ogg');
+  }
+
+  // Play coin collect sound
+  void playCoinCollectSound() {
+    playSfx('coin_collect.ogg');
+  }
+
+  // Play explosion sound
+  void playExplosionSound() {
+    playSfx('explosion.ogg');
+  }
+
+  // Play go sound
+  void playGoSound() {
+    playSfx('go.ogg');
+  }
+
   // Toggle mute/unmute
   void toggleMute() {
     _isMuted = !_isMuted;
@@ -249,7 +279,6 @@ class AudioManager {
         FlameAudio.bgm.stop();
         _isPlaying = false;
       }
-      // Clear any pending sound effects
       _soundQueue.clear();
     } else {
       playBackgroundMusic();
@@ -267,7 +296,6 @@ class AudioManager {
   void setLowPerformanceMode(bool enabled) {
     _isLowPerfMode = enabled;
     if (_isLowPerfMode) {
-      // Clear pending sounds when switching to low perf mode
       _soundQueue.clear();
     }
   }
@@ -282,7 +310,7 @@ class AudioManager {
     };
   }
 
-  // Clear audio caches - call this when game is exited or paused for a long time
+  // Clear audio caches
   void dispose() {
     stopBackgroundMusic();
     _lastSoundTimes.clear();

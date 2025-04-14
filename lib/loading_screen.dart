@@ -1,7 +1,7 @@
-// loading_screen.dart
 import 'package:flutter/material.dart';
 import 'package:floato_the_game/menu_screen.dart';
 import 'package:floato_the_game/language_manager.dart';
+import 'package:floato_the_game/audio_manager.dart';
 import 'dart:math' show Random;
 
 class LoadingScreen extends StatefulWidget {
@@ -19,8 +19,8 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
   final Random _random = Random();
   late AnimationController _tipAnimationController;
   late Animation<double> _tipFadeAnimation;
+  late AudioManager _audioManager;
 
-  // List of game tips to display randomly - now using localized strings
   final List<String> _gameTips = [
     LanguageManager.getText('tipCollectAbilities'),
     LanguageManager.getText('tipTapToShoot'),
@@ -34,11 +34,9 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-
-    // Choose one random tip for this loading session
+    _audioManager = AudioManager();
     _currentTip = _getRandomTip();
 
-    // Setup animation for tip
     _tipAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -51,14 +49,11 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
       ),
     );
 
-    // Start tip animation after a small delay
     Future.delayed(const Duration(milliseconds: 300), () {
       _tipAnimationController.forward();
     });
 
-    if (widget.onInitialization != null) {
-      _startLoading();
-    }
+    _startLoading();
   }
 
   @override
@@ -67,25 +62,35 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
     super.dispose();
   }
 
-  // Get a random tip from the list
   String _getRandomTip() {
     return _gameTips[_random.nextInt(_gameTips.length)];
   }
 
-  void _startLoading() async {
-    // Simulate progress updates
+  Future<void> _preloadResources() async {
+    // Start audio preloading
+    final audioFuture = _audioManager.init();
+
+    // Simulate progress updates while loading
     const totalSteps = 10;
     for (int i = 0; i <= totalSteps; i++) {
       await Future.delayed(const Duration(milliseconds: 200));
-      setState(() {
-        _progressValue = i / totalSteps;
-      });
+      if (mounted) {
+        setState(() => _progressValue = i / totalSteps);
+      }
     }
 
-    // Perform actual initialization
-    await widget.onInitialization!();
+    // Wait for audio to finish loading
+    await audioFuture;
 
-    // Navigate to menu
+    // Run additional initialization if provided
+    if (widget.onInitialization != null) {
+      await widget.onInitialization!();
+    }
+  }
+
+  void _startLoading() async {
+    await _preloadResources();
+
     if (mounted) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const MenuScreen()),
@@ -106,10 +111,7 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
         child: SafeArea(
           child: Column(
             children: [
-              // Spacer to push content to bottom
               const Spacer(),
-
-              // Tip container with beautiful design
               FadeTransition(
                 opacity: _tipFadeAnimation,
                 child: Container(
@@ -132,15 +134,12 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
                   ),
                   child: Column(
                     children: [
-                      // Tip icon
                       const Icon(
                         Icons.lightbulb_outline,
                         color: Colors.amber,
                         size: 32,
                       ),
                       const SizedBox(height: 12),
-
-                      // Tip divider
                       Container(
                         height: 2,
                         width: 40,
@@ -155,8 +154,6 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
                         ),
                       ),
                       const SizedBox(height: 12),
-
-                      // Tip text
                       Text(
                         _currentTip,
                         textAlign: TextAlign.center,
@@ -171,10 +168,7 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
                   ),
                 ),
               ),
-
               const SizedBox(height: 40),
-
-              // Loading indicator and text - now using localized string
               Text(
                 LanguageManager.getText('loadingGame'),
                 style: const TextStyle(
@@ -190,10 +184,7 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
                   ],
                 ),
               ),
-
               const SizedBox(height: 10),
-
-              // Progress percentage
               Text(
                 '${(_progressValue * 100).toInt()}%',
                 style: const TextStyle(
@@ -209,10 +200,7 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
                   ],
                 ),
               ),
-
               const SizedBox(height: 15),
-
-              // Progress bar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: Container(
@@ -237,7 +225,6 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
                   ),
                 ),
               ),
-
               const SizedBox(height: 40),
             ],
           ),
