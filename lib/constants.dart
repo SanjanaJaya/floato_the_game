@@ -122,13 +122,14 @@ const List<String> enemyPlaneImages = [
   'enemy_plane7.png',
   'enemy_plane8.png',
   'enemy_plane9.png',
+  'enemy_plane10.png',
 ];
 
 // Adjusted base speeds for different plane types to be more balanced
-const List<double> enemyPlaneSpeeds = [130, 150, 120, 170, 100, 80, 90, 110, 100];
+const List<double> enemyPlaneSpeeds = [130, 150, 120, 170, 100, 80, 90, 110, 100, 140];
 
 // Adjusted health values to create better balance with new missile damages
-const List<int> enemyPlaneHealths = [25, 35, 45, 55, 65, 80, 50, 40, 85];
+const List<int> enemyPlaneHealths = [25, 35, 45, 55, 65, 80, 50, 40, 85, 100];
 
 // Optimized difficulty levels with smoother progression and better performance scaling
 const Map<int, Map<String, dynamic>> difficultyLevels = {
