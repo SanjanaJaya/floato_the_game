@@ -1,6 +1,7 @@
 // loading_screen.dart
 import 'package:flutter/material.dart';
 import 'package:floato_the_game/menu_screen.dart';
+import 'package:floato_the_game/language_manager.dart';
 import 'dart:math' show Random;
 
 class LoadingScreen extends StatefulWidget {
@@ -19,23 +20,15 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
   late AnimationController _tipAnimationController;
   late Animation<double> _tipFadeAnimation;
 
-  // List of game tips to display randomly
+  // List of game tips to display randomly - now using localized strings
   final List<String> _gameTips = [
-    'Collect blue gems for extra power!',
-    'Double tap to perform a special move!',
-    'Watch out for red spikes - they\'re dangerous!',
-    'Hidden paths might contain valuable treasures!',
-    'Hold down to charge your jump for reaching higher platforms!',
-    'Bubble shields protect you from one enemy attack!',
-    'Some walls can be broken with a power attack!',
-    'Enemies flash red when they\'re about to attack!',
-    'Golden coins increase your score multiplier!',
-    'Look for secret underwater passages!',
-    'Save your power-ups for boss battles!',
-    'Green healing orbs restore your health!',
-    'Activate checkpoints to respawn safely!',
-    'Combo moves deal more damage than regular attacks!',
-    'Time slowdown power-ups help with difficult jumps!',
+    LanguageManager.getText('tipCollectAbilities'),
+    LanguageManager.getText('tipTapToShoot'),
+    LanguageManager.getText('tipWatchHelicopter'),
+    LanguageManager.getText('tipHigherLevels'),
+    LanguageManager.getText('tipCollectCoins'),
+    LanguageManager.getText('tipSkyeAbility'),
+    LanguageManager.getText('tipDifferentMissiles'),
   ];
 
   @override
@@ -181,10 +174,10 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
 
               const SizedBox(height: 40),
 
-              // Loading indicator and text
-              const Text(
-                'Loading Game',
-                style: TextStyle(
+              // Loading indicator and text - now using localized string
+              Text(
+                LanguageManager.getText('loadingGame'),
+                style: const TextStyle(
                   fontSize: 20,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
