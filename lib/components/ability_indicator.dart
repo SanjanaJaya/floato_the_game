@@ -16,7 +16,7 @@ class AbilityIndicator extends PositionComponent with HasGameRef<floato> {
   Future<void> onLoad() async {
     position = Vector2(
       gameRef.size.x / 2 - 150, // Centered horizontally with 300 width
-      20, // 20 pixels from top
+      38, // 20 pixels from top
     );
     size = Vector2(300, 50); // Slightly larger for better visibility
     priority = 10;

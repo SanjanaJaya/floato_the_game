@@ -93,9 +93,11 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     scoreText = ScoreText();
     add(scoreText);
 
-    // Initialize coin display
+    // Initialize coin display with image
+    // In game.dart's onLoad method
     coinDisplay = CoinDisplay();
     add(coinDisplay);
+// Remove the immediate updateCoins call, as it will happen automatically in update()
 
     // Define control zones
     dragZone = Rect.fromLTWH(0, 0, size.x * 0.66, size.y);
@@ -123,7 +125,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   void incrementCoins(int amount) {
     coins += amount;
     PreferencesHelper.saveCoins(coins);
-    coinDisplay.text = 'Coins: $coins'; // Update the coin display
+    coinDisplay.updateCoins(coins); // Use the new update method
   }
 
   void checkCoinCollisions() {
@@ -131,7 +133,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     for (final coin in coins) {
       if (rocket.toRect().overlaps(coin.toRect())) {
         _audioManager.playSfx('coin_collect.wav');
-        incrementCoins(coin.value); // Use incrementCoins to ensure proper updates
+        incrementCoins(coin.value);
         coin.collect();
       }
     }
@@ -715,7 +717,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     _abilityDuration = 0;
 
     scoreText.text = 'Score: 0';
-    coinDisplay.text = 'Coins: $coins'; // Update coin display with current coins
+    coinDisplay.updateCoins(coins); // Update coin display with current coins
 
     if (isPaused) {
       isPaused = false;
