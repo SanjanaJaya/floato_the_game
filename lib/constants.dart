@@ -203,8 +203,19 @@ const Map<String, int> coinTypes = {
 };
 const Map<int, int> birdUnlockCosts = {
   0: 0,    // First bird is free
-  1: 150,  // Second bird costs 100 coins
-  2: 500,  // Third bird costs 250 coins
-  3: 1500,  // Fourth bird costs 500 coins
-  4: 5000, // Fifth bird costs 1000 coins
+  1: 250,  // Second bird costs 100 coins
+  2: 1500,  // Third bird costs 250 coins
+  3: 2500,  // Fourth bird costs 500 coins
+  4: 7500, // Fifth bird costs 1000 coins
 };
+// Vehicle constants
+const double vehicleWidth = 300;
+const double vehicleHeight = 120;
+const double vehicleSpeed = 120; // Constant speed for all vehicles
+const double vehicleSpawnInterval = 8.0; // Base spawn interval in seconds
+
+// Add this to your constants for vehicle images
+// You can expand this list in the future without changing the code
+const List<String> vehicleImages = [
+  'vehicle1.png',
+];

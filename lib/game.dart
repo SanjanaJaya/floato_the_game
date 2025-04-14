@@ -18,6 +18,8 @@ import 'package:floato_the_game/coin_display.dart';
 import 'package:floato_the_game/coin.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/level_up_notification.dart';
+import 'package:floato_the_game/components/vehicle_manager.dart';
+import 'package:floato_the_game/vehicle.dart';
 import 'package:flutter/material.dart';
 import 'shared_preferences_helper.dart';
 import 'menu_screen.dart';
@@ -52,6 +54,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   // Coin related variables
   int coins = 0;
   late CoinManager coinManager;
+  late VehicleManager vehicleManager;
 
   // Performance management
   int _maxEnemyPlanes = 6;
@@ -92,6 +95,9 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
     ground = Ground();
     add(ground);
+
+    vehicleManager = VehicleManager();
+    add(vehicleManager);
 
     buildingManager = BuildingManager();
     add(buildingManager);
@@ -407,6 +413,17 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       explosions.sort((a, b) => a.creationTime.compareTo(b.creationTime));
       for (int i = 0; i < explosions.length - 8; i++) {
         explosions[i].removeFromParent();
+      }
+    }
+
+    // Limit vehicles
+    final vehicles = children.whereType<Vehicle>().toList();
+    if (vehicles.length > 3) {
+      vehicles.sort((a, b) => b.position.x.compareTo(a.position.x));
+      for (int i = 3; i < vehicles.length; i++) {
+        if (vehicles[i].position.x < -vehicleWidth || vehicles[i].position.x > size.x + vehicleWidth) {
+          vehicles[i].removeFromParent();
+        }
       }
     }
   }
@@ -830,6 +847,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     children.whereType<Explosion>().forEach((explosion) => explosion.removeFromParent());
     children.whereType<Coin>().forEach((coin) => coin.removeFromParent());
     children.whereType<SpecialAbility>().forEach((ability) => ability.removeFromParent());
+    children.whereType<Vehicle>().forEach((vehicle) => vehicle.removeFromParent());
 
     updateDifficultySettings();
     _audioManager.resumeBackgroundMusic();
