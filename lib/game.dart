@@ -145,7 +145,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     }
 
     if (coinsCollected > 0) {
-      _audioManager.playSfx('coin_collect.wav');
+      _audioManager.playSfx('coin_collect.ogg');
     }
   }
 
@@ -168,7 +168,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   void startGameAfterCountdown() {
     showingCountdown = false;
     resumeEngine();
-    _audioManager.playSfx('go.wav');
+    _audioManager.playSfx('go.ogg');
   }
 
   void spawnRandomAbility() {
@@ -189,7 +189,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
   void activateAbility(AbilityType type) {
     currentAbility = type;
-    _audioManager.playSfx('ability_collected.wav');
+    _audioManager.playSfx('ability_collected.ogg');
 
     switch (type) {
       case AbilityType.doubleScore:
@@ -640,7 +640,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       overlays.remove('pauseMenu');
     }
 
-    _audioManager.playSfx('crash.wav');
+    _audioManager.playSfx('crash.ogg');
     _audioManager.stopBackgroundMusic();
 
     showDialog(

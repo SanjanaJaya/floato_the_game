@@ -7,6 +7,7 @@ import 'package:floato_the_game/components/explosion.dart';
 import 'package:floato_the_game/constants.dart';
 import 'package:floato_the_game/game.dart';
 import 'package:floato_the_game/special_ability.dart';
+import 'package:floato_the_game/audio_manager.dart';
 
 class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGameRef<floato> {
   final int planeType;
@@ -15,6 +16,7 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
   int maxHealth;
   late HealthBar3D healthBar;
   bool _isDestroyed = false;
+  final AudioManager _audioManager = AudioManager();
 
   EnemyPlane({
     required Vector2 position,
@@ -106,6 +108,9 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
       // Plane is destroyed, give player points
       gameRef.incrementScore(3);
 
+      // Play explosion sound only when plane is completely destroyed
+      _audioManager.playSfx('explosion.ogg');
+
       // Create explosion at plane position
       final explosion = Explosion(
         position: Vector2(position.x + size.x/2, position.y + size.y/2),
@@ -114,7 +119,7 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
       gameRef.add(explosion);
 
       // Remove plane after a tiny delay to prevent audio stacking issues
-      Future.delayed(Duration(milliseconds: 10), () {
+      Future.delayed(Duration(milliseconds: 50), () {
         if (isMounted) {
           removeFromParent();
         }

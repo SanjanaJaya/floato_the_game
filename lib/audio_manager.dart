@@ -15,20 +15,20 @@ class AudioManager {
   // Sound throttling maps for various sounds
   final Map<String, int> _lastSoundTimes = {};
   static const Map<String, int> _soundThrottleMs = {
-    'crash.wav': 500,
-    'ability_collected.wav': 300,
-    'coin_collect.wav': 150, // Increased from 100ms to reduce frequency
-    'explosion.wav': 200,
-    'go.wav': 0, // Critical sound - no throttling
+    'crash.ogg': 500,
+    'ability_collected.ogg': 300,
+    'coin_collect.ogg': 150, // Increased from 100ms to reduce frequency
+    'explosion.ogg': 200,
+    'go.ogg': 0, // Critical sound - no throttling
   };
 
   // Audio priority levels (higher number = higher priority)
   static const Map<String, int> _soundPriority = {
-    'crash.wav': 10,
-    'ability_collected.wav': 8,
-    'coin_collect.wav': 3,
-    'explosion.wav': 7,
-    'go.wav': 10,
+    'crash.ogg': 10,
+    'ability_collected.ogg': 8,
+    'coin_collect.ogg': 3,
+    'explosion.ogg': 7,
+    'go.ogg': 10,
   };
 
   // Cache for preloaded audio files
@@ -57,12 +57,12 @@ class AudioManager {
 
       // List of audio files to preload
       final audioFiles = [
-        'menu_music.wav',
-        'crash.wav',
-        'ability_collected.wav',
-        'coin_collect.wav',
-        'go.wav',
-        'explosion.wav' // Added to preload list
+        'menu_music.ogg',
+        'crash.ogg',
+        'ability_collected.ogg',
+        'coin_collect.ogg',
+        'go.ogg',
+        'explosion.ogg' // Added to preload list
       ];
 
       // Configure audio cache for better performance
@@ -95,7 +95,7 @@ class AudioManager {
 
     try {
       FlameAudio.bgm.initialize();
-      FlameAudio.bgm.play('menu_music.wav', volume: 0.7);
+      FlameAudio.bgm.play('menu_music.ogg', volume: 0.7);
       FlameAudio.bgm.audioPlayer.setReleaseMode(ReleaseMode.loop);
       _isPlaying = true;
       print('Background music started successfully');
@@ -105,7 +105,7 @@ class AudioManager {
       Future.delayed(const Duration(seconds: 2), () {
         if (!_isPlaying && !_isMuted) {
           try {
-            FlameAudio.bgm.play('menu_music.wav', volume: 0.6);
+            FlameAudio.bgm.play('menu_music.ogg', volume: 0.6);
             _isPlaying = true;
           } catch (_) {} // Silently fail on second attempt
         }
@@ -237,7 +237,7 @@ class AudioManager {
 
   // Play crash sound with throttling
   void playCrashSound() {
-    playSfx('crash.wav');
+    playSfx('crash.ogg');
   }
 
   // Toggle mute/unmute

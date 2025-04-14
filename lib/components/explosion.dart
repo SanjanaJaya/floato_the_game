@@ -3,11 +3,13 @@ import 'package:flame/components.dart';
 import 'package:floato_the_game/game.dart';
 
 class Explosion extends SpriteAnimationComponent with HasGameRef<floato> {
-  final DateTime creationTime = DateTime.now(); // Add this line
+  final DateTime creationTime = DateTime.now();
+  final bool playSoundEffect;
 
   Explosion({
     required Vector2 position,
     required Vector2 size,
+    this.playSoundEffect = false,
   }) : super(
     position: position,
     size: size,
