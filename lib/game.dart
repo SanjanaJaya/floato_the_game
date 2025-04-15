@@ -410,12 +410,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       _maxMissiles = 8;
     }
 
-    // Further reduce during extreme performance issues
-    if (isPerformanceCritical) {
-      _maxEnemyPlanes = max(3, _maxEnemyPlanes);
-      _maxBuildings = max(5, _maxBuildings);
-      _maxMissiles = max(3, _maxMissiles);
-    }
 
     // Limit enemy planes
     final enemies = children.whereType<EnemyPlane>().toList();

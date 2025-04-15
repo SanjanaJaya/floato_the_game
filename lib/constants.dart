@@ -53,13 +53,15 @@ const List<int> missileDamages = [
 const double groundHeight = 100;
 const double groundScrollingSpeed = 100;
 
-// Background and ground images for each level
+// Background and ground images for each level - added 2 new levels
 const List<String> backgroundImages = [
   'background_level1.jpg',
   'background_level2.jpg',
   'background_level3.jpg',
   'background_level4.jpg',
   'background_level5.jpg',
+  'background_level6.jpg',
+  'background_level7.jpg',
 ];
 
 const List<String> groundImages = [
@@ -68,14 +70,19 @@ const List<String> groundImages = [
   'ground_level3.jpg',
   'ground_level4.jpg',
   'ground_level5.jpg',
+  'ground_level6.jpg',
+  'ground_level7.jpg',
 ];
 
+// Added 2 new level names
 const List<String> levelNames = [
   'Anuradhapura',
   'Jaffna',
   'Galle',
   'Nuwara Eliya',
-  'Sigiriya'
+  'Sigiriya',
+  'Kandy',
+  'Colombo'
 ];
 
 // Building constants
@@ -129,9 +136,10 @@ const List<String> enemyPlaneImages = [
 const List<double> enemyPlaneSpeeds = [130, 150, 120, 170, 100, 80, 90, 110, 100, 140];
 
 // Adjusted health values to create better balance with new missile damages
-const List<int> enemyPlaneHealths = [25, 35, 45, 55, 65, 80, 50, 40, 85, 100];
+const List<int> enemyPlaneHealths = [175, 185, 195, 200, 245, 260, 300, 320, 175, 320];
 
-// Optimized difficulty levels with smoother progression and better performance scaling
+// Optimized difficulty levels with smoother progression and two new levels
+// Plus a mechanism for handling scores beyond 2000
 const Map<int, Map<String, dynamic>> difficultyLevels = {
   0: { // Level 1 (0-79 points) - Very beginner friendly
     'buildingInterval': 4.0,
@@ -146,7 +154,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'environmentName': 'Anuradhapura',
   },
   80: { // Level 2 (80-199 points) - Easy challenge
-    'buildingInterval': 3.5,
+    'buildingInterval': 3.2,
     'buildingGap': 325.0,
     'enemySpawnInterval': 3.2,
     'groundScrollingSpeed': 90.0,
@@ -158,7 +166,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'environmentName': 'Jaffna',
   },
   200: { // Level 3 (200-349 points) - Mild challenge
-    'buildingInterval': 3.0,
+    'buildingInterval': 2.8,
     'buildingGap': 300.0,
     'enemySpawnInterval': 2.7,
     'groundScrollingSpeed': 105.0,
@@ -170,7 +178,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'environmentName': 'Galle',
   },
   350: { // Level 4 (350-599 points) - Moderate challenge
-    'buildingInterval': 2.7,
+    'buildingInterval': 2.6,
     'buildingGap': 285.0,
     'enemySpawnInterval': 2.2,
     'groundScrollingSpeed': 120.0,
@@ -181,19 +189,56 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'groundImage': 'ground_level4.jpg',
     'environmentName': 'Nuwara Eliya',
   },
-  600: { // Level 5 (600+ points) - Challenging but more manageable
-    'buildingInterval': 2.5,
+  600: { // Level 5 (600-999 points) - Challenging but manageable
+    'buildingInterval': 2.4,
     'buildingGap': 270.0,
-    'enemySpawnInterval': 1.5,
+    'enemySpawnInterval': 1.6,
     'groundScrollingSpeed': 135.0,
-    'enemySpeedMultiplier': 1.1, // Only 10% faster than base
+    'enemySpeedMultiplier': 1.1, // 10% faster than base
     'levelName': 'Level 5',
-    'levelRange': '600+',
+    'levelRange': '600-1000',
     'backgroundImage': 'background_level5.jpg',
     'groundImage': 'ground_level5.jpg',
     'environmentName': 'Sigiriya',
   },
+  1000: { // Level 6 (1000-1499 points) - Hard challenge
+    'buildingInterval': 2.2,
+    'buildingGap': 250.0,
+    'enemySpawnInterval': 1.4,
+    'groundScrollingSpeed': 150.0,
+    'enemySpeedMultiplier': 1.2, // 20% faster than base
+    'levelName': 'Level 6',
+    'levelRange': '1000-1500',
+    'backgroundImage': 'background_level6.jpg',
+    'groundImage': 'ground_level6.jpg',
+    'environmentName': 'Kandy',
+  },
+  1500: { // Level 7 (1500-1999 points) - Expert challenge
+    'buildingInterval': 2.0,
+    'buildingGap': 230.0,
+    'enemySpawnInterval': 1.2,
+    'groundScrollingSpeed': 165.0,
+    'enemySpeedMultiplier': 1.3, // 30% faster than base
+    'levelName': 'Level 7',
+    'levelRange': '1500-2000',
+    'backgroundImage': 'background_level7.jpg',
+    'groundImage': 'ground_level7.jpg',
+    'environmentName': 'Colombo',
+  },
+  2000: { // Master level (2000+ points) - Extreme challenge for advanced players
+    'buildingInterval': 1.8,
+    'buildingGap': 220.0,
+    'enemySpawnInterval': 1.0,
+    'groundScrollingSpeed': 180.0,
+    'enemySpeedMultiplier': 1.4, // 40% faster than base
+    'levelName': 'Master Level',
+    'levelRange': '2000+',
+    'backgroundImage': 'background_level7.jpg', // Reuse Colombo background
+    'groundImage': 'ground_level7.jpg', // Reuse Colombo ground
+    'environmentName': 'Colombo Elite',
+  },
 };
+
 // Coin constants
 const double coinSize = 30;
 const double coinSpawnInterval = 2.0; // Spawn a coin every 2 seconds on average
@@ -202,13 +247,16 @@ const Map<String, int> coinTypes = {
   'silver': 4,
   'gold': 8,
 };
+
+// Updated bird unlock costs with balanced progression
 const Map<int, int> birdUnlockCosts = {
-  0: 0,    // First bird is free
-  1: 250,  // Second bird costs 100 coins
-  2: 1500,  // Third bird costs 250 coins
-  3: 2500,  // Fourth bird costs 500 coins
-  4: 7500, // Fifth bird costs 1000 coins
+  0: 0,     // First bird is free
+  1: 250,   // Second bird costs 250 coins
+  2: 1500,  // Third bird costs 1500 coins
+  3: 2500,  // Fourth bird costs 2500 coins
+  4: 7500,  // Fifth bird costs 7500 coins
 };
+
 // Vehicle constants
 const double vehicleWidth = 300;
 const double vehicleHeight = 120;
@@ -222,3 +270,56 @@ const List<String> vehicleImages = [
   'vehicle2.png',
   'vehicle3.png',
 ];
+
+// Function to get difficulty settings beyond defined thresholds
+// Add this function to handle scores above 2000
+Map<String, dynamic> getDifficultyForScore(int score) {
+  // Find the appropriate difficulty level based on score
+  int thresholdKey = 0;
+
+  for (int threshold in difficultyLevels.keys) {
+    if (score >= threshold) {
+      thresholdKey = threshold;
+    } else {
+      break;
+    }
+  }
+
+  // Get the base difficulty settings
+  Map<String, dynamic> settings = Map.from(difficultyLevels[thresholdKey]!);
+
+  // For scores beyond 2000, scale difficulty gradually
+  if (score > 2000) {
+    // Calculate scaling factor - increases as score grows, but at a diminishing rate
+    double scalingFactor = 1.0 + (score - 2000) / 4000; // Caps at 1.5x at 6000 points
+
+    // Apply scaling to difficulty parameters (limit to reasonable values)
+    settings['buildingInterval'] = max(1.5, settings['buildingInterval'] / scalingFactor);
+    settings['buildingGap'] = max(180.0, settings['buildingGap'] / scalingFactor);
+    settings['enemySpawnInterval'] = max(0.8, settings['enemySpawnInterval'] / scalingFactor);
+    settings['groundScrollingSpeed'] = min(250.0, settings['groundScrollingSpeed'] * scalingFactor);
+    settings['enemySpeedMultiplier'] = min(1.8, settings['enemySpeedMultiplier'] * sqrt(scalingFactor));
+
+    // Update level info
+    settings['levelName'] = 'Master Level';
+    settings['levelRange'] = '${2000}+';
+    settings['environmentName'] = 'Colombo Elite';
+  }
+
+  return settings;
+}
+
+// Helper function for getDifficultyForScore
+double max(double a, double b) {
+  return a > b ? a : b;
+}
+
+// Helper function for getDifficultyForScore
+double min(double a, double b) {
+  return a < b ? a : b;
+}
+
+// Helper function for getDifficultyForScore
+double sqrt(double x) {
+  return x * 0.5 + 0.5; // Simple approximation of square root curve
+}
