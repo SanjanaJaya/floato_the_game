@@ -188,7 +188,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
         Transform.translate(
           offset: Offset(0, _animation.value),
           child: Text(
-            LanguageManager.getText('gameTitle'),
+            LanguageManager.getText(''),
             style: const TextStyle(
               fontSize: 60,
               fontWeight: FontWeight.bold,

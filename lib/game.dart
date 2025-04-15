@@ -25,6 +25,7 @@ import 'shared_preferences_helper.dart';
 import 'menu_screen.dart';
 import 'audio_manager.dart';
 import 'special_ability.dart';
+import 'main.dart';
 
 class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDetection {
   late Rocket rocket;
@@ -691,10 +692,11 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     }
 
     _audioManager.stopBackgroundMusic();
-    // First clean up audio to prevent delays
     _audioManager.processSoundQueue();
-    // Then play crash sound
     _audioManager.playCrashSound();
+
+    // Show interstitial ad
+    AdManager.showInterstitialAd();
 
     showDialog(
       context: buildContext!,
