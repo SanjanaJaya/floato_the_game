@@ -74,24 +74,29 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
   }
 
   Future<void> _loadSavedData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _isSinhala = prefs.getBool('isSinhala') ?? false;
+    LanguageManager.changeLanguage(_isSinhala ? LanguageManager.sinhala : LanguageManager.english);
     highScore = await PreferencesHelper.getHighScore();
     highestLevel = await PreferencesHelper.getHighestLevel();
     coins = await PreferencesHelper.getCoins();
     unlockedRockets = await PreferencesHelper.getUnlockedRocketsCount();
     selectedRocket = await PreferencesHelper.getSelectedRocket();
-
-    if (highestLevel >= 700) {
+    if (highestLevel >= 1500) {
+      levelName = LanguageManager.getText('level7');
+    } else if (highestLevel >= 1000) {
+      levelName = LanguageManager.getText('level6');
+    } else if (highestLevel >= 600) {
       levelName = LanguageManager.getText('level5');
-    } else if (highestLevel >= 450) {
+    } else if (highestLevel >= 350) {
       levelName = LanguageManager.getText('level4');
-    } else if (highestLevel >= 250) {
+    } else if (highestLevel >= 200) {
       levelName = LanguageManager.getText('level3');
-    } else if (highestLevel >= 100) {
+    } else if (highestLevel >= 80) {
       levelName = LanguageManager.getText('level2');
     } else {
       levelName = LanguageManager.getText('level1');
     }
-
     setState(() {});
   }
 
@@ -182,9 +187,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
         const Spacer(flex: 2),
         Transform.translate(
           offset: Offset(0, _animation.value),
-          child: const Text(
-            '',
-            style: TextStyle(
+          child: Text(
+            LanguageManager.getText('gameTitle'),
+            style: const TextStyle(
               fontSize: 60,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -738,6 +743,9 @@ class PauseMenu extends StatelessWidget {
     return Center(
       child: Container(
         padding: const EdgeInsets.all(20),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.8, // Limit width to prevent overflow
+        ),
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.8),
           borderRadius: BorderRadius.circular(20),
@@ -753,17 +761,22 @@ class PauseMenu extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              LanguageManager.getText('paused').toUpperCase(),
-              style: const TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-                color: Colors.amber,
+            FittedBox( // This will scale down text if needed
+              fit: BoxFit.scaleDown,
+              child: Text(
+                LanguageManager.getText('paused').toUpperCase(),
+                style: TextStyle(
+                  fontSize: LanguageManager.currentLanguage == LanguageManager.sinhala ? 28 : 36,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.amber,
+                ),
               ),
             ),
             const SizedBox(height: 30),
-            Row(
-              mainAxisSize: MainAxisSize.min,
+            Wrap( // Changed from Row to Wrap for better responsiveness
+              alignment: WrapAlignment.center,
+              spacing: 20,
+              runSpacing: 20,
               children: [
                 ElevatedButton(
                   onPressed: () {
@@ -786,7 +799,6 @@ class PauseMenu extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 20),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pushReplacement(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 
 class LanguageManager {
   static const String english = 'en';
@@ -25,7 +26,7 @@ class LanguageManager {
       'Kavindu Heshan': 'Kavindu Heshan',
       'back': 'Back',
       'newBirdUnlocked': 'NEW BIRD UNLOCKED!',
-      'notEnoughCoins': 'notEnoughCoins',
+      'notEnoughCoins': 'Not Enough Coins',
       'need': 'need',
       'more': 'more',
       'awesome': 'Awesome!',
@@ -39,12 +40,33 @@ class LanguageManager {
       'tipCollectAbilities': 'Collect abilities for extra power!',
       'tipTapToShoot': 'Tap right side of screen to shoot!',
       'tipWatchHelicopter': 'Watch out for big helicopter dangerous!',
-      'tipHigherLevels': 'Higher levels wil unlock differen cities!',
+      'tipHigherLevels': 'Higher levels will unlock different cities!',
       'tipCollectCoins': 'Collect more coins to unlock more powerful birds!',
-      'tipSkyeAbility': 'Skyee can\'t shoot.But he can shoot whith rapid fire ability',
+      'tipSkyeAbility': 'Skye can\'t shoot. But he can shoot with rapid fire ability',
       'tipDifferentMissiles': 'All birds have different power missiles!',
       'loadingGame': 'Loading Game',
       'Score:': 'Score:',
+      'level1': 'Level 1',
+      'level2': 'Level 2',
+      'level3': 'Level 3',
+      'level4': 'Level 4',
+      'level5': 'Level 5',
+      'level6': 'Level 6',
+      'level7': 'Level 7',
+      'masterLevel': 'Master Level',
+      'coins': 'coins',
+      'paused': 'Paused',
+      'resume': 'Resume',
+      'quit': 'Quit',
+      // Environment names
+      'Anuradhapura': 'Anuradhapura',
+      'Jaffna': 'Jaffna',
+      'Galle': 'Galle',
+      'Nuwara Eliya': 'Nuwara Eliya',
+      'Sigiriya': 'Sigiriya',
+      'Kandy': 'Kandy',
+      'Colombo': 'Colombo',
+      'Colombo Elite': 'Colombo Elite',
     },
     sinhala: {
       'gameTitle': 'ෆ්ලෝටෝ',
@@ -83,15 +105,68 @@ class LanguageManager {
       'tipSkyeAbility': 'ස්කයිට වෙඩි තැබීමට නොහැක. නමුත් ඔහුට ඉක්මන් වෙඩි තැබීමේ හැකියාව සමඟ වෙඩි තැබිය හැකිය',
       'tipDifferentMissiles': 'සියලුම පක්ෂීන්ට විවිධ බලමය මිසයිල ඇත!',
       'loadingGame': 'ක්‍රීඩාව පූරණය වෙමින් පවතී',
-      'Score:': 'ලකුණු:'
+      'Score:': 'ලකුණු:',
+      'level1': 'මට්ටම 1',
+      'level2': 'මට්ටම 2',
+      'level3': 'මට්ටම 3',
+      'level4': 'මට්ටම 4',
+      'level5': 'මට්ටම 5',
+      'level6': 'මට්ටම 6',
+      'level7': 'මට්ටම 7',
+      'masterLevel': 'ප්‍රවීණ මට්ටම',
+      'coins': 'කාසි',
+      'paused': 'තාවකාලිකව නවතා ඇත',
+      'resume': 'දිගටම කරගෙන යන්න',
+      'quit': 'ඉවත්වන්න',
+      // Environment names in Sinhala
+      'Anuradhapura': 'අනුරාධපුර',
+      'Jaffna': 'යාපනය',
+      'Galle': 'ගාල්ල',
+      'Nuwara Eliya': 'නුවරඑළිය',
+      'Sigiriya': 'සීගිරිය',
+      'Kandy': 'මහනුවර',
+      'Colombo': 'කොළඹ',
+      'Colombo Elite': 'කොළඹ ප්‍රධාන',
     },
   };
 
+  // Get translated text for the given key
   static String getText(String key) {
-    return _localizedValues[currentLanguage]![key] ?? key;
+    return _localizedValues[currentLanguage]?[key] ?? key;
   }
 
+  // Change current language
   static void changeLanguage(String language) {
-    currentLanguage = language;
+    if (_localizedValues.containsKey(language)) {
+      currentLanguage = language;
+    }
+  }
+
+  // Get current text direction based on language
+  static TextDirection getTextDirection() {
+    return currentLanguage == sinhala ? TextDirection.rtl : TextDirection.ltr;
+  }
+
+  // Get a translated level name by level number
+  static String getLevelName(int levelNumber) {
+    if (levelNumber > 7) {
+      return getText('masterLevel');
+    } else {
+      return getText('level$levelNumber');
+    }
+  }
+
+  // Get translated environment name
+  static String getEnvironmentName(String englishName) {
+    return getText(englishName);
+  }
+
+  // Measure text width for layout adjustments
+  static double getTextWidth(String text, TextStyle style) {
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: getTextDirection(),
+    )..layout();
+    return textPainter.width;
   }
 }
