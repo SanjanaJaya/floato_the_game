@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
+import 'package:flutter/material.dart' show Color;
 import 'package:floato_the_game/components/buildinng.dart';
 import 'package:floato_the_game/components/ground.dart';
 import 'package:floato_the_game/components/missile.dart';
@@ -31,6 +34,19 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
   // Rapid fire controls
   Timer? _rapidFireTimer;
   double _rapidFireInterval = 0.2; // How often to shoot during rapid fire
+
+  // Add these new properties for glow effect
+  late SpriteComponent _glowEffect;
+  bool _glowActive = false;
+  final Map<AbilityType, Color> _abilityColors = {
+    AbilityType.doubleScore: const Color(0xFFFFD700), // Gold
+    AbilityType.invincibility: const Color(0xFF00FF00), // Green
+    AbilityType.slowMotion: const Color(0xFFADD8E6), // Light Blue
+    AbilityType.rapidFire: const Color(0xFFFF4500), // Orange-Red
+  };
+
+  // Effect controller for the pulsing effect
+  EffectController? _pulseEffectController;
 
   Rocket({this.rocketType = 0}) : super(
       position: Vector2(rocketStartX, rocketStartY),
@@ -64,6 +80,96 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
     maxY = gameRef.size.y - groundHeight - size.y;
     targetPosition = position.clone();
     print('Rocket initialized with type: $rocketType');
+
+    // Initialize glow effect (hidden by default)
+    _glowEffect = SpriteComponent(
+      sprite: await gameRef.loadSprite('glow_circle.png'), // You need to add this asset
+      size: size * 1.5,
+      anchor: Anchor.center,
+      position: size / 2,
+    )..opacity = 0.0;
+
+    add(_glowEffect);
+  }
+
+  // Add this new method to update the glow effect
+  void updateGlowEffect(AbilityType? ability) {
+    // Cancel any ongoing effects first by removing them
+    final effectsToRemove = _glowEffect.children.where((component) => component is OpacityEffect).toList();
+    for (final effect in effectsToRemove) {
+      _glowEffect.remove(effect);
+    }
+
+    if (ability == null) {
+      // Fade out glow when ability ends
+      _glowEffect.add(
+        OpacityEffect.to(
+          0.0,
+          EffectController(duration: 0.5),
+          onComplete: () {
+            _glowActive = false;
+            // Ensure opacity is actually 0
+            _glowEffect.opacity = 0.0;
+          },
+        ),
+      );
+    } else {
+      // Set color based on ability type
+      Color color;
+      switch (ability) {
+        case AbilityType.doubleScore:
+          color = const Color(0xFFFFD700); // Gold
+          break;
+        case AbilityType.invincibility:
+          color = const Color(0xFF00FF00); // Green
+          break;
+        case AbilityType.slowMotion:
+          color = const Color(0xFFADD8E6); // Light Blue
+          break;
+        case AbilityType.rapidFire:
+          color = const Color(0xFFFF4500); // Orange-Red
+          break;
+        default:
+          color = const Color(0xFFFFFFFF); // White as fallback
+      }
+
+      // Apply the color directly to the sprite's paint
+      if (_glowEffect.sprite != null) {
+        _glowEffect.sprite!.paint.colorFilter = ColorFilter.mode(
+            color,
+            BlendMode.srcATop
+        );
+      }
+
+      if (!_glowActive) {
+        _glowEffect.opacity = 0.0;
+
+        // First fade in the glow
+        _glowEffect.add(
+          OpacityEffect.to(
+            0.7,
+            EffectController(duration: 0.5),
+            onComplete: () {
+              // Then start pulsing effect after fade-in
+              _pulseEffectController = EffectController(
+                duration: 1.0,
+                reverseDuration: 1.0,
+                infinite: true,
+              );
+
+              _glowEffect.add(
+                OpacityEffect.to(
+                  0.4,
+                  _pulseEffectController!,
+                ),
+              );
+            },
+          ),
+        );
+
+        _glowActive = true;
+      }
+    }
   }
 
   void flap() {

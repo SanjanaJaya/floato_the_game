@@ -200,6 +200,9 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     currentAbility = type;
     _audioManager.playSfx('ability_collected.ogg');
 
+    // Update rocket's glow effect
+    rocket.updateGlowEffect(type);
+
     switch (type) {
       case AbilityType.doubleScore:
         _abilityDuration = 10.0;
@@ -231,6 +234,8 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       if (rocket.rocketType == 0) {
         rocket.canShoot = false;
       }
+      // Remove glow effect when ability ends
+      rocket.updateGlowEffect(null);
     });
   }
 
