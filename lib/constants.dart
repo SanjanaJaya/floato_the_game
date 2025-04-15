@@ -220,4 +220,5 @@ const double vehicleSpawnInterval = 8.0; // Base spawn interval in seconds
 const List<String> vehicleImages = [
   'vehicle1.png',
   'vehicle2.png',
+  'vehicle3.png',
 ];

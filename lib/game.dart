@@ -71,6 +71,8 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   static const int _fpsHistoryMaxSize = 30; // Track last 30 frames
   static const double _lowFpsThreshold = 40.0; // FPS below this is considered low performance
   int _lastPerformanceCheckTime = 0;
+  int _lastAudioProcessTime = 0;
+  static const int _audioProcessInterval = 100; // Process audio less frequently
 
   // Add this to the floato class
   double get abilityDuration => _abilityDuration;
@@ -255,15 +257,18 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
           _lastPerformanceCheckTime = now;
           _updatePerformanceSettings();
         }
-      }
 
-      // Process any pending audio events
-      _audioManager.processSoundQueue();
+        // Process audio queue less frequently
+        if (now - _lastAudioProcessTime > _audioProcessInterval) {
+          _audioManager.processSoundQueue();
+          _lastAudioProcessTime = now;
+        }
+      }
 
       spawnRandomAbility();
       updateAbilityTimer(dt);
 
-      // Batch collision checks
+      // Batch collision checks on a schedule
       _batchCollisionChecks();
 
       // Apply slow motion effect if active
@@ -318,16 +323,20 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     return avgFps < _lowFpsThreshold;
   }
 
-  // Update performance settings based on current conditions
+  // Update performance settings with improved audio handling
   void _updatePerformanceSettings() {
     if (_fpsHistory.length < 10) return;
 
-    // Calculate average FPS
+    // Calculate average FPS with more weight on recent frames
     double sum = 0;
-    for (final fps in _fpsHistory) {
-      sum += fps;
+    double weight = 0;
+    for (int i = 0; i < _fpsHistory.length; i++) {
+      // More weight to recent frames (last 5 frames are most important)
+      double frameWeight = i >= _fpsHistory.length - 5 ? 1.5 : 1.0;
+      sum += _fpsHistory[i] * frameWeight;
+      weight += frameWeight;
     }
-    final avgFps = sum / _fpsHistory.length;
+    final avgFps = sum / weight;
 
     // Update audio manager performance mode
     final shouldBeInLowPerfMode = avgFps < _lowFpsThreshold;
@@ -335,6 +344,39 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     if (shouldBeInLowPerfMode != _audioManager.isLowPerfMode) {
       _audioManager.setLowPerformanceMode(shouldBeInLowPerfMode);
       print('Audio performance mode changed: Low Performance = $shouldBeInLowPerfMode (FPS: $avgFps)');
+
+      // More aggressive object management during performance issues
+      if (shouldBeInLowPerfMode) {
+        _clearSomeElements();
+      }
+    }
+  }
+
+  // Clear elements to improve performance
+  void _clearSomeElements() {
+    // First, clear non-essential sounds
+    _audioManager.processSoundQueue(); // Process and clear pending queue
+
+    // Clear less important visual elements
+    final explosions = children.whereType<Explosion>().toList();
+    if (explosions.length > 2) {
+      for (int i = 0; i < explosions.length - 2; i++) {
+        explosions[i].removeFromParent();
+      }
+    }
+
+    // Clear coins that are far from the player
+    final coins = children.whereType<Coin>().toList();
+    if (coins.length > 5) {
+      coins.sort((a, b) {
+        final distA = (a.position - rocket.position).length;
+        final distB = (b.position - rocket.position).length;
+        return distB.compareTo(distA); // Sort descending to remove furthest
+      });
+
+      for (int i = 0; i < coins.length - 5; i++) {
+        coins[i].removeFromParent();
+      }
     }
   }
 
@@ -491,15 +533,12 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       resumeEngine();
       isPaused = false;
       overlays.remove('pauseMenu');
-      _audioManager.resumeBackgroundMusic();
+      _audioManager.resume();
     } else {
       pauseEngine();
       isPaused = true;
       overlays.add('pauseMenu');
-      _audioManager.stopBackgroundMusic();
-
-      // Clear audio queues when paused
-      _audioManager.processSoundQueue();
+      _audioManager.pause();
     }
   }
 
@@ -657,8 +696,11 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       overlays.remove('pauseMenu');
     }
 
-    _audioManager.playSfx('crash.ogg');
     _audioManager.stopBackgroundMusic();
+    // First clean up audio to prevent delays
+    _audioManager.processSoundQueue();
+    // Then play crash sound
+    _audioManager.playCrashSound();
 
     showDialog(
       context: buildContext!,
@@ -840,6 +882,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       overlays.remove('pauseMenu');
     }
 
+    // Clean up game elements
     children.whereType<Building>().forEach((building) => building.removeFromParent());
     children.whereType<EnemyPlane>().forEach((enemy) => enemy.removeFromParent());
     children.whereType<LevelUpNotification>().forEach((notification) => notification.removeFromParent());
@@ -848,6 +891,11 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     children.whereType<Coin>().forEach((coin) => coin.removeFromParent());
     children.whereType<SpecialAbility>().forEach((ability) => ability.removeFromParent());
     children.whereType<Vehicle>().forEach((vehicle) => vehicle.removeFromParent());
+
+    // Reset fps tracking
+    _fpsHistory.clear();
+    _lastPerformanceCheckTime = DateTime.now().millisecondsSinceEpoch;
+    _lastAudioProcessTime = _lastPerformanceCheckTime;
 
     updateDifficultySettings();
     _audioManager.resumeBackgroundMusic();
