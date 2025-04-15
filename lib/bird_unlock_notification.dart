@@ -52,6 +52,11 @@ class _BirdUnlockNotificationState extends State<BirdUnlockNotification>
 
   @override
   Widget build(BuildContext context) {
+    // Get the translated bird name from LanguageManager
+    String birdName = LanguageManager.getText('bird${widget.birdIndex}Name');
+    // Set text direction based on current language
+    TextDirection textDirection = LanguageManager.getTextDirection();
+
     return Center(
       child: Container(
         margin: const EdgeInsets.all(20),
@@ -71,85 +76,88 @@ class _BirdUnlockNotificationState extends State<BirdUnlockNotification>
             ),
           ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              LanguageManager.getText('newBirdUnlocked'),
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.amber,
-                shadows: [
-                  Shadow(
-                    color: Colors.black,
-                    blurRadius: 5,
-                    offset: Offset(1, 1),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 30),
-            // Animated bird image
-            Transform.translate(
-              offset: Offset(0, _animation.value),
-              child: Container(
-                height: 120,
-                width: 120,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.amber.withOpacity(0.2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.amber.withOpacity(0.5),
-                      blurRadius: 20,
-                      spreadRadius: 5,
+        child: Directionality(
+          textDirection: textDirection,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                LanguageManager.getText('newBirdUnlocked'),
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.amber,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black,
+                      blurRadius: 5,
+                      offset: Offset(1, 1),
                     ),
                   ],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Image.asset(
-                    'assets/images/bird/${rocketImages[widget.birdIndex]}',
-                    fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 30),
+              // Animated bird image
+              Transform.translate(
+                offset: Offset(0, _animation.value),
+                child: Container(
+                  height: 120,
+                  width: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.amber.withOpacity(0.2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.amber.withOpacity(0.5),
+                        blurRadius: 20,
+                        spreadRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Image.asset(
+                      'assets/images/bird/${rocketImages[widget.birdIndex]}',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              rocketNames[widget.birdIndex],
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 10),
-            _buildBirdAbility(widget.birdIndex),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                widget.onClose();
-              },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                backgroundColor: Colors.amber,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                elevation: 5,
-              ),
-              child: Text(
-                LanguageManager.getText('awesome'),
+              const SizedBox(height: 20),
+              Text(
+                birdName,
                 style: const TextStyle(
-                  fontSize: 20,
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 10),
+              _buildBirdAbility(widget.birdIndex),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () {
+                  widget.onClose();
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  backgroundColor: Colors.amber,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  elevation: 5,
+                ),
+                child: Text(
+                  LanguageManager.getText('awesome'),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -160,29 +168,30 @@ class _BirdUnlockNotificationState extends State<BirdUnlockNotification>
     IconData icon;
     Color color;
 
+    // Translate ability descriptions
     switch (birdIndex) {
       case 1:
-        ability = 'Basic Shooting (25 damage)';
+        ability = LanguageManager.getText('basicShooting');
         icon = Icons.flash_on;
         color = Colors.yellow;
         break;
       case 2:
-        ability = 'Enhanced Shooting (35 damage)';
+        ability = LanguageManager.getText('enhancedShooting');
         icon = Icons.bolt;
         color = Colors.orange;
         break;
       case 3:
-        ability = 'Advanced Shooting (50 damage)';
+        ability = LanguageManager.getText('advancedShooting');
         icon = Icons.electric_bolt;
         color = Colors.red;
         break;
       case 4:
-        ability = 'Master Shooting (80 damage)';
+        ability = LanguageManager.getText('masterShooting');
         icon = Icons.thunderstorm;
         color = Colors.purple;
         break;
       default:
-        ability = 'Agile Flier';
+        ability = LanguageManager.getText('agileFlier');
         icon = Icons.air;
         color = Colors.blue;
     }

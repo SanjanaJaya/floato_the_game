@@ -67,6 +67,11 @@ class LanguageManager {
       'Kandy': 'Kandy',
       'Colombo': 'Colombo',
       'Colombo Elite': 'Colombo Elite',
+      'basicShooting': 'Basic Shooting (25 damage)',
+      'enhancedShooting': 'Enhanced Shooting (35 damage)',
+      'advancedShooting': 'Advanced Shooting (50 damage)',
+      'masterShooting': 'Master Shooting (80 damage)',
+      'agileFlier': 'Agile Flier',
     },
     sinhala: {
       'gameTitle': 'ෆ්ලෝටෝ',
@@ -127,6 +132,11 @@ class LanguageManager {
       'Kandy': 'මහනුවර',
       'Colombo': 'කොළඹ',
       'Colombo Elite': 'කොළඹ ප්‍රධාන',
+      'basicShooting': 'මූලික වෙඩි තැබීම (හානිය 25)',
+      'enhancedShooting': 'වැඩිදියුණු වෙඩි තැබීම (හානිය 35)',
+      'advancedShooting': 'උසස් වෙඩි තැබීම (හානිය 50)',
+      'masterShooting': 'ප්‍රවීණ වෙඩි තැබීම (හානිය 80)',
+      'agileFlier': 'චපල පියාසැරිය',
     },
   };
 
