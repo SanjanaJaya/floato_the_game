@@ -44,6 +44,7 @@ class LanguageManager {
       'tipSkyeAbility': 'Skyee can\'t shoot.But he can shoot whith rapid fire ability',
       'tipDifferentMissiles': 'All birds have different power missiles!',
       'loadingGame': 'Loading Game',
+      'Score:': 'Score:',
     },
     sinhala: {
       'gameTitle': 'ෆ්ලෝටෝ',
@@ -82,6 +83,7 @@ class LanguageManager {
       'tipSkyeAbility': 'ස්කයිට වෙඩි තැබීමට නොහැක. නමුත් ඔහුට ඉක්මන් වෙඩි තැබීමේ හැකියාව සමඟ වෙඩි තැබිය හැකිය',
       'tipDifferentMissiles': 'සියලුම පක්ෂීන්ට විවිධ බලමය මිසයිල ඇත!',
       'loadingGame': 'ක්‍රීඩාව පූරණය වෙමින් පවතී',
+      'Score:': 'ලකුණු:'
     },
   };
 

@@ -136,62 +136,62 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
   0: { // Level 1 (0-79 points) - Very beginner friendly
     'buildingInterval': 4.0,
     'buildingGap': 350.0,
-    'enemySpawnInterval': 4.5,
+    'enemySpawnInterval': 3.5,
     'groundScrollingSpeed': 75.0,
     'enemySpeedMultiplier': 0.7, // Much slower than original
     'levelName': 'Level 1',
     'levelRange': '0-80',
     'backgroundImage': 'background_level1.jpg',
     'groundImage': 'ground_level1.jpg',
-    'environmentName': 'Forest',
+    'environmentName': 'Anuradhapura',
   },
   80: { // Level 2 (80-199 points) - Easy challenge
     'buildingInterval': 3.5,
     'buildingGap': 325.0,
-    'enemySpawnInterval': 3.8,
+    'enemySpawnInterval': 3.2,
     'groundScrollingSpeed': 90.0,
     'enemySpeedMultiplier': 0.8, // Slower than original
     'levelName': 'Level 2',
     'levelRange': '80-200',
     'backgroundImage': 'background_level2.jpg',
     'groundImage': 'ground_level2.jpg',
-    'environmentName': 'Desert',
+    'environmentName': 'Jaffna',
   },
   200: { // Level 3 (200-349 points) - Mild challenge
     'buildingInterval': 3.0,
     'buildingGap': 300.0,
-    'enemySpawnInterval': 3.2,
+    'enemySpawnInterval': 2.7,
     'groundScrollingSpeed': 105.0,
     'enemySpeedMultiplier': 0.9, // Slightly slower
     'levelName': 'Level 3',
     'levelRange': '200-350',
     'backgroundImage': 'background_level3.jpg',
     'groundImage': 'ground_level3.jpg',
-    'environmentName': 'Arctic',
+    'environmentName': 'Galle',
   },
   350: { // Level 4 (350-599 points) - Moderate challenge
     'buildingInterval': 2.7,
     'buildingGap': 285.0,
-    'enemySpawnInterval': 2.8,
+    'enemySpawnInterval': 2.2,
     'groundScrollingSpeed': 120.0,
     'enemySpeedMultiplier': 1.0, // Base speed
     'levelName': 'Level 4',
     'levelRange': '350-600',
     'backgroundImage': 'background_level4.jpg',
     'groundImage': 'ground_level4.jpg',
-    'environmentName': 'Volcano',
+    'environmentName': 'Nuwara Eliya',
   },
   600: { // Level 5 (600+ points) - Challenging but more manageable
     'buildingInterval': 2.5,
     'buildingGap': 270.0,
-    'enemySpawnInterval': 2.5,
+    'enemySpawnInterval': 1.5,
     'groundScrollingSpeed': 135.0,
     'enemySpeedMultiplier': 1.1, // Only 10% faster than base
     'levelName': 'Level 5',
     'levelRange': '600+',
     'backgroundImage': 'background_level5.jpg',
     'groundImage': 'ground_level5.jpg',
-    'environmentName': 'Space',
+    'environmentName': 'Sigiriya',
   },
 };
 // Coin constants
@@ -219,4 +219,5 @@ const double vehicleSpawnInterval = 8.0; // Base spawn interval in seconds
 // You can expand this list in the future without changing the code
 const List<String> vehicleImages = [
   'vehicle1.png',
+  'vehicle2.png',
 ];
