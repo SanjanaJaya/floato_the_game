@@ -15,13 +15,7 @@ const List<String> rocketImages = [
   'rocket5.png',
 ];
 
-const List<String> rocketNames = [
-  'Skye',
-  'Nyra',
-  'Seren',
-  'Elowen',
-  'Zephyr',
-];
+const List<String> rocketNames = ['Skye', 'Nyra', 'Seren', 'Elowen', 'Zephyr'];
 
 // Updated requirements with more meaningful descriptions
 const List<String> rocketLevelRequirements = [
@@ -34,15 +28,15 @@ const List<String> rocketLevelRequirements = [
 
 // Updated missile capabilities to be more distinctive
 const List<double> missileSpeeds = [
-  0,    // Rocket 1 doesn't shoot
-  300,  // Rocket 2 missile speed
-  400,  // Rocket 3 missile speed - increased from 350
-  450,  // Rocket 4 missile speed - increased from 400
-  500,  // Rocket 5 missile speed - increased from 450
+  0, // Rocket 1 doesn't shoot
+  300, // Rocket 2 missile speed
+  400, // Rocket 3 missile speed - increased from 350
+  450, // Rocket 4 missile speed - increased from 400
+  500, // Rocket 5 missile speed - increased from 450
 ];
 
 const List<int> missileDamages = [
-  0,  // Rocket 1 doesn't shoot
+  0, // Rocket 1 doesn't shoot
   25, // Rocket 2 missile damage - decreased from 30
   35, // Rocket 3 missile damage - decreased from 40
   50, // Rocket 4 missile damage - unchanged
@@ -82,7 +76,7 @@ const List<String> levelNames = [
   'Nuwara Eliya',
   'Sigiriya',
   'Kandy',
-  'Colombo'
+  'Colombo',
 ];
 
 // Building constants
@@ -130,18 +124,44 @@ const List<String> enemyPlaneImages = [
   'enemy_plane8.png',
   'enemy_plane9.png',
   'enemy_plane10.png',
+  'enemy_plane11.png',
 ];
 
 // Adjusted base speeds for different plane types to be more balanced
-const List<double> enemyPlaneSpeeds = [130, 150, 120, 170, 100, 80, 90, 110, 100, 140];
+const List<double> enemyPlaneSpeeds = [
+  130,
+  150,
+  120,
+  170,
+  100,
+  80,
+  90,
+  110,
+  100,
+  140,
+  180,
+];
 
 // Adjusted health values to create better balance with new missile damages
-const List<int> enemyPlaneHealths = [175, 185, 195, 200, 245, 260, 300, 320, 175, 320];
+const List<int> enemyPlaneHealths = [
+  175,
+  185,
+  195,
+  200,
+  245,
+  260,
+  300,
+  320,
+  175,
+  320,
+  350,
+];
 
 // Optimized difficulty levels with smoother progression and two new levels
 // Plus a mechanism for handling scores beyond 2000
 const Map<int, Map<String, dynamic>> difficultyLevels = {
-  0: { // Level 1 (0-79 points) - Very beginner friendly
+  0: {
+    // Level 1 (0-79 points) - Very beginner friendly
     'buildingInterval': 4.0,
     'buildingGap': 350.0,
     'enemySpawnInterval': 3.5,
@@ -153,7 +173,8 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'groundImage': 'ground_level1.jpg',
     'environmentName': 'Anuradhapura',
   },
-  80: { // Level 2 (80-199 points) - Easy challenge
+  80: {
+    // Level 2 (80-199 points) - Easy challenge
     'buildingInterval': 3.2,
     'buildingGap': 325.0,
     'enemySpawnInterval': 3.2,
@@ -165,7 +186,8 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'groundImage': 'ground_level2.jpg',
     'environmentName': 'Jaffna',
   },
-  200: { // Level 3 (200-349 points) - Mild challenge
+  200: {
+    // Level 3 (200-349 points) - Mild challenge
     'buildingInterval': 2.8,
     'buildingGap': 300.0,
     'enemySpawnInterval': 2.7,
@@ -177,7 +199,8 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'groundImage': 'ground_level3.jpg',
     'environmentName': 'Galle',
   },
-  350: { // Level 4 (350-599 points) - Moderate challenge
+  350: {
+    // Level 4 (350-599 points) - Moderate challenge
     'buildingInterval': 2.6,
     'buildingGap': 285.0,
     'enemySpawnInterval': 2.2,
@@ -189,7 +212,8 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'groundImage': 'ground_level4.jpg',
     'environmentName': 'Nuwara Eliya',
   },
-  600: { // Level 5 (600-999 points) - Challenging but manageable
+  600: {
+    // Level 5 (600-999 points) - Challenging but manageable
     'buildingInterval': 2.4,
     'buildingGap': 270.0,
     'enemySpawnInterval': 1.6,
@@ -201,7 +225,8 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'groundImage': 'ground_level5.jpg',
     'environmentName': 'Sigiriya',
   },
-  1000: { // Level 6 (1000-1499 points) - Hard challenge
+  1000: {
+    // Level 6 (1000-1499 points) - Hard challenge
     'buildingInterval': 2.2,
     'buildingGap': 250.0,
     'enemySpawnInterval': 1.4,
@@ -213,7 +238,8 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'groundImage': 'ground_level6.jpg',
     'environmentName': 'Kandy',
   },
-  1500: { // Level 7 (1500-1999 points) - Expert challenge
+  1500: {
+    // Level 7 (1500-1999 points) - Expert challenge
     'buildingInterval': 2.0,
     'buildingGap': 230.0,
     'enemySpawnInterval': 1.2,
@@ -225,7 +251,8 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'groundImage': 'ground_level7.jpg',
     'environmentName': 'Colombo',
   },
-  2000: { // Master level (2000+ points) - Extreme challenge for advanced players
+  2000: {
+    // Master level (2000+ points) - Extreme challenge for advanced players
     'buildingInterval': 1.8,
     'buildingGap': 220.0,
     'enemySpawnInterval': 1.0,
@@ -242,19 +269,15 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
 // Coin constants
 const double coinSize = 30;
 const double coinSpawnInterval = 2.0; // Spawn a coin every 2 seconds on average
-const Map<String, int> coinTypes = {
-  'bronze': 2,
-  'silver': 4,
-  'gold': 8,
-};
+const Map<String, int> coinTypes = {'bronze': 2, 'silver': 4, 'gold': 8};
 
 // Updated bird unlock costs with balanced progression
 const Map<int, int> birdUnlockCosts = {
-  0: 0,     // First bird is free
-  1: 250,   // Second bird costs 250 coins
-  2: 1500,  // Third bird costs 1500 coins
-  3: 2500,  // Fourth bird costs 2500 coins
-  4: 7500,  // Fifth bird costs 7500 coins
+  0: 0, // First bird is free
+  1: 250, // Second bird costs 250 coins
+  2: 1500, // Third bird costs 1500 coins
+  3: 2500, // Fourth bird costs 2500 coins
+  4: 7500, // Fifth bird costs 7500 coins
 };
 
 // Vehicle constants
@@ -269,6 +292,7 @@ const List<String> vehicleImages = [
   'vehicle1.png',
   'vehicle2.png',
   'vehicle3.png',
+  'vehicle4.png',
 ];
 
 // Function to get difficulty settings beyond defined thresholds
@@ -291,14 +315,30 @@ Map<String, dynamic> getDifficultyForScore(int score) {
   // For scores beyond 2000, scale difficulty gradually
   if (score > 2000) {
     // Calculate scaling factor - increases as score grows, but at a diminishing rate
-    double scalingFactor = 1.0 + (score - 2000) / 4000; // Caps at 1.5x at 6000 points
+    double scalingFactor =
+        1.0 + (score - 2000) / 4000; // Caps at 1.5x at 6000 points
 
     // Apply scaling to difficulty parameters (limit to reasonable values)
-    settings['buildingInterval'] = max(1.5, settings['buildingInterval'] / scalingFactor);
-    settings['buildingGap'] = max(180.0, settings['buildingGap'] / scalingFactor);
-    settings['enemySpawnInterval'] = max(0.8, settings['enemySpawnInterval'] / scalingFactor);
-    settings['groundScrollingSpeed'] = min(250.0, settings['groundScrollingSpeed'] * scalingFactor);
-    settings['enemySpeedMultiplier'] = min(1.8, settings['enemySpeedMultiplier'] * sqrt(scalingFactor));
+    settings['buildingInterval'] = max(
+      1.5,
+      settings['buildingInterval'] / scalingFactor,
+    );
+    settings['buildingGap'] = max(
+      180.0,
+      settings['buildingGap'] / scalingFactor,
+    );
+    settings['enemySpawnInterval'] = max(
+      0.8,
+      settings['enemySpawnInterval'] / scalingFactor,
+    );
+    settings['groundScrollingSpeed'] = min(
+      250.0,
+      settings['groundScrollingSpeed'] * scalingFactor,
+    );
+    settings['enemySpeedMultiplier'] = min(
+      1.8,
+      settings['enemySpeedMultiplier'] * sqrt(scalingFactor),
+    );
 
     // Update level info
     settings['levelName'] = 'Master Level';
