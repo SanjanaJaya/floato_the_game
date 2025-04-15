@@ -63,7 +63,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     super.dispose();
   }
 
-  // Add this method to toggle between languages
   void _toggleLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -102,6 +101,11 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final padding = mediaQuery.padding;
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -109,6 +113,12 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
             image: AssetImage('assets/images/menu_background.jpg'),
             fit: BoxFit.cover,
           ),
+        ),
+        padding: EdgeInsets.only(
+          top: padding.top,
+          bottom: padding.bottom,
+          left: padding.left,
+          right: padding.right,
         ),
         child: Stack(
           children: [
@@ -123,55 +133,35 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
             Positioned(
               top: 40,
               left: 20,
-              child: IconButton(
-                icon: Text(
+              child: _buildCircleButton(
+                child: Text(
                   _isSinhala ? 'EN' : 'SI',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: screenWidth * 0.04,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 onPressed: _toggleLanguage,
-                padding: const EdgeInsets.all(10),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Colors.black.withOpacity(0.5),
-                  ),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                ),
+                color: Colors.black.withOpacity(0.5),
               ),
             ),
             // Audio button
             Positioned(
               top: 40,
               right: 20,
-              child: IconButton(
-                icon: Icon(
+              child: _buildCircleButton(
+                child: Icon(
                   _audioManager.isMuted ? Icons.volume_off : Icons.volume_up,
                   color: Colors.white,
-                  size: 36,
+                  size: screenWidth * 0.08,
                 ),
                 onPressed: () {
                   setState(() {
                     _audioManager.toggleMute();
                   });
                 },
-                padding: const EdgeInsets.all(10),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Colors.black.withOpacity(0.5),
-                  ),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                ),
+                color: Colors.black.withOpacity(0.5),
               ),
             ),
           ],
@@ -180,7 +170,43 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     );
   }
 
+  Widget _buildCircleButton({
+    required Widget child,
+    required VoidCallback onPressed,
+    Color? color,
+    double? size,
+  }) {
+    return Container(
+      width: size ?? 50,
+      height: size ?? 50,
+      decoration: BoxDecoration(
+        color: color ?? Colors.black.withOpacity(0.5),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(50),
+          child: Center(child: child),
+        ),
+      ),
+    );
+  }
+
   Widget buildMenuContent() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final buttonWidth = screenWidth * 0.7;
+    final buttonHeight = screenHeight * 0.07;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -189,60 +215,67 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
           offset: Offset(0, _animation.value),
           child: Text(
             LanguageManager.getText(''),
-            style: const TextStyle(
-              fontSize: 60,
+            style: TextStyle(
+              fontSize: screenWidth * 0.15,
               fontWeight: FontWeight.bold,
               color: Colors.white,
               shadows: [
                 Shadow(
                   blurRadius: 20,
                   color: Colors.black,
-                  offset: Offset(2, 2),
+                  offset: const Offset(2, 2),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 33),
+        SizedBox(height: screenHeight * 0.03),
         Container(
-          padding: const EdgeInsets.all(15),
-          margin: const EdgeInsets.symmetric(horizontal: 40),
+          padding: EdgeInsets.all(screenWidth * 0.04),
+          margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
           decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.7),
             borderRadius: BorderRadius.circular(15),
             border: Border.all(color: Colors.amber, width: 2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.amber.withOpacity(0.3),
+                blurRadius: 15,
+                spreadRadius: 2,
+              ),
+            ],
           ),
           child: Column(
             children: [
               Text(
                 '${LanguageManager.getText('highScore')}: $highScore',
-                style: const TextStyle(
-                  fontSize: 24,
+                style: TextStyle(
+                  fontSize: screenWidth * 0.06,
                   fontWeight: FontWeight.bold,
                   color: Colors.amber,
                 ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: screenHeight * 0.01),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.monetization_on, color: Colors.yellow, size: 20),
-                  const SizedBox(width: 5),
+                  Icon(Icons.monetization_on, color: Colors.yellow, size: screenWidth * 0.05),
+                  SizedBox(width: screenWidth * 0.02),
                   Text(
                     '$coins',
-                    style: const TextStyle(
-                      fontSize: 20,
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.05,
                       fontWeight: FontWeight.bold,
                       color: Colors.yellow,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: screenHeight * 0.01),
               Text(
                 '${LanguageManager.getText('highestLevel')}: $levelName',
-                style: const TextStyle(
-                  fontSize: 20,
+                style: TextStyle(
+                  fontSize: screenWidth * 0.045,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -255,16 +288,24 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
           offset: Offset(0, _animation.value * 1.5),
           child: Image.asset(
             'assets/images/bird/${rocketImages[selectedRocket]}',
-            height: 100,
-            width: 100,
+            height: screenHeight * 0.12,
+            width: screenHeight * 0.12,
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: screenHeight * 0.02),
         Padding(
-          padding: const EdgeInsets.only(bottom: 20),
+          padding: EdgeInsets.only(bottom: screenHeight * 0.03),
           child: Column(
             children: [
-              ElevatedButton(
+              _buildMenuButton(
+                text: LanguageManager.getText('startGame'),
+                width: buttonWidth,
+                height: buttonHeight,
+                gradient: LinearGradient(
+                  colors: [Colors.orange.shade700, Colors.orange.shade400],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
@@ -293,70 +334,38 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                     ),
                   );
                 },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  backgroundColor: Colors.orange,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  elevation: 5,
-                ),
-                child: Text(
-                  LanguageManager.getText('startGame'),
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
               ),
-              const SizedBox(height: 15),
-              ElevatedButton(
+              SizedBox(height: screenHeight * 0.02),
+              _buildMenuButton(
+                text: LanguageManager.getText('selectBird'),
+                width: buttonWidth,
+                height: buttonHeight,
+                gradient: LinearGradient(
+                  colors: [Colors.green.shade700, Colors.green.shade400],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 onPressed: () {
                   setState(() {
                     showRocketSelection = true;
                   });
                 },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  backgroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  elevation: 5,
-                ),
-                child: Text(
-                  LanguageManager.getText('selectBird'),
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
               ),
-              const SizedBox(height: 15),
-              ElevatedButton(
+              SizedBox(height: screenHeight * 0.02),
+              _buildMenuButton(
+                text: LanguageManager.getText('credits'),
+                width: buttonWidth,
+                height: buttonHeight,
+                gradient: LinearGradient(
+                  colors: [Colors.blueGrey.shade700, Colors.blueGrey.shade400],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 onPressed: () {
                   setState(() {
                     showCredits = true;
                   });
                 },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  backgroundColor: Colors.blueGrey,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  elevation: 5,
-                ),
-                child: Text(
-                  LanguageManager.getText('credits'),
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
               ),
             ],
           ),
@@ -365,332 +374,354 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     );
   }
 
-  Widget buildCreditsContent() {
+  Widget _buildMenuButton({
+    required String text,
+    required double width,
+    required double height,
+    required Gradient gradient,
+    required VoidCallback onPressed,
+    double fontSize = 24,
+  }) {
     return Container(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.all(20),
+      width: width,
+      height: height,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.amber, width: 3),
+        borderRadius: BorderRadius.circular(30),
+        gradient: gradient,
         boxShadow: [
           BoxShadow(
-            color: Colors.amber.withOpacity(0.3),
-            blurRadius: 15,
-            spreadRadius: 5,
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            spreadRadius: 2,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            LanguageManager.getText('credits').toUpperCase(),
-            style: const TextStyle(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-              color: Colors.amber,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            LanguageManager.getText('mainDeveloper'),
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          Text(
-            LanguageManager.getText('Imesh Sanjana'),
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            LanguageManager.getText('graphicsAndIllustrations'),
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          Text(
-            LanguageManager.getText('Nethsara Werasooriya'),
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ),
-          Text(
-            LanguageManager.getText('Anjana Herath'),
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ),
-          Text(
-            LanguageManager.getText('Nethmina Medagedara'),
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ),
-          Text(
-            LanguageManager.getText('Dinuwara Wijerathne'),
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 30),
-          Text(
-            LanguageManager.getText('audioEffectsAndMusic'),
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          Text(
-            LanguageManager.getText('Kavindu Heshan'),
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 30),
-          Image.asset(
-            'assets/images/logo.png',
-            height: 100,
-            width: 100,
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                showCredits = false;
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-              backgroundColor: Colors.blueGrey,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-              elevation: 5,
-            ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(30),
+          onTap: onPressed,
+          child: Center(
             child: Text(
-              LanguageManager.getText('back'),
-              style: const TextStyle(
-                fontSize: 24,
+              text,
+              style: TextStyle(
+                fontSize: width * 0.06,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
+                shadows: const [
+                  Shadow(
+                    blurRadius: 4,
+                    color: Colors.black45,
+                    offset: Offset(1, 1),
+                  ),
+                ],
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget buildRocketSelectionContent() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.amber, width: 3),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.amber.withOpacity(0.3),
-            blurRadius: 15,
-            spreadRadius: 5,
-          ),
-        ],
+  Widget buildCreditsContent() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.all(screenWidth * 0.05),
+        margin: EdgeInsets.all(screenWidth * 0.05),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.amber, width: 3),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.amber.withOpacity(0.3),
+              blurRadius: 15,
+              spreadRadius: 5,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              LanguageManager.getText('credits').toUpperCase(),
+              style: TextStyle(
+                fontSize: screenWidth * 0.09,
+                fontWeight: FontWeight.bold,
+                color: Colors.amber,
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.03),
+            _buildCreditSection(
+              title: LanguageManager.getText('mainDeveloper'),
+              names: [LanguageManager.getText('Imesh Sanjana')],
+            ),
+            SizedBox(height: screenHeight * 0.03),
+            _buildCreditSection(
+              title: LanguageManager.getText('graphicsAndIllustrations'),
+              names: [
+                LanguageManager.getText('Nethsara Werasooriya'),
+                LanguageManager.getText('Anjana Herath'),
+                LanguageManager.getText('Nethmina Medagedara'),
+                LanguageManager.getText('Dinuwara Wijerathne'),
+              ],
+            ),
+            SizedBox(height: screenHeight * 0.03),
+            _buildCreditSection(
+              title: LanguageManager.getText('audioEffectsAndMusic'),
+              names: [LanguageManager.getText('Kavindu Heshan')],
+            ),
+            SizedBox(height: screenHeight * 0.04),
+            Image.asset(
+              'assets/images/logo.png',
+              height: screenHeight * 0.12,
+              width: screenHeight * 0.12,
+            ),
+            SizedBox(height: screenHeight * 0.03),
+            _buildMenuButton(
+              text: LanguageManager.getText('back'),
+              width: screenWidth * 0.5,
+              height: screenHeight * 0.07,
+              gradient: LinearGradient(
+                colors: [Colors.blueGrey.shade700, Colors.blueGrey.shade400],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              onPressed: () {
+                setState(() {
+                  showCredits = false;
+                });
+              },
+            ),
+          ],
+        ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            LanguageManager.getText('selectBird').toUpperCase(),
-            style: const TextStyle(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-              color: Colors.amber,
+    );
+  }
+
+  Widget _buildCreditSection({required String title, required List<String> names}) {
+    return Column(
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: MediaQuery.of(context).size.width * 0.06,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+        ...names.map((name) => Padding(
+          padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.005),
+          child: Text(
+            name,
+            style: TextStyle(
+              fontSize: MediaQuery.of(context).size.width * 0.045,
+              color: Colors.white,
             ),
           ),
-          const SizedBox(height: 20),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.5,
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 0.85,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
+        )),
+      ],
+    );
+  }
+
+  Widget buildRocketSelectionContent() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final crossAxisCount = screenWidth > 600 ? 3 : 2;
+
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.all(screenWidth * 0.05),
+        margin: EdgeInsets.all(screenWidth * 0.05),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.amber, width: 3),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.amber.withOpacity(0.3),
+              blurRadius: 15,
+              spreadRadius: 5,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              LanguageManager.getText('selectBird').toUpperCase(),
+              style: TextStyle(
+                fontSize: screenWidth * 0.09,
+                fontWeight: FontWeight.bold,
+                color: Colors.amber,
               ),
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                final bool isUnlocked = index < unlockedRockets;
-                final bool isSelected = index == selectedRocket;
+            ),
+            SizedBox(height: screenHeight * 0.03),
+            SizedBox(
+              height: screenHeight * 0.5,
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  childAspectRatio: 0.85,
+                  crossAxisSpacing: screenWidth * 0.03,
+                  mainAxisSpacing: screenWidth * 0.03,
+                ),
+                itemCount: 5,
+                itemBuilder: (context, index) {
+                  final bool isUnlocked = index < unlockedRockets;
+                  final bool isSelected = index == selectedRocket;
 
-                return GestureDetector(
-                  onTap: isUnlocked
-                      ? () async {
-                    setState(() {
-                      selectedRocket = index;
-                    });
-                    await PreferencesHelper.saveSelectedRocket(index);
-                  }
-                      : () async {
-                    if (coins >= birdUnlockCosts[index]!) {
-                      // Deduct coins
-                      coins -= birdUnlockCosts[index]!;
-                      await PreferencesHelper.saveCoins(coins);
-
-                      // Unlock the bird
-                      unlockedRockets = index + 1;
-                      await PreferencesHelper.saveUnlockedRockets(unlockedRockets);
-
-                      // Select the newly unlocked bird
-                      selectedRocket = index;
+                  return GestureDetector(
+                    onTap: isUnlocked
+                        ? () async {
+                      setState(() {
+                        selectedRocket = index;
+                      });
                       await PreferencesHelper.saveSelectedRocket(index);
-
-                      setState(() {});
-
-                      // Show unlock notification
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) => BirdUnlockNotification(
-                          birdIndex: index,
-                          onClose: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '${LanguageManager.getText('notEnoughCoins')}! ${LanguageManager.getText('need')} ${birdUnlockCosts[index]! - coins} ${LanguageManager.getText('more')}',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
                     }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? Colors.amber.withOpacity(0.3)
-                          : Colors.black.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: isSelected ? Colors.amber : Colors.grey,
-                        width: 2,
-                      ),
-                      boxShadow: isSelected
-                          ? [
-                        BoxShadow(
-                          color: Colors.amber.withOpacity(0.3),
-                          blurRadius: 10,
-                          spreadRadius: 2,
+                        : () async {
+                      if (coins >= birdUnlockCosts[index]!) {
+                        // Deduct coins
+                        coins -= birdUnlockCosts[index]!;
+                        await PreferencesHelper.saveCoins(coins);
+
+                        // Unlock the bird
+                        unlockedRockets = index + 1;
+                        await PreferencesHelper.saveUnlockedRockets(unlockedRockets);
+
+                        // Select the newly unlocked bird
+                        selectedRocket = index;
+                        await PreferencesHelper.saveSelectedRocket(index);
+
+                        setState(() {});
+
+                        // Show unlock notification
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) => BirdUnlockNotification(
+                            birdIndex: index,
+                            onClose: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              '${LanguageManager.getText('notEnoughCoins')}! ${LanguageManager.getText('need')} ${birdUnlockCosts[index]! - coins} ${LanguageManager.getText('more')}',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(screenWidth * 0.02),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? Colors.amber.withOpacity(0.3)
+                            : Colors.black.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(
+                          color: isSelected ? Colors.amber : Colors.grey,
+                          width: 2,
                         ),
-                      ]
-                          : [],
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Transform.translate(
-                            offset: Offset(0, isUnlocked ? _animation.value : 0),
-                            child: Stack(
-                              alignment: Alignment.center,
+                        boxShadow: isSelected
+                            ? [
+                          BoxShadow(
+                            color: Colors.amber.withOpacity(0.3),
+                            blurRadius: 10,
+                            spreadRadius: 2,
+                          ),
+                        ]
+                            : [],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Transform.translate(
+                              offset: Offset(0, isUnlocked ? _animation.value : 0),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Image.asset(
+                                    'assets/images/bird/${rocketImages[index]}',
+                                    fit: BoxFit.contain,
+                                    color: isUnlocked ? null : Colors.black.withOpacity(0.7),
+                                    colorBlendMode: isUnlocked ? BlendMode.srcIn : BlendMode.srcATop,
+                                  ),
+                                  if (!isUnlocked)
+                                    Icon(
+                                      Icons.lock,
+                                      color: Colors.white,
+                                      size: screenWidth * 0.08,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: screenHeight * 0.01),
+                            child: Column(
                               children: [
-                                Image.asset(
-                                  'assets/images/bird/${rocketImages[index]}',
-                                  fit: BoxFit.contain,
-                                  color: isUnlocked ? null : Colors.black.withOpacity(0.7),
-                                  colorBlendMode: isUnlocked ? BlendMode.srcIn : BlendMode.srcATop,
+                                Text(
+                                  LanguageManager.getText('bird${index}Name'),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.035,
+                                    fontWeight: FontWeight.bold,
+                                    color: isUnlocked ? Colors.white : Colors.grey,
+                                  ),
                                 ),
                                 if (!isUnlocked)
-                                  const Icon(
-                                    Icons.lock,
-                                    color: Colors.white,
-                                    size: 30,
+                                  Padding(
+                                    padding: EdgeInsets.only(top: screenHeight * 0.005),
+                                    child: Text(
+                                      '${birdUnlockCosts[index]} ${LanguageManager.getText('coins')}',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: screenWidth * 0.03,
+                                        color: coins >= birdUnlockCosts[index]! ? Colors.green : Colors.grey,
+                                      ),
+                                    ),
                                   ),
                               ],
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Column(
-                            children: [
-                              Text(
-                                LanguageManager.getText('bird${index}Name'),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: isUnlocked ? Colors.white : Colors.grey,
-                                ),
-                              ),
-                              if (!isUnlocked)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: Text(
-                                    '${birdUnlockCosts[index]} ${LanguageManager.getText('coins')}',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: coins >= birdUnlockCosts[index]! ? Colors.green : Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                );
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.03),
+            _buildMenuButton(
+              text: LanguageManager.getText('back'),
+              width: screenWidth * 0.5,
+              height: screenHeight * 0.07,
+              gradient: LinearGradient(
+                colors: [Colors.blueGrey.shade700, Colors.blueGrey.shade400],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              onPressed: () {
+                setState(() {
+                  showRocketSelection = false;
+                });
               },
             ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                showRocketSelection = false;
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-              backgroundColor: Colors.blueGrey,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-              elevation: 5,
-            ),
-            child: Text(
-              LanguageManager.getText('back'),
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -706,23 +737,33 @@ class PauseButton extends StatelessWidget {
     return Positioned(
       top: 40,
       right: 20,
-      child: IconButton(
-        icon: const Icon(
-          Icons.pause_circle_filled,
-          color: Colors.white,
-          size: 40,
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.5),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 10,
+              spreadRadius: 2,
+            ),
+          ],
         ),
-        onPressed: () {
-          game.togglePause();
-        },
-        padding: const EdgeInsets.all(10),
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(
-            Colors.black.withOpacity(0.5),
-          ),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(50),
+            onTap: () {
+              game.togglePause();
+            },
+            child: const Center(
+              child: Icon(
+                Icons.pause_circle_filled,
+                color: Colors.white,
+                size: 40,
+              ),
             ),
           ),
         ),
@@ -738,13 +779,14 @@ class PauseMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AudioManager audioManager = AudioManager();
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Center(
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(screenWidth * 0.05),
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.8, // Limit width to prevent overflow
+          maxWidth: screenWidth * 0.8,
         ),
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.8),
@@ -761,45 +803,37 @@ class PauseMenu extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            FittedBox( // This will scale down text if needed
+            FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
                 LanguageManager.getText('paused').toUpperCase(),
                 style: TextStyle(
-                  fontSize: LanguageManager.currentLanguage == LanguageManager.sinhala ? 28 : 36,
+                  fontSize: LanguageManager.currentLanguage == LanguageManager.sinhala
+                      ? screenWidth * 0.07
+                      : screenWidth * 0.09,
                   fontWeight: FontWeight.bold,
                   color: Colors.amber,
                 ),
               ),
             ),
-            const SizedBox(height: 30),
-            Wrap( // Changed from Row to Wrap for better responsiveness
+            SizedBox(height: screenHeight * 0.03),
+            Wrap(
               alignment: WrapAlignment.center,
               spacing: 20,
               runSpacing: 20,
               children: [
-                ElevatedButton(
+                _buildPauseMenuButton(
+                  text: LanguageManager.getText('resume'),
+                  color: Colors.green,
                   onPressed: () {
                     game.togglePause();
                   },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    backgroundColor: Colors.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    elevation: 5,
-                  ),
-                  child: Text(
-                    LanguageManager.getText('resume'),
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+                  width: screenWidth * 0.3,
+                  height: screenHeight * 0.06,
                 ),
-                ElevatedButton(
+                _buildPauseMenuButton(
+                  text: LanguageManager.getText('quit'),
+                  color: Colors.red,
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
@@ -808,28 +842,67 @@ class PauseMenu extends StatelessWidget {
                       ),
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    elevation: 5,
-                  ),
-                  child: Text(
-                    LanguageManager.getText('quit'),
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+                  width: screenWidth * 0.3,
+                  height: screenHeight * 0.06,
                 ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPauseMenuButton({
+    required String text,
+    required Color color,
+    required VoidCallback onPressed,
+    required double width,
+    required double height,
+  }) {
+    return Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+    gradient: LinearGradient(
+    colors: [color.withOpacity(0.8), color],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    ),
+    boxShadow: [
+    BoxShadow(
+    color: Colors.black.withOpacity(0.3),
+    blurRadius: 10,
+    spreadRadius: 2,
+    offset: const Offset(0, 4),
+    ),
+    ],
+    ),
+    child: Material(
+    color: Colors.transparent,
+    child: InkWell(
+    borderRadius: BorderRadius.circular(30),
+    onTap: onPressed,
+    child: Center(
+    child: Text(
+    text,
+    style: TextStyle(
+    fontSize: width * 0.12,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+    shadows: const [
+    Shadow(
+    blurRadius: 4,
+    color: Colors.black45,
+    offset: Offset(1, 1),
+    ),
+    ],
+    ),
+    ),
+    ),
+    ),
+    ),
     );
   }
 }

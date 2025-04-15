@@ -170,10 +170,6 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
 
   @override
   void update(double dt) {
-    // Apply slow motion effect to dt if needed
-    if (gameRef.currentAbility == AbilityType.slowMotion) {
-      dt *= 0.5;
-    }
 
     // Check if rapid fire was just activated
     if (gameRef.currentAbility == AbilityType.rapidFire && _rapidFireTimer == null) {

@@ -701,160 +701,168 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     showDialog(
       context: buildContext!,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-        backgroundColor: Colors.blueGrey[900],
-        elevation: 20,
-        title: const Text(
-          "Game Over",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Arial',
+      builder: (context) {
+        final mediaQuery = MediaQuery.of(context);
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: mediaQuery.padding.bottom,
           ),
-        ),
-        content: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.blueGrey[800],
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Score: $score",
-                style: const TextStyle(
-                  color: Colors.amber,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+            backgroundColor: Colors.blueGrey[900],
+            elevation: 20,
+            title: const Text(
+              "Game Over",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Arial',
               ),
-              const SizedBox(height: 8),
-              Text(
-                "${getCurrentLevelName()} (${getCurrentLevelRange()})",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                ),
+            ),
+            content: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.blueGrey[800],
+                borderRadius: BorderRadius.circular(10),
               ),
-              const SizedBox(height: 8),
-              Text(
-                "Environment: ${background.currentEnvironmentName}",
-                style: const TextStyle(
-                  color: Colors.lightBlueAccent,
-                  fontSize: 18,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Coins collected: $coins",
-                style: const TextStyle(
-                  color: Colors.yellow,
-                  fontSize: 18,
-                ),
-              ),
-            ],
-          ),
-        ),
-        actionsAlignment: MainAxisAlignment.center,
-        actions: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 200,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Colors.orange, Colors.red],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    resetGame();
-                  },
-                  child: const Text(
-                    "Play Again",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Score: $score",
+                    style: const TextStyle(
+                      color: Colors.amber,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "${getCurrentLevelName()} (${getCurrentLevelRange()})",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Environment: ${background.currentEnvironmentName}",
+                    style: const TextStyle(
+                      color: Colors.lightBlueAccent,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Coins collected: $coins",
+                    style: const TextStyle(
+                      color: Colors.yellow,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 10),
-              Container(
-                width: 200,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Colors.blue, Colors.purple],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MenuScreen(),
+            ),
+            actionsAlignment: MainAxisAlignment.center,
+            actions: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 200,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Colors.orange, Colors.red],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                    );
-                  },
-                  child: const Text(
-                    "Back to Menu",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        resetGame();
+                      },
+                      child: const Text(
+                        "Play Again",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 10),
+                  Container(
+                    width: 200,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Colors.blue, Colors.purple],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MenuScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "Back to Menu",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

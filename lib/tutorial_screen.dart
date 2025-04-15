@@ -36,6 +36,10 @@ class _TutorialScreenState extends State<TutorialScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+
     return Container(
       color: Colors.black.withOpacity(0.8),
       child: SafeArea(
@@ -43,14 +47,14 @@ class _TutorialScreenState extends State<TutorialScreen> {
           children: [
             // Header with progress indicator
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(screenWidth * 0.04),
               child: Row(
                 children: [
                   for (int i = 0; i < totalPages; i++)
                     Expanded(
                       child: Container(
                         height: 4,
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
                         decoration: BoxDecoration(
                           color: i <= currentPage ? Colors.amber : Colors.grey,
                           borderRadius: BorderRadius.circular(2),
@@ -64,23 +68,24 @@ class _TutorialScreenState extends State<TutorialScreen> {
             // Tutorial content
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: EdgeInsets.all(screenWidth * 0.06),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       tutorialItems[currentPage].title,
                       style: GoogleFonts.poppins(
-                        fontSize: 28,
+                        fontSize: isPortrait ? screenWidth * 0.07 : screenHeight * 0.07,
                         fontWeight: FontWeight.bold,
                         color: Colors.amber,
                         decoration: TextDecoration.none,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 30),
+                    SizedBox(height: screenHeight * 0.03),
                     Container(
-                      height: 300,
+                      height: isPortrait ? screenHeight * 0.4 : screenWidth * 0.4,
+                      width: isPortrait ? screenWidth * 0.8 : screenHeight * 0.8,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: Colors.amber, width: 2),
@@ -90,16 +95,19 @@ class _TutorialScreenState extends State<TutorialScreen> {
                         fit: BoxFit.contain,
                       ),
                     ),
-                    const SizedBox(height: 30),
-                    Text(
-                      tutorialItems[currentPage].description,
-                      style: GoogleFonts.roboto(
-                        fontSize: 18,
-                        color: Colors.white,
-                        height: 1.5,
-                        decoration: TextDecoration.none,
+                    SizedBox(height: screenHeight * 0.03),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                      child: Text(
+                        tutorialItems[currentPage].description,
+                        style: GoogleFonts.roboto(
+                          fontSize: isPortrait ? screenWidth * 0.045 : screenHeight * 0.045,
+                          color: Colors.white,
+                          height: 1.5,
+                          decoration: TextDecoration.none,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
@@ -108,7 +116,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
 
             // Navigation buttons
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: EdgeInsets.all(screenWidth * 0.06),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -126,7 +134,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                     child: Text(
                       'SKIP',
                       style: GoogleFonts.montserrat(
-                        fontSize: 18,
+                        fontSize: isPortrait ? screenWidth * 0.045 : screenHeight * 0.045,
                         color: Colors.grey,
                         fontWeight: FontWeight.w500,
                         decoration: TextDecoration.none,
@@ -146,7 +154,10 @@ class _TutorialScreenState extends State<TutorialScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.08,
+                        vertical: screenHeight * 0.015,
+                      ),
                       backgroundColor: Colors.amber,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -158,7 +169,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                     child: Text(
                       currentPage < totalPages - 1 ? 'NEXT' : 'START',
                       style: GoogleFonts.montserrat(
-                        fontSize: 18,
+                        fontSize: isPortrait ? screenWidth * 0.045 : screenHeight * 0.045,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                         decoration: TextDecoration.none,

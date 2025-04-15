@@ -100,6 +100,10 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -111,12 +115,15 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
         child: SafeArea(
           child: Column(
             children: [
-              const Spacer(),
+              const Spacer(flex: 2), // Increased spacer to push content down
               FadeTransition(
                 opacity: _tipFadeAnimation,
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 30),
-                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 25),
+                  margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
+                  padding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.02,
+                    horizontal: screenWidth * 0.06,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.75),
                     borderRadius: BorderRadius.circular(15),
@@ -134,15 +141,15 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
                   ),
                   child: Column(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.lightbulb_outline,
                         color: Colors.amber,
-                        size: 32,
+                        size: screenWidth * 0.08,
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: screenHeight * 0.012),
                       Container(
                         height: 2,
-                        width: 40,
+                        width: screenWidth * 0.1,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
@@ -153,12 +160,12 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
                           ),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: screenHeight * 0.012),
                       Text(
                         _currentTip,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 18,
+                        style: TextStyle(
+                          fontSize: isPortrait ? screenWidth * 0.045 : screenHeight * 0.045,
                           color: Colors.white,
                           height: 1.4,
                           letterSpacing: 0.5,
@@ -168,41 +175,41 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
                   ),
                 ),
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: screenHeight * 0.06), // Increased spacing here
               Text(
                 LanguageManager.getText('loadingGame'),
-                style: const TextStyle(
-                  fontSize: 20,
+                style: TextStyle(
+                  fontSize: isPortrait ? screenWidth * 0.06 : screenHeight * 0.06,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   shadows: [
                     Shadow(
                       blurRadius: 8,
                       color: Colors.black,
-                      offset: Offset(1, 1),
+                      offset: const Offset(1, 1),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: screenHeight * 0.02),
               Text(
                 '${(_progressValue * 100).toInt()}%',
-                style: const TextStyle(
-                  fontSize: 16,
+                style: TextStyle(
+                  fontSize: isPortrait ? screenWidth * 0.04 : screenHeight * 0.04,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   shadows: [
                     Shadow(
                       blurRadius: 4,
                       color: Colors.black,
-                      offset: Offset(1, 1),
+                      offset: const Offset(1, 1),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 15),
+              SizedBox(height: screenHeight * 0.03),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.15),
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
@@ -220,12 +227,12 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
                       value: _progressValue,
                       backgroundColor: Colors.grey[800],
                       valueColor: const AlwaysStoppedAnimation<Color>(Colors.amber),
-                      minHeight: 12,
+                      minHeight: screenHeight * 0.015,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 40),
+              const Spacer(flex: 3), // Adjusted spacer to balance the layout
             ],
           ),
         ),

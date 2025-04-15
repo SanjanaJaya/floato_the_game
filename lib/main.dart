@@ -69,7 +69,9 @@ void main() async {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: const SafeArea(
+        child: SplashScreen(),
+      ),
     ),
   );
 }
