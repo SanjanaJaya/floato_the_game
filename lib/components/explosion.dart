@@ -46,7 +46,7 @@ class Explosion extends SpriteAnimationComponent with HasGameRef<floato> {
     // Set up animation
     animation = SpriteAnimation.spriteList(
       frames,
-      stepTime: 0.1, // Animation speed
+      stepTime: 0.05, // Animation speed
       loop: false, // Don't loop the explosion
     );
   }

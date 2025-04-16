@@ -113,8 +113,11 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
     if (health <= 0 && !_isDestroyed) {
       _isDestroyed = true; // Mark as destroyed to prevent double processing
 
-      // Plane is destroyed, give player points
-      gameRef.incrementScore(3);
+      // Calculate points based on plane's health - scale from base of 3 points
+      int pointsAwarded = calculatePointsForPlane();
+
+      // Award points to the player
+      gameRef.incrementScore(pointsAwarded);
 
       // Play explosion sound only when plane is completely destroyed
       _audioManager.playSfx('explosion.ogg');
@@ -132,6 +135,29 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
           removeFromParent();
         }
       });
+    }
+  }
+
+  // Calculate points based on plane's health
+  int calculatePointsForPlane() {
+    // Base calculations on max health
+    // We'll use the following formula to scale points:
+    // - Planes with health 175-199: 3 points (lowest tier)
+    // - Planes with health 200-249: 5 points
+    // - Planes with health 250-299: 7 points
+    // - Planes with health 300-349: 10 points
+    // - Planes with health 350+: 15 points (highest tier)
+
+    if (maxHealth >= 350) {
+      return 12; // Highest tier planes
+    } else if (maxHealth >= 300) {
+      return 8; // High tier planes
+    } else if (maxHealth >= 250) {
+      return 6;  // Medium-high tier planes
+    } else if (maxHealth >= 200) {
+      return 4;  // Medium tier planes
+    } else {
+      return 2;  // Basic planes (default)
     }
   }
 
