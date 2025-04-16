@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'shared_preferences_helper.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'language_manager.dart';
 
 class TutorialScreen extends StatefulWidget {
   final VoidCallback onComplete;
@@ -13,24 +14,39 @@ class TutorialScreen extends StatefulWidget {
 
 class _TutorialScreenState extends State<TutorialScreen> {
   int currentPage = 0;
-  final int totalPages = 3; // Number of tutorial images
+  final int totalPages = 6; // Number of tutorial images
 
-  // Tutorial content - add your actual content here
+  // Tutorial content - now with support for both English and Sinhala
   final List<TutorialItem> tutorialItems = [
     TutorialItem(
       image: 'assets/images/tutorial/tutorial1.png',
-      title: 'Welcome to Floato!',
-      description: 'Tap and drag on the left side of the screen to move your bird up and down.',
+      titleKey: 'tutorialTitle1',
+      descriptionKey: 'tutorialDesc1',
     ),
     TutorialItem(
       image: 'assets/images/tutorial/tutorial2.png',
-      title: 'Avoid Obstacles',
-      description: 'Navigate through buildings and avoid enemy planes to survive longer!',
+      titleKey: 'tutorialTitle2',
+      descriptionKey: 'tutorialDesc2',
     ),
     TutorialItem(
       image: 'assets/images/tutorial/tutorial3.png',
-      title: 'Special Abilities',
-      description: 'Tap on the right side to shoot missiles and destroy enemy planes (Available with advanced birds.Not available with first bird.)',
+      titleKey: 'tutorialTitle3',
+      descriptionKey: 'tutorialDesc3',
+    ),
+    TutorialItem(
+      image: 'assets/images/tutorial/tutorial4.png',
+      titleKey: 'tutorialTitle4',
+      descriptionKey: 'tutorialDesc4',
+    ),
+    TutorialItem(
+      image: 'assets/images/tutorial/tutorial5.png',
+      titleKey: 'tutorialTitle5',
+      descriptionKey: 'tutorialDesc5',
+    ),
+    TutorialItem(
+      image: 'assets/images/tutorial/tutorial5.png',
+      titleKey: 'tutorialTitle6',
+      descriptionKey: 'tutorialDesc6',
     ),
   ];
 
@@ -73,7 +89,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      tutorialItems[currentPage].title,
+                      LanguageManager.getText(tutorialItems[currentPage].titleKey),
                       style: GoogleFonts.poppins(
                         fontSize: isPortrait ? screenWidth * 0.07 : screenHeight * 0.07,
                         fontWeight: FontWeight.bold,
@@ -99,14 +115,17 @@ class _TutorialScreenState extends State<TutorialScreen> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                       child: Text(
-                        tutorialItems[currentPage].description,
+                        LanguageManager.getText(tutorialItems[currentPage].descriptionKey),
                         style: GoogleFonts.roboto(
                           fontSize: isPortrait ? screenWidth * 0.045 : screenHeight * 0.045,
                           color: Colors.white,
                           height: 1.5,
                           decoration: TextDecoration.none,
                         ),
-                        textAlign: TextAlign.center,
+                        textAlign: LanguageManager.currentLanguage == LanguageManager.sinhala
+                            ? TextAlign.right
+                            : TextAlign.center,
+                        textDirection: LanguageManager.getTextDirection(),
                       ),
                     ),
                   ],
@@ -132,7 +151,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                       splashFactory: NoSplash.splashFactory,
                     ),
                     child: Text(
-                      'SKIP',
+                      LanguageManager.getText('skip'),
                       style: GoogleFonts.montserrat(
                         fontSize: isPortrait ? screenWidth * 0.045 : screenHeight * 0.045,
                         color: Colors.grey,
@@ -167,7 +186,9 @@ class _TutorialScreenState extends State<TutorialScreen> {
                       shadowColor: Colors.transparent,
                     ),
                     child: Text(
-                      currentPage < totalPages - 1 ? 'NEXT' : 'START',
+                      currentPage < totalPages - 1
+                          ? LanguageManager.getText('next')
+                          : LanguageManager.getText('start'),
                       style: GoogleFonts.montserrat(
                         fontSize: isPortrait ? screenWidth * 0.045 : screenHeight * 0.045,
                         fontWeight: FontWeight.bold,
@@ -188,12 +209,12 @@ class _TutorialScreenState extends State<TutorialScreen> {
 
 class TutorialItem {
   final String image;
-  final String title;
-  final String description;
+  final String titleKey;
+  final String descriptionKey;
 
   TutorialItem({
     required this.image,
-    required this.title,
-    required this.description,
+    required this.titleKey,
+    required this.descriptionKey,
   });
 }
