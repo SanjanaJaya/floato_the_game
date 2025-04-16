@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:floato_the_game/game.dart';
 import 'package:flutter/material.dart';
+import 'package:floato_the_game/language_manager.dart';
 
 class ScoreText extends TextComponent with HasGameRef<floato> {
   int _lastScore = 0;
@@ -12,10 +13,9 @@ class ScoreText extends TextComponent with HasGameRef<floato> {
   static const double baseWidth = 800.0;
   static const double baseHeight = 600.0;
 
-  // Default style that will be updated when game reference is available
   ScoreText()
       : super(
-    text: 'Score: 0',
+    text: '${LanguageManager.getText('Score:')} 0', // Initialize with translated text
     textRenderer: TextPaint(
       style: const TextStyle(
         color: Colors.white,
@@ -42,14 +42,14 @@ class ScoreText extends TextComponent with HasGameRef<floato> {
     textRenderer = TextPaint(
       style: TextStyle(
         color: Colors.white,
-        fontSize: 48 * fontScale, // Responsive font size
+        fontSize: 48 * fontScale,
         fontWeight: FontWeight.bold,
         shadows: [
-          Shadow(
-            color: Colors.blue,
-            blurRadius: 10 * shadowScale, // Responsive shadow
-            offset: const Offset(0, 0),
-          ),
+        Shadow(
+        color: Colors.blue,
+        blurRadius: 10 * shadowScale,
+        offset: const Offset(0, 0),
+        ),
         ],
       ),
     );
@@ -57,16 +57,13 @@ class ScoreText extends TextComponent with HasGameRef<floato> {
     _glowPaint = Paint()
       ..color = Colors.blue.withOpacity(0.3)
       ..maskFilter = MaskFilter.blur(
-          BlurStyle.normal,
-          15 * shadowScale); // Responsive glow blur
+          BlurStyle.normal, 15 * shadowScale);
 
-    // Responsive positioning
     position = Vector2(
       gameRef.size.x / 2,
-      gameRef.size.y - 50 * (gameRef.size.y / baseHeight), // Responsive position
+      gameRef.size.y - 50 * (gameRef.size.y / baseHeight),
     );
 
-    // Make floating effect proportional to screen size
     add(
       MoveEffect.by(
         Vector2(0, -5 * (gameRef.size.y / baseHeight)),
@@ -84,12 +81,12 @@ class ScoreText extends TextComponent with HasGameRef<floato> {
   @override
   void update(double dt) {
     final newScore = gameRef.score;
-    final newText = 'Score: $newScore';
+    // Use LanguageManager to get translated "Score:" text
+    final newText = '${LanguageManager.getText('Score:')} $newScore';
 
     if (text != newText) {
       text = newText;
 
-      // Animate score change if it increased
       if (newScore > _lastScore) {
         _animateScoreIncrease();
       }
@@ -102,21 +99,16 @@ class ScoreText extends TextComponent with HasGameRef<floato> {
 
   @override
   void render(Canvas canvas) {
-    // Add glow effect behind text
     final textRect = Rect.fromLTWH(0, 0, width, height);
     canvas.drawRect(textRect, _glowPaint);
-
     super.render(canvas);
   }
 
   void _animateScoreIncrease() {
-    // Remove any existing scale effects
     removeWhere((component) => component is ScaleEffect);
 
-    // Calculate responsive scale amount
     double scaleAmount = 1.2 * (gameRef.size.x / baseWidth).clamp(0.8, 1.2);
 
-    // Add a pulse animation when score increases
     add(
       ScaleEffect.by(
         Vector2.all(scaleAmount),
@@ -127,7 +119,6 @@ class ScoreText extends TextComponent with HasGameRef<floato> {
       ),
     );
 
-    // Add a color tint effect
     final colorController = EffectController(
       duration: 0.3,
       alternate: true,
