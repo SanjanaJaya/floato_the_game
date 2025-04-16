@@ -1,8 +1,8 @@
 // Rocket constants
 const double rocketStartX = 100;
 const double rocketStartY = 100;
-const double rocketWidth = 40;
-const double rocketHeight = 40;
+const double rocketWidth = 55;
+const double rocketHeight = 55;
 const double gravity = 500;
 const double jumpStrength = -300;
 
