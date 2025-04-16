@@ -72,7 +72,7 @@ class Rocket extends SpriteAnimationComponent with CollisionCallbacks, HasGameRe
 
     animation = SpriteAnimation.spriteList(
       sprites,
-      stepTime: 0.05,
+      stepTime: 0.1,
     );
 
     add(RectangleHitbox());
