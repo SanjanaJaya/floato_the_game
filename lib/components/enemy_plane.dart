@@ -17,6 +17,7 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
   late HealthBar3D healthBar;
   bool _isDestroyed = false;
   final AudioManager _audioManager = AudioManager();
+  Vector2 _initialSize;
 
   EnemyPlane({
     required Vector2 position,
@@ -26,10 +27,17 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
   }) :
         maxHealth = enemyPlaneHealths[planeType % enemyPlaneHealths.length],
         health = enemyPlaneHealths[planeType % enemyPlaneHealths.length],
+        _initialSize = size,
         super(position: position, size: size);
 
   @override
   FutureOr<void> onLoad() async {
+    // Apply scaling to the size
+    size = Vector2(
+      _initialSize.x * gameRef.scaleFactor,
+      _initialSize.y * gameRef.scaleFactor,
+    );
+
     // Load the sprite sheet for animations
     final imageIndex = planeType % enemyPlaneImages.length;
     final spriteSheet = await game.images.load(enemyPlaneImages[imageIndex]);
@@ -65,11 +73,11 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
       speed = baseSpeed * speedMultiplier;
     }
 
-    // Add health bar
+    // Add health bar with scaled position and size
     healthBar = HealthBar3D(
       maxHealth: maxHealth,
-      position: Vector2(0, -15), // Position above the plane
-      size: Vector2(size.x, 5),
+      position: Vector2(0, -15 * gameRef.scaleFactor),
+      size: Vector2(size.x, 5 * gameRef.scaleFactor),
     );
     add(healthBar);
   }
@@ -79,7 +87,7 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
     // Get the actual speed considering slow motion ability
     double effectiveSpeed = speed;
     if (gameRef.currentAbility == AbilityType.slowMotion) {
-      effectiveSpeed *= 0.5; // Half speed during slow motion
+      effectiveSpeed *= 0.075; // Half speed during slow motion
     }
 
     position.x -= effectiveSpeed * dt;

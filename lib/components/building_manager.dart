@@ -31,13 +31,15 @@ class BuildingManager extends Component with HasGameRef<floato> {
   }
 
   void spawnBuilding() {
-    final double screenHeight = gameRef.size.y;
-    final double buildingHeight = minBuildingHeight +
-        random.nextDouble() * (maxBuildingHeight - minBuildingHeight);
+    final buildingHeight = (minBuildingHeight +
+        random.nextDouble() * (maxBuildingHeight - minBuildingHeight)) * gameRef.scaleFactor;
 
     final building = Building(
-      Vector2(gameRef.size.x, screenHeight - groundHeight),
-      Vector2(buildingWidth, buildingHeight),
+      Vector2(gameRef.size.x, gameRef.size.y - groundHeight * gameRef.scaleFactor),
+      Vector2(
+        buildingWidth * gameRef.scaleFactor,
+        buildingHeight,
+      ),
     );
 
     gameRef.add(building);

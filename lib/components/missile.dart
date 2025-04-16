@@ -19,15 +19,21 @@ class Missile extends SpriteComponent with CollisionCallbacks, HasGameRef<floato
     required this.damage,
   }) : super(
     position: position,
-    size: rocketType == 0 ? Vector2(20, 10) : Vector2(30, 15), // Smaller missiles for Skye
+    size: Vector2(rocketType == 0 ? 20 : 30, rocketType == 0 ? 10 : 15), // Default size
   );
 
   @override
   FutureOr<void> onLoad() async {
     try {
+      // Apply scaling after the component is loaded
+      size = Vector2(
+        (rocketType == 0 ? 20 : 30) * gameRef.scaleFactor,
+        (rocketType == 0 ? 10 : 15) * gameRef.scaleFactor,
+      );
+
       // Load basic missile for Skye (type 0)
       if (rocketType == 0) {
-        sprite = await Sprite.load('basic_missile.png'); // Add this asset
+        sprite = await Sprite.load('basic_missile.png');
       }
       // Load specialized missiles for other rockets
       else {
@@ -53,14 +59,15 @@ class Missile extends SpriteComponent with CollisionCallbacks, HasGameRef<floato
   }
 
   @override
-  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    super.onCollision(intersectionPoints, other);
+  void onCollisionStart(
+      Set<Vector2> intersectionPoints,
+      PositionComponent other,
+      ) {
+    super.onCollisionStart(intersectionPoints, other);
 
     if (other is EnemyPlane) {
-      // Ensure damage is applied
       other.takeDamage(damage);
 
-      // Add explosion at the collision point
       final explosionPos = Vector2(
         (intersectionPoints.first.x + intersectionPoints.last.x) / 2,
         (intersectionPoints.first.y + intersectionPoints.last.y) / 2,
@@ -68,10 +75,9 @@ class Missile extends SpriteComponent with CollisionCallbacks, HasGameRef<floato
 
       gameRef.add(Explosion(
         position: explosionPos,
-        size: Vector2(50, 50),
+        size: Vector2(50 * gameRef.scaleFactor, 50 * gameRef.scaleFactor),
       ));
 
-      // Remove missile after hitting a plane
       removeFromParent();
     }
   }

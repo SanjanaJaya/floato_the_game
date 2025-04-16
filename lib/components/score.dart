@@ -8,6 +8,11 @@ class ScoreText extends TextComponent with HasGameRef<floato> {
   int _lastScore = 0;
   late final Paint _glowPaint;
 
+  // Constants for base dimensions to calculate scaling
+  static const double baseWidth = 800.0;
+  static const double baseHeight = 600.0;
+
+  // Default style that will be updated when game reference is available
   ScoreText()
       : super(
     text: 'Score: 0',
@@ -29,20 +34,42 @@ class ScoreText extends TextComponent with HasGameRef<floato> {
   );
 
   @override
-  FutureOr<void> onLoad() {
-    _glowPaint = Paint()
-      ..color = Colors.blue.withOpacity(0.3)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 15);
+  FutureOr<void> onLoad() async {
+    // Update text style with responsive values now that gameRef is available
+    double fontScale = (gameRef.size.x / baseWidth).clamp(0.8, 1.5);
+    double shadowScale = gameRef.size.x / baseWidth;
 
-    position = Vector2(
-      gameRef.size.x / 2,
-      gameRef.size.y - 50,
+    textRenderer = TextPaint(
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 48 * fontScale, // Responsive font size
+        fontWeight: FontWeight.bold,
+        shadows: [
+          Shadow(
+            color: Colors.blue,
+            blurRadius: 10 * shadowScale, // Responsive shadow
+            offset: const Offset(0, 0),
+          ),
+        ],
+      ),
     );
 
-    // Add a subtle floating effect
+    _glowPaint = Paint()
+      ..color = Colors.blue.withOpacity(0.3)
+      ..maskFilter = MaskFilter.blur(
+          BlurStyle.normal,
+          15 * shadowScale); // Responsive glow blur
+
+    // Responsive positioning
+    position = Vector2(
+      gameRef.size.x / 2,
+      gameRef.size.y - 50 * (gameRef.size.y / baseHeight), // Responsive position
+    );
+
+    // Make floating effect proportional to screen size
     add(
       MoveEffect.by(
-        Vector2(0, -5),
+        Vector2(0, -5 * (gameRef.size.y / baseHeight)),
         EffectController(
           duration: 1.5,
           alternate: true,
@@ -86,10 +113,13 @@ class ScoreText extends TextComponent with HasGameRef<floato> {
     // Remove any existing scale effects
     removeWhere((component) => component is ScaleEffect);
 
+    // Calculate responsive scale amount
+    double scaleAmount = 1.2 * (gameRef.size.x / baseWidth).clamp(0.8, 1.2);
+
     // Add a pulse animation when score increases
     add(
       ScaleEffect.by(
-        Vector2.all(1.2),
+        Vector2.all(scaleAmount),
         EffectController(
           duration: 0.2,
           alternate: true,

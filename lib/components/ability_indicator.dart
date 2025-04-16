@@ -15,10 +15,13 @@ class AbilityIndicator extends PositionComponent with HasGameRef<floato> {
   @override
   Future<void> onLoad() async {
     position = Vector2(
-      gameRef.size.x / 2 - 150, // Centered horizontally with 300 width
-      38, // 20 pixels from top
+      gameRef.size.x / 2 - 150 * gameRef.scaleFactor,
+      38 * gameRef.heightScaleFactor,
     );
-    size = Vector2(300, 50); // Slightly larger for better visibility
+    size = Vector2(
+      300 * gameRef.scaleFactor,
+      50 * gameRef.heightScaleFactor,
+    );
     priority = 10;
     await super.onLoad();
   }
@@ -29,7 +32,7 @@ class AbilityIndicator extends PositionComponent with HasGameRef<floato> {
 
     if (gameRef.currentAbility != null) {
       final ability = gameRef.currentAbility!;
-      final remaining = gameRef.abilityDuration; // Accessing the private duration
+      final remaining = gameRef.abilityDuration;
       final maxDuration = _abilityDurations[ability]!;
 
       // Calculate progress percentage (0.0 to 1.0)
@@ -44,20 +47,12 @@ class AbilityIndicator extends PositionComponent with HasGameRef<floato> {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2;
 
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(0, 0, size.x, size.y),
-          Radius.circular(25),
-        ),
-        backgroundPaint,
+      final backgroundRRect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, size.x, size.y),
+        Radius.circular(25 * gameRef.scaleFactor),
       );
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(0, 0, size.x, size.y),
-          Radius.circular(25),
-        ),
-        borderPaint,
-      );
+      canvas.drawRRect(backgroundRRect, backgroundPaint);
+      canvas.drawRRect(backgroundRRect, borderPaint);
 
       // Draw progress bar with gradient colors
       final progressBarRect = Rect.fromLTWH(
@@ -65,6 +60,10 @@ class AbilityIndicator extends PositionComponent with HasGameRef<floato> {
         0,
         size.x * progress,
         size.y,
+      );
+      final progressBarRRect = RRect.fromRectAndRadius(
+        progressBarRect,
+        Radius.circular(25 * gameRef.scaleFactor),
       );
       final progressBarPaint = Paint()
         ..shader = LinearGradient(
@@ -74,57 +73,61 @@ class AbilityIndicator extends PositionComponent with HasGameRef<floato> {
             progress > 0.2 ? Colors.yellow : Colors.red,
           ],
         ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          progressBarRect,
-          Radius.circular(25),
-        ),
-        progressBarPaint,
-      );
+      canvas.drawRRect(progressBarRRect, progressBarPaint);
 
       // Draw ability icon (larger and centered vertically)
+      final iconStyle = TextStyle(
+        fontSize: 28 * gameRef.scaleFactor,
+        color: Colors.white,
+        fontFamily: 'Arial',
+        fontWeight: FontWeight.bold,
+        shadows: [
+          Shadow(
+            color: Colors.black.withOpacity(0.8),
+            blurRadius: 2 * gameRef.scaleFactor,
+            offset: Offset(1 * gameRef.scaleFactor, 1 * gameRef.scaleFactor),
+          ),
+        ],
+      );
+
       final icon = TextPainter(
         text: TextSpan(
           text: _getAbilityIcon(ability),
-          style: TextStyle(
-            fontSize: 28,
-            color: Colors.white,
-            fontFamily: 'Arial',
-            fontWeight: FontWeight.bold,
-            shadows: [
-              Shadow(
-                color: Colors.black.withOpacity(0.8),
-                blurRadius: 2,
-                offset: Offset(1, 1),
-              ),
-            ],
-          ),
+          style: iconStyle,
         ),
         textDirection: TextDirection.ltr,
       )..layout();
-      icon.paint(canvas, Offset(15, (size.y - icon.height) / 2));
+      icon.paint(canvas, Offset(
+          15 * gameRef.scaleFactor,
+          (size.y - icon.height) / 2
+      ));
 
       // Draw ability name
+      final nameStyle = TextStyle(
+        fontSize: 18 * gameRef.scaleFactor,
+        color: Colors.white,
+        fontFamily: 'Arial',
+        fontWeight: FontWeight.bold,
+        shadows: [
+          Shadow(
+            color: Colors.black.withOpacity(0.8),
+            blurRadius: 2 * gameRef.scaleFactor,
+            offset: Offset(1 * gameRef.scaleFactor, 1 * gameRef.scaleFactor),
+          ),
+        ],
+      );
+
       final name = TextPainter(
         text: TextSpan(
           text: _getAbilityName(ability),
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.white,
-            fontFamily: 'Arial',
-            fontWeight: FontWeight.bold,
-            shadows: [
-              Shadow(
-                color: Colors.black.withOpacity(0.8),
-                blurRadius: 2,
-                offset: Offset(1, 1),
-              ),
-            ],
-          ),
+          style: nameStyle,
         ),
         textDirection: TextDirection.ltr,
       )..layout();
-      name.paint(canvas, Offset(60, (size.y - name.height) / 2));
+      name.paint(canvas, Offset(
+          60 * gameRef.scaleFactor,
+          (size.y - name.height) / 2
+      ));
 
       // Draw timer with dynamic color based on remaining time
       final timerColor = progress > 0.5
@@ -133,26 +136,31 @@ class AbilityIndicator extends PositionComponent with HasGameRef<floato> {
           ? Colors.yellow
           : Colors.red;
 
+      final timerStyle = TextStyle(
+        fontSize: 18 * gameRef.scaleFactor,
+        color: timerColor,
+        fontFamily: 'Arial',
+        fontWeight: FontWeight.bold,
+        shadows: [
+          Shadow(
+            color: Colors.black.withOpacity(0.8),
+            blurRadius: 2 * gameRef.scaleFactor,
+            offset: Offset(1 * gameRef.scaleFactor, 1 * gameRef.scaleFactor),
+          ),
+        ],
+      );
+
       final timer = TextPainter(
         text: TextSpan(
           text: remaining.toStringAsFixed(1) + 's',
-          style: TextStyle(
-            fontSize: 18,
-            color: timerColor,
-            fontFamily: 'Arial',
-            fontWeight: FontWeight.bold,
-            shadows: [
-              Shadow(
-                color: Colors.black.withOpacity(0.8),
-                blurRadius: 2,
-                offset: Offset(1, 1),
-              ),
-            ],
-          ),
+          style: timerStyle,
         ),
         textDirection: TextDirection.ltr,
       )..layout();
-      timer.paint(canvas, Offset(size.x - timer.width - 15, (size.y - timer.height) / 2));
+      timer.paint(canvas, Offset(
+          size.x - timer.width - 15 * gameRef.scaleFactor,
+          (size.y - timer.height) / 2
+      ));
     }
   }
 

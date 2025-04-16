@@ -13,8 +13,11 @@ class Ground extends SpriteComponent with HasGameRef<floato>, CollisionCallbacks
 
   @override
   FutureOr<void> onLoad() async {
-    size = Vector2(2 * gameRef.size.x, groundHeight);
-    position = Vector2(0, gameRef.size.y - groundHeight);
+    size = Vector2(
+      2 * gameRef.size.x,
+      groundHeight * gameRef.scaleFactor,
+    );
+    position = Vector2(0, gameRef.size.y - groundHeight * gameRef.scaleFactor);
     await updateGround(0);
     add(RectangleHitbox());
   }

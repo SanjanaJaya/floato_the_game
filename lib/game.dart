@@ -27,6 +27,10 @@ import 'audio_manager.dart';
 import 'special_ability.dart';
 import 'main.dart';
 
+// Add these constants at the top of the file
+const double baseWidth = 360.0; // Base width for reference (e.g., iPhone SE)
+const double baseHeight = 640.0; // Base height for reference
+
 class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDetection {
   late Rocket rocket;
   late Background background;
@@ -75,6 +79,10 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   int _lastAudioProcessTime = 0;
   static const int _audioProcessInterval = 100; // Process audio less frequently
 
+  // Add scaling factors
+  double get scaleFactor => size.x / baseWidth;
+  double get heightScaleFactor => size.y / baseHeight;
+
   // Add this to the floato class
   double get abilityDuration => _abilityDuration;
 
@@ -112,7 +120,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     coinDisplay = CoinDisplay();
     add(coinDisplay);
 
-    // Define control zones
+    // Define responsive control zones
     dragZone = Rect.fromLTWH(0, 0, size.x * 0.66, size.y);
     shootZone = Rect.fromLTWH(size.x * 0.66, 0, size.x * 0.34, size.y);
 
@@ -387,6 +395,11 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   }
 
   void manageGameObjects() {
+    // Scale object limits based on screen size
+    final scaledMaxEnemyPlanes = (_maxEnemyPlanes * scaleFactor).round();
+    final scaledMaxBuildings = (_maxBuildings * scaleFactor).round();
+    final scaledMaxMissiles = (_maxMissiles * scaleFactor).round();
+
     final levelThreshold = _getCurrentLevelThreshold();
     final isPerformanceCritical = _isPerformanceCritical();
 
@@ -416,12 +429,11 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       _maxMissiles = 8;
     }
 
-
     // Limit enemy planes
     final enemies = children.whereType<EnemyPlane>().toList();
-    if (enemies.length > _maxEnemyPlanes) {
+    if (enemies.length > scaledMaxEnemyPlanes) {
       enemies.sort((a, b) => b.position.x.compareTo(a.position.x));
-      for (int i = _maxEnemyPlanes; i < enemies.length; i++) {
+      for (int i = scaledMaxEnemyPlanes; i < enemies.length; i++) {
         if (enemies[i].position.x < -enemyPlaneWidth * 1.5 ||
             enemies[i].position.x > size.x + enemyPlaneWidth * 1.5) {
           enemies[i].removeFromParent();
@@ -431,9 +443,9 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
     // Limit buildings
     final buildings = children.whereType<Building>().toList();
-    if (buildings.length > _maxBuildings) {
+    if (buildings.length > scaledMaxBuildings) {
       buildings.sort((a, b) => b.position.x.compareTo(a.position.x));
-      for (int i = _maxBuildings; i < buildings.length; i++) {
+      for (int i = scaledMaxBuildings; i < buildings.length; i++) {
         if (buildings[i].position.x < -buildingWidth * 1.5) {
           buildings[i].removeFromParent();
         }
@@ -442,9 +454,9 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
     // Limit missiles
     final missiles = children.whereType<Missile>().toList();
-    if (missiles.length > _maxMissiles) {
+    if (missiles.length > scaledMaxMissiles) {
       missiles.sort((a, b) => a.creationTime.compareTo(b.creationTime));
-      for (int i = 0; i < missiles.length - _maxMissiles; i++) {
+      for (int i = 0; i < missiles.length - scaledMaxMissiles; i++) {
         missiles[i].removeFromParent();
       }
     }

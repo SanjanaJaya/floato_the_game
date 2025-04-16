@@ -284,7 +284,7 @@ const Map<int, int> birdUnlockCosts = {
 const double vehicleWidth = 300;
 const double vehicleHeight = 120;
 const double vehicleSpeed = 120; // Constant speed for all vehicles
-const double vehicleSpawnInterval = 8.0; // Base spawn interval in seconds
+const double vehicleSpawnInterval = 4.0; // Base spawn interval in seconds
 
 // Add this to your constants for vehicle images
 // You can expand this list in the future without changing the code

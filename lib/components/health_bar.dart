@@ -50,7 +50,10 @@ class HealthBar3D extends PositionComponent {
         depthPaint = Paint()
           ..color = const Color(0xFF111111)
           ..style = PaintingStyle.fill,
-        super(position: position, size: size);
+        super(
+        position: position,
+        size: size,
+      );
 
   void updateHealth(int newHealth) {
     _previousHealth = currentHealth;

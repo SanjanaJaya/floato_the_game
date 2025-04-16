@@ -21,6 +21,12 @@ class Vehicle extends SpriteAnimationComponent with HasGameRef<floato> {
 
   @override
   FutureOr<void> onLoad() async {
+    // Scale size based on device
+    size = Vector2(
+      gameRef.scaleFactor * vehicleWidth,
+      gameRef.scaleFactor * vehicleHeight,
+    );
+
     // Load the appropriate vehicle image from constants
     final vehicleImage = vehicleImages[vehicleType % vehicleImages.length];
     final spriteSheet = await gameRef.images.load(vehicleImage);
@@ -36,7 +42,7 @@ class Vehicle extends SpriteAnimationComponent with HasGameRef<floato> {
       spriteSheet,
       SpriteAnimationData.sequenced(
         amount: framesPerVehicle,
-        stepTime: 0.2, // Adjust animation speed as needed
+        stepTime: 0.075, // Adjust animation speed as needed
         textureSize: Vector2(frameWidth, frameHeight),
       ),
     );
