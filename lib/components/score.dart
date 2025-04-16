@@ -15,7 +15,7 @@ class ScoreText extends TextComponent with HasGameRef<floato> {
 
   ScoreText()
       : super(
-    text: '${LanguageManager.getText('Score:')} 0', // Initialize with translated text
+    text: 'Score: 0',
     textRenderer: TextPaint(
       style: const TextStyle(
         color: Colors.white,
@@ -82,7 +82,7 @@ class ScoreText extends TextComponent with HasGameRef<floato> {
   void update(double dt) {
     final newScore = gameRef.score;
     // Use LanguageManager to get translated "Score:" text
-    final newText = '${LanguageManager.getText('Score:')} $newScore';
+    final newText = 'Score: $newScore';
 
     if (text != newText) {
       text = newText;

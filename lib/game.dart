@@ -26,6 +26,7 @@ import 'menu_screen.dart';
 import 'audio_manager.dart';
 import 'special_ability.dart';
 import 'main.dart';
+import 'package:floato_the_game/language_manager.dart';
 
 // Add these constants at the top of the file
 const double baseWidth = 360.0; // Base width for reference (e.g., iPhone SE)
@@ -339,6 +340,7 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
 
   // Update performance settings with improved audio handling
   void _updatePerformanceSettings() {
+
     if (_fpsHistory.length < 10) return;
 
     // Calculate average FPS with more weight on recent frames
@@ -720,163 +722,203 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
       barrierDismissible: false,
       builder: (context) {
         final mediaQuery = MediaQuery.of(context);
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: mediaQuery.padding.bottom,
-          ),
-          child: AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-            backgroundColor: Colors.blueGrey[900],
-            elevation: 20,
-            title: const Text(
-              "Game Over",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Arial',
-              ),
+        final screenWidth = mediaQuery.size.width;
+        final screenHeight = mediaQuery.size.height;
+
+        // Calculate responsive sizes
+        final dialogWidth = screenWidth * 0.9; // 90% of screen width
+        final dialogMaxWidth = 500.0; // Maximum width for very large screens
+        final buttonWidth = screenWidth * 0.6; // 60% of screen width
+        final buttonMaxWidth = 300.0; // Maximum button width
+        final fontSizeMultiplier = screenWidth < 400 ? 0.8 : 1.0; // Adjust font size for small screens
+
+        // Get localized text
+        final gameOverText = LanguageManager.getText('gameOver');
+        final scoreText = LanguageManager.getText('Score:');
+        final environmentText = LanguageManager.getText('environment');
+        final coinsCollectedText = LanguageManager.getText('coinsCollected');
+        final playAgainText = LanguageManager.getText('playAgain');
+        final backToMenuText = LanguageManager.getText('back');
+
+        // Get environment name translated
+        final translatedEnvironmentName = LanguageManager.getEnvironmentName(background.currentEnvironmentName);
+
+        // Use text direction from language manager
+        final textDirection = LanguageManager.getTextDirection();
+
+        return Directionality(
+          textDirection: textDirection,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: mediaQuery.padding.bottom,
             ),
-            content: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.blueGrey[800],
-                borderRadius: BorderRadius.circular(10),
+            child: AlertDialog(
+              insetPadding: EdgeInsets.symmetric(
+                horizontal: max(16, (screenWidth - min(dialogWidth, dialogMaxWidth)) / 2),
+                vertical: 16,
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "Score: $score",
-                    style: const TextStyle(
-                      color: Colors.amber,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "${getCurrentLevelName()} (${getCurrentLevelRange()})",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "Environment: ${background.currentEnvironmentName}",
-                    style: const TextStyle(
-                      color: Colors.lightBlueAccent,
-                      fontSize: 18,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "Coins collected: $coins",
-                    style: const TextStyle(
-                      color: Colors.yellow,
-                      fontSize: 18,
-                    ),
-                  ),
-                ],
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+              backgroundColor: Colors.blueGrey[900],
+              elevation: 20,
+              title: Text(
+                gameOverText,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30 * fontSizeMultiplier,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Arial',
+                ),
               ),
-            ),
-            actionsAlignment: MainAxisAlignment.center,
-            actions: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 200,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Colors.orange, Colors.red],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        resetGame();
-                      },
-                      child: const Text(
-                        "Play Again",
+              content: SingleChildScrollView(
+                child: Container(
+                  width: min(dialogWidth, dialogMaxWidth),
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.blueGrey[800],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "$scoreText $score",
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
+                          color: Colors.amber,
+                          fontSize: 24 * fontSizeMultiplier,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
+                      SizedBox(height: 8),
+                      Text(
+                        "${LanguageManager.getText(getCurrentLevelName())} (${getCurrentLevelRange()})",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20 * fontSizeMultiplier,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "$environmentText: $translatedEnvironmentName",
+                        style: TextStyle(
+                          color: Colors.lightBlueAccent,
+                          fontSize: 18 * fontSizeMultiplier,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "$coinsCollectedText: $coins",
+                        style: TextStyle(
+                          color: Colors.yellow,
+                          fontSize: 18 * fontSizeMultiplier,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 10),
-                  Container(
-                    width: 200,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Colors.blue, Colors.purple],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
+                ),
+              ),
+              actionsAlignment: MainAxisAlignment.center,
+              actions: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: min(buttonWidth, buttonMaxWidth),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.orange, Colors.red],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ],
-                    ),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MenuScreen(),
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
                           ),
-                        );
-                      },
-                      child: const Text(
-                        "Back to Menu",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: screenHeight < 600 ? 10 : 15,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          resetGame();
+                        },
+                        child: Text(
+                          playAgainText,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18 * fontSizeMultiplier,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    SizedBox(height: screenHeight < 600 ? 8 : 10),
+                    Container(
+                      width: min(buttonWidth, buttonMaxWidth),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.blue, Colors.purple],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: screenHeight < 600 ? 10 : 15,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MenuScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          backToMenuText,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18 * fontSizeMultiplier,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },

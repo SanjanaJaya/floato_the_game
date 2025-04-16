@@ -85,6 +85,10 @@ class LanguageManager {
       'skip': 'SKIP',
       'next': 'NEXT',
       'start': 'START',
+      'gameOver': 'Game Over',
+      'environment': 'Environment',
+      'coinsCollected': 'Coins collected',
+      'playAgain': 'Play Again',
     },
     sinhala: {
       'gameTitle': 'ෆ්ලෝටෝ',
@@ -162,6 +166,10 @@ class LanguageManager {
       'skip': 'ඉවත්වන්න',
       'next': 'ඊළඟ',
       'start': 'අරඹන්න',
+      'gameOver': 'ක්‍රීඩාව අවසන්',
+      'environment': 'පරිසරය',
+      'coinsCollected': 'එකතු කළ කාසි',
+      'playAgain': 'නැවත සෙල්ලම් කරන්න',
     },
   };
 
