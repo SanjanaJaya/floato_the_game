@@ -135,7 +135,7 @@ class LanguageManager {
       'masterLevel': 'ප්‍රවීණ මට්ටම',
       'coins': 'කාසි',
       'paused': 'තාවකාලිකව නවතා ඇත',
-      'resume': 'දිගටම කරගෙන යන්න',
+      'resume': 'දිගටම යන්න',
       'quit': 'ඉවත්වන්න',
       // Environment names in Sinhala
       'Anuradhapura': 'අනුරාධපුර',
