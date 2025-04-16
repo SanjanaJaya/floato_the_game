@@ -294,6 +294,10 @@ const List<String> vehicleImages = [
   'vehicle3.png',
   'vehicle4.png',
   'vehicle5.png',
+  'vehicle6.png',
+  'vehicle7.png',
+  'vehicle8.png',
+  'vehicle9.png',
 ];
 
 // Function to get difficulty settings beyond defined thresholds
