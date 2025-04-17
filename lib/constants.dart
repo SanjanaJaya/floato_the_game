@@ -23,11 +23,11 @@ const List<String> rocketNames = ['Skye', 'Nyra', 'Seren', 'Elowen', 'Zephyr', '
 
 // Updated missile capabilities to be more distinctive
 const List<double> missileSpeeds = [
-  0, // Rocket 1 doesn't shoot
-  300, // Rocket 2 missile speed
-  400, // Rocket 3 missile speed - increased from 350
-  450, // Rocket 4 missile speed - increased from 400
-  500, // Rocket 5 missile speed - increased from 450
+  0,
+  300,
+  400,
+  450,
+  500,
   600,
   700,
   800,
