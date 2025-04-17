@@ -159,7 +159,7 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/loading_bg.jpg'),
+            image: AssetImage('assets/images/loading_bg.png'),
             fit: BoxFit.cover,
           ),
         ),
