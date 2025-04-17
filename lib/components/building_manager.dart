@@ -46,11 +46,19 @@ class BuildingManager extends Component with HasGameRef<floato> {
   }
 
   void spawnEnemy() {
+    // Define spawn area parameters
     final double screenHeight = gameRef.size.y;
-    final double minY = 100;
-    final double maxY = screenHeight - groundHeight - maxBuildingHeight - 50;
+    final double screenWidth = gameRef.size.x;
 
+    // Use 20% of screen height from top as minimum Y
+    final double minY = screenHeight * 0.05;
+    // Use 70% of screen height as maximum Y (leaving space for ground buildings)
+    final double maxY = screenHeight * 0.7;
+
+    // Random Y position within the defined range
     final double yPos = minY + random.nextDouble() * (maxY - minY);
+
+    // Random plane type
     final planeType = random.nextInt(enemyPlaneImages.length);
 
     // Calculate the correct speed based on the current level
@@ -58,9 +66,13 @@ class BuildingManager extends Component with HasGameRef<floato> {
     final speedMultiplier = gameRef.getEnemySpeedMultiplier();
     final adjustedSpeed = baseSpeed * speedMultiplier;
 
+    // Create the enemy plane
     final enemy = EnemyPlane(
-      position: Vector2(gameRef.size.x, yPos),
-      size: Vector2(enemyPlaneWidth, enemyPlaneHeight),
+      position: Vector2(screenWidth, yPos),
+      size: Vector2(
+        enemyPlaneWidth * gameRef.scaleFactor,
+        enemyPlaneHeight * gameRef.scaleFactor,
+      ),
       planeType: planeType,
       speed: adjustedSpeed,
     );
