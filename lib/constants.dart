@@ -28,6 +28,9 @@ const List<double> missileSpeeds = [
   400, // Rocket 3 missile speed - increased from 350
   450, // Rocket 4 missile speed - increased from 400
   500, // Rocket 5 missile speed - increased from 450
+  600,
+  700,
+  800,
 ];
 
 const List<int> missileDamages = [
@@ -36,6 +39,9 @@ const List<int> missileDamages = [
   35, // Rocket 3 missile damage - decreased from 40
   50, // Rocket 4 missile damage - unchanged
   80, // Rocket 5 missile damage - increased from 75
+  95,
+  105,
+  120,
 ];
 
 // Ground constants
