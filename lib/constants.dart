@@ -107,7 +107,6 @@ const List<String> buildingImages = [
   'building18.png',
   'building19.png',
   'building20.png',
-  'building21.png',
 ];
 
 // Enemy plane constants

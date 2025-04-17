@@ -87,6 +87,7 @@ flutter:
     - assets/images/abilities/invincibility.png
     - assets/images/abilities/slow_motion.png
     - assets/images/abilities/rapid_fire.png
+    - assets/videos/menu_background.mp4
 
 
 

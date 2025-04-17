@@ -2,6 +2,7 @@ import 'package:floato_the_game/tutorial_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:video_player/video_player.dart';
 import 'game.dart';
 import 'audio_manager.dart';
 import 'shared_preferences_helper.dart';
@@ -11,7 +12,9 @@ import 'bird_unlock_notification.dart';
 import 'language_manager.dart';
 
 class MenuScreen extends StatefulWidget {
-  const MenuScreen({Key? key}) : super(key: key);
+  final VideoPlayerController? videoPlayerController;
+
+  const MenuScreen({Key? key, this.videoPlayerController}) : super(key: key);
 
   @override
   State<MenuScreen> createState() => _MenuScreenState();
@@ -22,6 +25,8 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
   bool showRocketSelection = false;
   bool _isSinhala = false;
   final AudioManager _audioManager = AudioManager();
+  VideoPlayerController? _videoPlayerController;
+  bool _needToInitVideo = false;
 
   // Animation controller for rocket hover effect
   late AnimationController _animationController;
@@ -54,12 +59,34 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     });
 
     _animationController.repeat(reverse: true);
+
+    // Set up video controller if provided or create a new one
+    if (widget.videoPlayerController != null) {
+      _videoPlayerController = widget.videoPlayerController;
+      // Make sure video loops
+      _videoPlayerController!.setLooping(true);
+      // Start playing immediately
+      _videoPlayerController!.play();
+    } else {
+      _needToInitVideo = true;
+      _videoPlayerController = VideoPlayerController.asset('assets/videos/menu_background.mp4')
+        ..initialize().then((_) {
+          setState(() {});
+          _videoPlayerController!.setLooping(true);
+          _videoPlayerController!.play();
+        });
+    }
+
     _loadSavedData();
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    // Only dispose video controller if we created it here
+    if (_needToInitVideo && _videoPlayerController != null) {
+      _videoPlayerController!.dispose();
+    }
     super.dispose();
   }
 
@@ -107,65 +134,91 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     final screenHeight = mediaQuery.size.height;
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/menu_background.jpg'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        padding: EdgeInsets.only(
-          top: padding.top,
-          bottom: padding.bottom,
-          left: padding.left,
-          right: padding.right,
-        ),
-        child: Stack(
-          children: [
-            Center(
-              child: showCredits
-                  ? buildCreditsContent()
-                  : (showRocketSelection
-                  ? buildRocketSelectionContent()
-                  : buildMenuContent()),
+      body: Stack(
+        children: [
+          // Video background
+          _videoPlayerController != null && _videoPlayerController!.value.isInitialized
+              ? SizedBox.expand(
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: SizedBox(
+                width: _videoPlayerController!.value.size.width,
+                height: _videoPlayerController!.value.size.height,
+                child: VideoPlayer(_videoPlayerController!),
+              ),
             ),
-            // Language toggle button
-            Positioned(
-              top: 40,
-              left: 20,
-              child: _buildCircleButton(
-                child: Text(
-                  _isSinhala ? 'EN' : 'SI',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: screenWidth * 0.04,
-                    fontWeight: FontWeight.bold,
+          )
+          // Fallback to static image if video not ready
+              : Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/menu_background.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+
+          // Dark overlay to make UI more visible
+          Container(
+            color: Colors.black.withOpacity(0.3),
+          ),
+
+          // Main content
+          Padding(
+            padding: EdgeInsets.only(
+              top: padding.top,
+              bottom: padding.bottom,
+              left: padding.left,
+              right: padding.right,
+            ),
+            child: Stack(
+              children: [
+                Center(
+                  child: showCredits
+                      ? buildCreditsContent()
+                      : (showRocketSelection
+                      ? buildRocketSelectionContent()
+                      : buildMenuContent()),
+                ),
+                // Language toggle button
+                Positioned(
+                  top: 40,
+                  left: 20,
+                  child: _buildCircleButton(
+                    child: Text(
+                      _isSinhala ? 'EN' : 'SI',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: screenWidth * 0.04,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: _toggleLanguage,
+                    color: Colors.black.withOpacity(0.5),
                   ),
                 ),
-                onPressed: _toggleLanguage,
-                color: Colors.black.withOpacity(0.5),
-              ),
-            ),
-            // Audio button
-            Positioned(
-              top: 40,
-              right: 20,
-              child: _buildCircleButton(
-                child: Icon(
-                  _audioManager.isMuted ? Icons.volume_off : Icons.volume_up,
-                  color: Colors.white,
-                  size: screenWidth * 0.08,
+                // Audio button
+                Positioned(
+                  top: 40,
+                  right: 20,
+                  child: _buildCircleButton(
+                    child: Icon(
+                      _audioManager.isMuted ? Icons.volume_off : Icons.volume_up,
+                      color: Colors.white,
+                      size: screenWidth * 0.08,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _audioManager.toggleMute();
+                      });
+                    },
+                    color: Colors.black.withOpacity(0.5),
+                  ),
                 ),
-                onPressed: () {
-                  setState(() {
-                    _audioManager.toggleMute();
-                  });
-                },
-                color: Colors.black.withOpacity(0.5),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -584,8 +637,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
       ],
     );
   }
-
-
 
   Widget _buildPerchDivider() {
     return Padding(

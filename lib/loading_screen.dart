@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:floato_the_game/menu_screen.dart';
 import 'package:floato_the_game/language_manager.dart';
 import 'package:floato_the_game/audio_manager.dart';
+import 'package:video_player/video_player.dart';
 import 'dart:math' show Random;
 
 class LoadingScreen extends StatefulWidget {
@@ -20,6 +21,10 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
   late AnimationController _tipAnimationController;
   late Animation<double> _tipFadeAnimation;
   late AudioManager _audioManager;
+  VideoPlayerController? _videoPlayerController;
+  bool _videoInitialized = false;
+  bool _loadingFailed = false;
+  bool _isDisposed = false;
 
   final List<String> _gameTips = [
     LanguageManager.getText('tipCollectAbilities'),
@@ -49,16 +54,49 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
       ),
     );
 
+    // Initialize the video player controller
+    _initializeVideoController();
+
     Future.delayed(const Duration(milliseconds: 300), () {
-      _tipAnimationController.forward();
+      if (!_isDisposed) {
+        _tipAnimationController.forward();
+      }
     });
 
     _startLoading();
   }
 
+  Future<void> _initializeVideoController() async {
+    try {
+      _videoPlayerController = VideoPlayerController.asset('assets/videos/menu_background.mp4');
+      await _videoPlayerController!.initialize().timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {
+          throw Exception('Video initialization timed out');
+        },
+      );
+      if (!_isDisposed) {
+        setState(() {
+          _videoInitialized = true;
+        });
+      }
+    } catch (e) {
+      debugPrint('Video initialization failed: $e');
+      if (!_isDisposed) {
+        setState(() {
+          _loadingFailed = true;
+        });
+      }
+      _videoPlayerController?.dispose();
+      _videoPlayerController = null;
+    }
+  }
+
   @override
   void dispose() {
+    _isDisposed = true;
     _tipAnimationController.dispose();
+    // Don't dispose the controller here - it's either passed to MenuScreen or already disposed
     super.dispose();
   }
 
@@ -67,33 +105,46 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
   }
 
   Future<void> _preloadResources() async {
-    // Start audio preloading
-    final audioFuture = _audioManager.init();
+    try {
+      // Start audio preloading
+      final audioFuture = _audioManager.init();
 
-    // Simulate progress updates while loading
-    const totalSteps = 10;
-    for (int i = 0; i <= totalSteps; i++) {
-      await Future.delayed(const Duration(milliseconds: 200));
-      if (mounted) {
-        setState(() => _progressValue = i / totalSteps);
+      // Simulate progress updates while loading
+      const totalSteps = 10;
+      for (int i = 0; i <= totalSteps; i++) {
+        await Future.delayed(const Duration(milliseconds: 200));
+        if (!_isDisposed && mounted) {
+          setState(() => _progressValue = i / totalSteps);
+        }
       }
-    }
 
-    // Wait for audio to finish loading
-    await audioFuture;
+      // Wait for audio to finish loading
+      await audioFuture;
 
-    // Run additional initialization if provided
-    if (widget.onInitialization != null) {
-      await widget.onInitialization!();
+      // Run additional initialization if provided
+      if (widget.onInitialization != null) {
+        await widget.onInitialization!();
+      }
+    } catch (e) {
+      debugPrint('Error during preloading: $e');
+      if (!_isDisposed && mounted) {
+        setState(() {
+          _loadingFailed = true;
+        });
+      }
     }
   }
 
   void _startLoading() async {
     await _preloadResources();
 
-    if (mounted) {
+    if (!_isDisposed && mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const MenuScreen()),
+        MaterialPageRoute(
+          builder: (context) => MenuScreen(
+            videoPlayerController: _videoInitialized ? _videoPlayerController : null,
+          ),
+        ),
       );
     }
   }
