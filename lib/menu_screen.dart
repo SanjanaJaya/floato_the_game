@@ -647,7 +647,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                   crossAxisSpacing: screenWidth * 0.03,
                   mainAxisSpacing: screenWidth * 0.03,
                 ),
-                itemCount: 5,
+                itemCount: 8,
                 itemBuilder: (context, index) {
                   final bool isUnlocked = index < unlockedRockets;
                   final bool isSelected = index == selectedRocket;

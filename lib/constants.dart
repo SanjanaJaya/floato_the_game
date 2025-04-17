@@ -276,6 +276,9 @@ const Map<int, int> birdUnlockCosts = {
   2: 1500, // Third bird costs 1500 coins
   3: 2500, // Fourth bird costs 2500 coins
   4: 7500, // Fifth bird costs 7500 coins
+  5: 10000, // Sixth bird costs 10000 coins
+  6: 12500, // Seventh bird costs 12500 coins
+  7: 15000, // Eighth bird costs 15000 coins
 };
 
 // Vehicle constants

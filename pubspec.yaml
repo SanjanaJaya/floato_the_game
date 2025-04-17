@@ -73,11 +73,16 @@ flutter:
     - assets/images/bird/rocket3.png
     - assets/images/bird/rocket4.png
     - assets/images/bird/rocket5.png
+    - assets/images/bird/rocket6.png
+    - assets/images/bird/rocket7.png
+    - assets/images/bird/rocket8.png
     - assets/audio/
     - assets/videos/
     - assets/images/tutorial/tutorial1.png
     - assets/images/tutorial/tutorial2.png
     - assets/images/tutorial/tutorial3.png
+    - assets/images/tutorial/tutorial4.png
+    - assets/images/tutorial/tutorial5.png
     - assets/images/abilities/double_score.png
     - assets/images/abilities/invincibility.png
     - assets/images/abilities/slow_motion.png
