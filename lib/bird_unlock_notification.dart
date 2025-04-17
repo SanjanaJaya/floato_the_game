@@ -190,7 +190,22 @@ class _BirdUnlockNotificationState extends State<BirdUnlockNotification>
         icon = Icons.thunderstorm;
         color = Colors.purple;
         break;
-      default:
+      case 5:
+        ability = LanguageManager.getText('powerShooting');
+        icon = Icons.thunderstorm;
+        color = Colors.purpleAccent;
+        break;
+      case 6:
+        ability = LanguageManager.getText('proShooting');
+        icon = Icons.thunderstorm;
+        color = Colors.deepPurple;
+        break;
+      case 7:
+        ability = LanguageManager.getText('infiniteShooting');
+        icon = Icons.thunderstorm;
+        color = Colors.deepPurpleAccent;
+        break;
+      default: // case 0
         ability = LanguageManager.getText('agileFlier');
         icon = Icons.air;
         color = Colors.blue;

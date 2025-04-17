@@ -30,27 +30,6 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
   void render(Canvas canvas) {
     super.render(canvas);
 
-    // Create translucent background for better readability
-    final Paint backgroundPaint = Paint()
-      ..color = Colors.black.withOpacity(0.6)
-      ..style = PaintingStyle.fill;
-
-    // Make background taller for Sinhala to accommodate more space
-    final double backgroundHeight = _isSinhala ? 200 : 160;
-
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          gameRef.size.x * 0.1,
-          gameRef.size.y * 0.3 - 80,
-          gameRef.size.x * 0.8,
-          backgroundHeight,
-        ),
-        Radius.circular(15),
-      ),
-      backgroundPaint,
-    );
-
     // Get translated strings
     final String translatedWelcome = LanguageManager.getText('welcomeTo');
     final String translatedLevelReached = LanguageManager.getText('levelReached');
@@ -77,11 +56,10 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
           ],
         ),
       ),
-      textDirection: _isSinhala ? TextDirection.ltr : TextDirection.ltr, // Always LTR for proper layout
+      textDirection: TextDirection.ltr,
       textAlign: TextAlign.center,
     );
 
-    // Make sure to set width constraint for proper text wrapping
     welcomeText.layout(maxWidth: gameRef.size.x * 0.75);
 
     // Prepare level text
@@ -101,23 +79,20 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
           ],
         ),
       ),
-      textDirection: _isSinhala ? TextDirection.ltr : TextDirection.ltr, // Always LTR for proper layout
+      textDirection: TextDirection.ltr,
       textAlign: TextAlign.center,
     );
 
-    // Make sure to set width constraint for proper text wrapping
     levelText.layout(maxWidth: gameRef.size.x * 0.75);
 
-    // Adjust vertical position for Sinhala
     final double welcomeYPosition = _isSinhala
         ? gameRef.size.y / 3 - 60
         : gameRef.size.y / 3 - 40;
 
     final double levelYPosition = _isSinhala
-        ? gameRef.size.y / 3 + 20 // More space between welcome and level text for Sinhala
+        ? gameRef.size.y / 3 + 20
         : gameRef.size.y / 3 + 10;
 
-    // Paint welcome text centered
     welcomeText.paint(
       canvas,
       Offset(
@@ -126,7 +101,6 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
       ),
     );
 
-    // Paint level text centered
     levelText.paint(
       canvas,
       Offset(
@@ -135,6 +109,7 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
       ),
     );
   }
+
 
   @override
   void update(double dt) {

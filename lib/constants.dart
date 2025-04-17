@@ -273,7 +273,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
 // Coin constants
 const double coinSize = 30;
 const double coinSpawnInterval = 2.0; // Spawn a coin every 2 seconds on average
-const Map<String, int> coinTypes = {'bronze': 2, 'silver': 4, 'gold': 8};
+const Map<String, int> coinTypes = {'bronze': 2, 'silver': 4, 'gold': 6};
 
 // Updated bird unlock costs with balanced progression
 const Map<int, int> birdUnlockCosts = {
