@@ -13,18 +13,13 @@ const List<String> rocketImages = [
   'rocket3.png',
   'rocket4.png',
   'rocket5.png',
+  'rocket6.png',
+  'rocket7.png',
+  'rocket8.png',
 ];
 
-const List<String> rocketNames = ['Skye', 'Nyra', 'Seren', 'Elowen', 'Zephyr'];
+const List<String> rocketNames = ['Skye', 'Nyra', 'Seren', 'Elowen', 'Zephyr', 'Maelis ', 'Alarien', 'Virel'];
 
-// Updated requirements with more meaningful descriptions
-const List<String> rocketLevelRequirements = [
-  'Default',
-  'Score 80+ (Level 1)',
-  'Score 200+ (Level 2)',
-  'Score 350+ (Level 3)',
-  'Score 600+ (Level 4)',
-];
 
 // Updated missile capabilities to be more distinctive
 const List<double> missileSpeeds = [
@@ -125,6 +120,7 @@ const List<String> enemyPlaneImages = [
   'enemy_plane9.png',
   'enemy_plane10.png',
   'enemy_plane11.png',
+  'enemy_plane12.png',
 ];
 
 // Adjusted base speeds for different plane types to be more balanced
@@ -140,6 +136,7 @@ const List<double> enemyPlaneSpeeds = [
   100,
   140,
   180,
+  160,
 ];
 
 // Adjusted health values to create better balance with new missile damages
@@ -155,6 +152,7 @@ const List<int> enemyPlaneHealths = [
   175,
   320,
   350,
+  325
 ];
 
 // Optimized difficulty levels with smoother progression and two new levels
