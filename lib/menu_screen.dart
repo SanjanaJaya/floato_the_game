@@ -532,11 +532,11 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                 title: LanguageManager.getText(''),
                 names: [
                   LanguageManager.getText('Imesh Sanjana'),
-                  LanguageManager.getText('Nethsara Werasooriya'),
                   LanguageManager.getText('Anjana Herath'),
+                  LanguageManager.getText('Nethsara Werasooriya '),
+                  LanguageManager.getText('Kavindu Heshan'),
                   LanguageManager.getText('Nethmina Medagedara'),
                   LanguageManager.getText('Dinuwara Wijerathne'),
-                  LanguageManager.getText('Kavindu Heshan'),
                 ],
               ),
 
