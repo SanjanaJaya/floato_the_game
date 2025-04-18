@@ -168,7 +168,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 1 (0-79 points) - Very beginner friendly
     'buildingInterval': 4.0,
     'buildingGap': 350.0,
-    'enemySpawnInterval': 3.5,
+    'enemySpawnInterval': 4.5,
     'groundScrollingSpeed': 75.0,
     'enemySpeedMultiplier': 0.7, // Much slower than original
     'levelName': 'Level 1',
@@ -181,7 +181,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 2 (80-199 points) - Easy challenge
     'buildingInterval': 3.2,
     'buildingGap': 325.0,
-    'enemySpawnInterval': 3.2,
+    'enemySpawnInterval': 3.5,
     'groundScrollingSpeed': 90.0,
     'enemySpeedMultiplier': 0.8, // Slower than original
     'levelName': 'Level 2',
@@ -192,7 +192,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
   },
   200: {
     // Level 3 (200-349 points) - Mild challenge
-    'buildingInterval': 2.8,
+    'buildingInterval': 3.0,
     'buildingGap': 300.0,
     'enemySpawnInterval': 2.7,
     'groundScrollingSpeed': 105.0,
