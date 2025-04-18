@@ -35,7 +35,6 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
   int highScore = 0;
   int highestLevel = 0;
   int coins = 0;
-  int unlockedRockets = 1;
   int selectedRocket = 0;
   String levelName = 'Level 1';
 
@@ -106,8 +105,8 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     highScore = await PreferencesHelper.getHighScore();
     highestLevel = await PreferencesHelper.getHighestLevel();
     coins = await PreferencesHelper.getCoins();
-    unlockedRockets = await PreferencesHelper.getUnlockedRocketsCount();
     selectedRocket = await PreferencesHelper.getSelectedRocket();
+
     if (highestLevel >= 1500) {
       levelName = LanguageManager.getText('level7');
     } else if (highestLevel >= 1000) {
@@ -655,201 +654,211 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     );
   }
 
-
   Widget buildRocketSelectionContent() {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final crossAxisCount = screenWidth > 600 ? 3 : 2;
 
-    return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.all(screenWidth * 0.05),
-        margin: EdgeInsets.all(screenWidth * 0.05),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.8),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.amber, width: 3),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.amber.withOpacity(0.3),
-              blurRadius: 15,
-              spreadRadius: 5,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              LanguageManager.getText('selectBird').toUpperCase(),
-              style: TextStyle(
-                fontSize: screenWidth * 0.09,
-                fontWeight: FontWeight.bold,
-                color: Colors.amber,
-              ),
-            ),
-            SizedBox(height: screenHeight * 0.03),
-            SizedBox(
-              height: screenHeight * 0.5,
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  childAspectRatio: 0.85,
-                  crossAxisSpacing: screenWidth * 0.03,
-                  mainAxisSpacing: screenWidth * 0.03,
+    return FutureBuilder<List<bool>>(
+      future: PreferencesHelper.getUnlockedBirds(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        final unlockedBirds = snapshot.data!;
+
+        return SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(screenWidth * 0.05),
+            margin: EdgeInsets.all(screenWidth * 0.05),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.8),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.amber, width: 3),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.amber.withOpacity(0.3),
+                  blurRadius: 15,
+                  spreadRadius: 5,
                 ),
-                itemCount: 8,
-                itemBuilder: (context, index) {
-                  final bool isUnlocked = index < unlockedRockets;
-                  final bool isSelected = index == selectedRocket;
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  LanguageManager.getText('selectBird').toUpperCase(),
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.09,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.amber,
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.03),
+                SizedBox(
+                  height: screenHeight * 0.5,
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      childAspectRatio: 0.85,
+                      crossAxisSpacing: screenWidth * 0.03,
+                      mainAxisSpacing: screenWidth * 0.03,
+                    ),
+                    itemCount: 8,
+                    itemBuilder: (context, index) {
+                      final bool isUnlocked = unlockedBirds[index];
+                      final bool isSelected = index == selectedRocket;
 
-                  return GestureDetector(
-                    onTap: isUnlocked
-                        ? () async {
-                      setState(() {
-                        selectedRocket = index;
-                      });
-                      await PreferencesHelper.saveSelectedRocket(index);
-                    }
-                        : () async {
-                      if (coins >= birdUnlockCosts[index]!) {
-                        // Deduct coins
-                        coins -= birdUnlockCosts[index]!;
-                        await PreferencesHelper.saveCoins(coins);
+                      return GestureDetector(
+                        onTap: isUnlocked
+                            ? () async {
+                          setState(() {
+                            selectedRocket = index;
+                          });
+                          await PreferencesHelper.saveSelectedRocket(index);
+                        }
+                            : () async {
+                          if (coins >= birdUnlockCosts[index]!) {
+                            // Deduct coins
+                            coins -= birdUnlockCosts[index]!;
+                            await PreferencesHelper.saveCoins(coins);
 
-                        // Unlock the bird
-                        unlockedRockets = index + 1;
-                        await PreferencesHelper.saveUnlockedRockets(unlockedRockets);
+                            // Unlock this specific bird
+                            await PreferencesHelper.unlockBird(index);
+                            unlockedBirds[index] = true;
 
-                        // Select the newly unlocked bird
-                        selectedRocket = index;
-                        await PreferencesHelper.saveSelectedRocket(index);
+                            // Select the newly unlocked bird
+                            selectedRocket = index;
+                            await PreferencesHelper.saveSelectedRocket(index);
 
-                        setState(() {});
+                            setState(() {});
 
-                        // Show unlock notification
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) => BirdUnlockNotification(
-                            birdIndex: index,
-                            onClose: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '${LanguageManager.getText('notEnoughCoins')}! ${LanguageManager.getText('need')} ${birdUnlockCosts[index]! - coins} ${LanguageManager.getText('more')}',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(screenWidth * 0.02),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? Colors.amber.withOpacity(0.3)
-                            : Colors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(
-                          color: isSelected ? Colors.amber : Colors.grey,
-                          width: 2,
-                        ),
-                        boxShadow: isSelected
-                            ? [
-                          BoxShadow(
-                            color: Colors.amber.withOpacity(0.3),
-                            blurRadius: 10,
-                            spreadRadius: 2,
-                          ),
-                        ]
-                            : [],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Transform.translate(
-                              offset: Offset(0, isUnlocked ? _animation.value : 0),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Image.asset(
-                                    'assets/images/bird/${rocketImages[index]}',
-                                    fit: BoxFit.contain,
-                                    color: isUnlocked ? null : Colors.black.withOpacity(0.7),
-                                    colorBlendMode: isUnlocked ? BlendMode.srcIn : BlendMode.srcATop,
-                                  ),
-                                  if (!isUnlocked)
-                                    Icon(
-                                      Icons.lock,
-                                      color: Colors.white,
-                                      size: screenWidth * 0.08,
-                                    ),
-                                ],
+                            // Show unlock notification
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => BirdUnlockNotification(
+                                birdIndex: index,
+                                onClose: () {
+                                  Navigator.of(context).pop();
+                                },
                               ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  '${LanguageManager.getText('notEnoughCoins')}! ${LanguageManager.getText('need')} ${birdUnlockCosts[index]! - coins} ${LanguageManager.getText('more')}',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(screenWidth * 0.02),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? Colors.amber.withOpacity(0.3)
+                                : Colors.black.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(
+                              color: isSelected ? Colors.amber : Colors.grey,
+                              width: 2,
                             ),
+                            boxShadow: isSelected
+                                ? [
+                              BoxShadow(
+                                color: Colors.amber.withOpacity(0.3),
+                                blurRadius: 10,
+                                spreadRadius: 2,
+                              ),
+                            ]
+                                : [],
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(top: screenHeight * 0.01),
-                            child: Column(
-                              children: [
-                                Text(
-                                  LanguageManager.getText('bird${index}Name'),
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: screenWidth * 0.035,
-                                    fontWeight: FontWeight.bold,
-                                    color: isUnlocked ? Colors.white : Colors.grey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Transform.translate(
+                                  offset: Offset(0, isUnlocked ? _animation.value : 0),
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Image.asset(
+                                        'assets/images/bird/${rocketImages[index]}',
+                                        fit: BoxFit.contain,
+                                        color: isUnlocked ? null : Colors.black.withOpacity(0.7),
+                                        colorBlendMode: isUnlocked ? BlendMode.srcIn : BlendMode.srcATop,
+                                      ),
+                                      if (!isUnlocked)
+                                        Icon(
+                                          Icons.lock,
+                                          color: Colors.white,
+                                          size: screenWidth * 0.08,
+                                        ),
+                                    ],
                                   ),
                                 ),
-                                if (!isUnlocked)
-                                  Padding(
-                                    padding: EdgeInsets.only(top: screenHeight * 0.005),
-                                    child: Text(
-                                      '${birdUnlockCosts[index]} ${LanguageManager.getText('coins')}',
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(top: screenHeight * 0.01),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      LanguageManager.getText('bird${index}Name'),
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        fontSize: screenWidth * 0.03,
-                                        color: coins >= birdUnlockCosts[index]! ? Colors.green : Colors.grey,
+                                        fontSize: screenWidth * 0.035,
+                                        fontWeight: FontWeight.bold,
+                                        color: isUnlocked ? Colors.white : Colors.grey,
                                       ),
                                     ),
-                                  ),
-                              ],
-                            ),
+                                    if (!isUnlocked)
+                                      Padding(
+                                        padding: EdgeInsets.only(top: screenHeight * 0.005),
+                                        child: Text(
+                                          '${birdUnlockCosts[index]} ${LanguageManager.getText('coins')}',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: screenWidth * 0.03,
+                                            color: coins >= birdUnlockCosts[index]! ? Colors.green : Colors.grey,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.03),
+                _buildMenuButton(
+                  text: LanguageManager.getText('back'),
+                  width: screenWidth * 0.5,
+                  height: screenHeight * 0.07,
+                  gradient: LinearGradient(
+                    colors: [Colors.blueGrey.shade700, Colors.blueGrey.shade400],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      showRocketSelection = false;
+                    });
+                  },
+                ),
+              ],
             ),
-            SizedBox(height: screenHeight * 0.03),
-            _buildMenuButton(
-              text: LanguageManager.getText('back'),
-              width: screenWidth * 0.5,
-              height: screenHeight * 0.07,
-              gradient: LinearGradient(
-                colors: [Colors.blueGrey.shade700, Colors.blueGrey.shade400],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              onPressed: () {
-                setState(() {
-                  showRocketSelection = false;
-                });
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -988,48 +997,48 @@ class PauseMenu extends StatelessWidget {
     required double height,
   }) {
     return Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
-    gradient: LinearGradient(
-    colors: [color.withOpacity(0.8), color],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    ),
-    boxShadow: [
-    BoxShadow(
-    color: Colors.black.withOpacity(0.3),
-    blurRadius: 10,
-    spreadRadius: 2,
-    offset: const Offset(0, 4),
-    ),
-    ],
-    ),
-    child: Material(
-    color: Colors.transparent,
-    child: InkWell(
-    borderRadius: BorderRadius.circular(30),
-    onTap: onPressed,
-    child: Center(
-    child: Text(
-    text,
-    style: TextStyle(
-    fontSize: width * 0.12,
-    fontWeight: FontWeight.bold,
-    color: Colors.white,
-    shadows: const [
-    Shadow(
-    blurRadius: 4,
-    color: Colors.black45,
-    offset: Offset(1, 1),
-    ),
-    ],
-    ),
-    ),
-    ),
-    ),
-    ),
+        gradient: LinearGradient(
+          colors: [color.withOpacity(0.8), color],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            spreadRadius: 2,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(30),
+          onTap: onPressed,
+          child: Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: width * 0.12,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                shadows: const [
+                  Shadow(
+                    blurRadius: 4,
+                    color: Colors.black45,
+                    offset: Offset(1, 1),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

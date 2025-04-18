@@ -9,7 +9,7 @@ class CoinDisplay extends PositionComponent with HasGameRef<floato> {
   TextComponent _textComponent = TextComponent();
   SpriteComponent _coinIcon = SpriteComponent();
 
-  CoinDisplay() : super(anchor: Anchor.topCenter);
+  CoinDisplay() : super(anchor: Anchor.topLeft); // Changed to topLeft anchor
 
   @override
   Future<void> onLoad() async {
@@ -39,12 +39,12 @@ class CoinDisplay extends PositionComponent with HasGameRef<floato> {
       anchor: Anchor.center,
     );
 
-    // Position the components in the middle top
-    position = Vector2(gameRef.size.x / 2, 20);
+    // Position the components in the top left, 20 pixels from top and 20 from left
+    position = Vector2(20, 20); // Changed position to top left with padding
 
     // Position the coin to the left of the text
-    _coinIcon.position = Vector2(-30, 0);
-    _textComponent.position = Vector2(30, 0);
+    _coinIcon.position = Vector2(18, 18); // Adjusted position relative to parent
+    _textComponent.position = Vector2(90, 18); // Adjusted position relative to parent
 
     // Add children components
     add(_coinIcon);

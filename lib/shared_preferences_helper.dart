@@ -29,15 +29,21 @@ class PreferencesHelper {
     }
   }
 
-  // Bird unlock methods - modified for manual purchase system
-  static Future<int> getUnlockedRocketsCount() async {
+  // Bird unlock methods - now tracking individual birds
+  static Future<List<bool>> getUnlockedBirds() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt('unlockedRockets') ?? 1; // Default to first bird unlocked
+    // Default to first bird unlocked, others locked
+    return List.generate(8, (index) => index == 0 ? true : prefs.getBool('bird_$index') ?? false);
   }
 
-  static Future<void> saveUnlockedRockets(int count) async {
+  static Future<void> unlockBird(int birdIndex) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('unlockedRockets', count);
+    await prefs.setBool('bird_$birdIndex', true);
+  }
+
+  static Future<int> getUnlockedRocketsCount() async {
+    final unlocked = await getUnlockedBirds();
+    return unlocked.where((isUnlocked) => isUnlocked).length;
   }
 
   static Future<int> getSelectedRocket() async {
