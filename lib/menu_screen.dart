@@ -697,7 +697,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                 ),
                 SizedBox(height: screenHeight * 0.03),
                 SizedBox(
-                  height: screenHeight * 0.5,
+                  height: screenHeight * 0.6, // Increased height to accommodate missiles
                   child: GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: crossAxisCount,
@@ -781,7 +781,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              // Bird image with animation
                               Expanded(
+                                flex: 2, // Give more space to the bird
                                 child: Transform.translate(
                                   offset: Offset(0, isUnlocked ? _animation.value : 0),
                                   child: Stack(
@@ -803,6 +805,42 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                   ),
                                 ),
                               ),
+
+                              // Missile image with glow effect
+                              Expanded(
+                                flex: 1, // Give less space to the missile
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 5),
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Image.asset(
+                                        'assets/images/missile${index + 1}.png',
+                                        height: screenHeight * 0.05,
+                                        color: isUnlocked ? null : Colors.black.withOpacity(0.7),
+                                        colorBlendMode: isUnlocked ? BlendMode.srcIn : BlendMode.srcATop,
+                                      ),
+                                      if (isUnlocked)
+                                        Container(
+                                          width: screenWidth * 0.1,
+                                          height: screenHeight * 0.05,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.rectangle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.amber.withOpacity(0.7),
+                                                blurRadius: 15,
+                                                spreadRadius: 5,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              // Bird name and unlock cost
                               Padding(
                                 padding: EdgeInsets.only(top: screenHeight * 0.01),
                                 child: Column(

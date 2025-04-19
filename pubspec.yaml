@@ -76,6 +76,14 @@ flutter:
     - assets/images/bird/rocket6.png
     - assets/images/bird/rocket7.png
     - assets/images/bird/rocket8.png
+    - assets/images/bird/missile0.png
+    - assets/images/bird/missile1.png
+    - assets/images/bird/missile2.png
+    - assets/images/bird/missile3.png
+    - assets/images/bird/missile4.png
+    - assets/images/bird/missile5.png
+    - assets/images/bird/missile6.png
+    - assets/images/bird/missile7.png
     - assets/audio/
     - assets/videos/
     - assets/images/tutorial/tutorial1.gif
