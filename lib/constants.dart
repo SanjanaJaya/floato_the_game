@@ -181,7 +181,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 2 (80-199 points) - Easy challenge
     'buildingInterval': 3.2,
     'buildingGap': 325.0,
-    'enemySpawnInterval': 3.5,
+    'enemySpawnInterval': 4.0,
     'groundScrollingSpeed': 90.0,
     'enemySpeedMultiplier': 0.8, // Slower than original
     'levelName': 'Level 2',
@@ -194,7 +194,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 3 (200-349 points) - Mild challenge
     'buildingInterval': 3.0,
     'buildingGap': 300.0,
-    'enemySpawnInterval': 2.7,
+    'enemySpawnInterval': 3.75,
     'groundScrollingSpeed': 105.0,
     'enemySpeedMultiplier': 0.9, // Slightly slower
     'levelName': 'Level 3',
@@ -207,7 +207,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 4 (350-599 points) - Moderate challenge
     'buildingInterval': 2.6,
     'buildingGap': 285.0,
-    'enemySpawnInterval': 2.2,
+    'enemySpawnInterval': 3.5,
     'groundScrollingSpeed': 120.0,
     'enemySpeedMultiplier': 1.0, // Base speed
     'levelName': 'Level 4',
@@ -220,7 +220,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 5 (600-999 points) - Challenging but manageable
     'buildingInterval': 2.4,
     'buildingGap': 270.0,
-    'enemySpawnInterval': 1.6,
+    'enemySpawnInterval': 3.0,
     'groundScrollingSpeed': 135.0,
     'enemySpeedMultiplier': 1.1, // 10% faster than base
     'levelName': 'Level 5',
@@ -233,7 +233,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 6 (1000-1499 points) - Hard challenge
     'buildingInterval': 2.2,
     'buildingGap': 250.0,
-    'enemySpawnInterval': 1.4,
+    'enemySpawnInterval': 2.5,
     'groundScrollingSpeed': 150.0,
     'enemySpeedMultiplier': 1.2, // 20% faster than base
     'levelName': 'Level 6',
@@ -246,9 +246,9 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 7 (1500-1999 points) - Expert challenge
     'buildingInterval': 2.0,
     'buildingGap': 230.0,
-    'enemySpawnInterval': 1.2,
+    'enemySpawnInterval': 2.0,
     'groundScrollingSpeed': 165.0,
-    'enemySpeedMultiplier': 1.3, // 30% faster than base
+    'enemySpeedMultiplier': 1.5, // 30% faster than base
     'levelName': 'Level 7',
     'levelRange': '1500-2000',
     'backgroundImage': 'background_level7.jpg',
@@ -259,9 +259,9 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Master level (2000+ points) - Extreme challenge for advanced players
     'buildingInterval': 1.8,
     'buildingGap': 220.0,
-    'enemySpawnInterval': 1.0,
+    'enemySpawnInterval': 1.8,
     'groundScrollingSpeed': 180.0,
-    'enemySpeedMultiplier': 1.4, // 40% faster than base
+    'enemySpeedMultiplier': 1.8, // 40% faster than base
     'levelName': 'Master Level',
     'levelRange': '2000+',
     'backgroundImage': 'background_level7.jpg', // Reuse Colombo background

@@ -828,7 +828,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                             shape: BoxShape.rectangle,
                                             boxShadow: [
                                               BoxShadow(
-                                                color: Colors.amber.withOpacity(0.4),
+                                                color: Colors.amber.withOpacity(0.25),
                                                 blurRadius: 10,
                                                 spreadRadius: 3,
                                               ),
