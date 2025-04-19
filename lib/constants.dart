@@ -3,7 +3,7 @@ const double rocketStartX = 100;
 const double rocketStartY = 100;
 const double rocketWidth = 55;
 const double rocketHeight = 55;
-const double gravity = 500;
+const double gravity = 400;
 const double jumpStrength = -300;
 
 // Rocket data
@@ -141,7 +141,7 @@ const List<double> enemyPlaneSpeeds = [
   110,
   100,
   140,
-  180,
+  200,
   160,
 ];
 
@@ -155,7 +155,7 @@ const List<int> enemyPlaneHealths = [
   260,
   300,
   320,
-  175,
+  250,
   320,
   350,
   325

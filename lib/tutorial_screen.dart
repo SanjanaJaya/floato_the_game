@@ -19,7 +19,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
   // Tutorial content - now with support for both English and Sinhala
   final List<TutorialItem> tutorialItems = [
     TutorialItem(
-      image: 'assets/images/tutorial/tutorial1.png',
+      image: 'assets/images/tutorial/tutorial1.gif',
       titleKey: 'tutorialTitle1',
       descriptionKey: 'tutorialDesc1',
     ),
@@ -29,7 +29,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
       descriptionKey: 'tutorialDesc2',
     ),
     TutorialItem(
-      image: 'assets/images/tutorial/tutorial3.png',
+      image: 'assets/images/tutorial/tutorial3.gif',
       titleKey: 'tutorialTitle3',
       descriptionKey: 'tutorialDesc3',
     ),
@@ -44,7 +44,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
       descriptionKey: 'tutorialDesc5',
     ),
     TutorialItem(
-      image: 'assets/images/tutorial/tutorial5.png',
+      image: 'assets/images/tutorial/tutorial6.png',
       titleKey: 'tutorialTitle6',
       descriptionKey: 'tutorialDesc6',
     ),
