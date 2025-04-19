@@ -815,7 +815,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                     alignment: Alignment.center,
                                     children: [
                                       Image.asset(
-                                        'assets/images/missile${index + 1}.png',
+                                        'assets/images/bird/missile${index + 1}.png',
                                         height: screenHeight * 0.05,
                                         color: isUnlocked ? null : Colors.black.withOpacity(0.7),
                                         colorBlendMode: isUnlocked ? BlendMode.srcIn : BlendMode.srcATop,
@@ -828,9 +828,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                             shape: BoxShape.rectangle,
                                             boxShadow: [
                                               BoxShadow(
-                                                color: Colors.amber.withOpacity(0.7),
-                                                blurRadius: 15,
-                                                spreadRadius: 5,
+                                                color: Colors.amber.withOpacity(0.4),
+                                                blurRadius: 10,
+                                                spreadRadius: 3,
                                               ),
                                             ],
                                           ),
