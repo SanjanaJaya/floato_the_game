@@ -85,7 +85,7 @@ const double buildingInterval = 2;
 const double buildingGap = 300;
 const double minBuildingHeight = 250;
 const double maxBuildingHeight = 350;
-const double buildingWidth = 120;
+const double buildingWidth = 150;
 const List<String> buildingImages = [
   'building1.png',
   'building2.png',
@@ -107,6 +107,16 @@ const List<String> buildingImages = [
   'building18.png',
   'building19.png',
   'building20.png',
+  'building21.png',
+  'building22.png',
+  'building23.png',
+  'building24.png',
+  'building25.png',
+  'building26.png',
+  'building27.png',
+  'building28.png',
+  'building29.png',
+  'building30.png',
 ];
 
 // Enemy plane constants
