@@ -728,23 +728,33 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
         // Calculate responsive sizes
         final dialogWidth = screenWidth * 0.9; // 90% of screen width
         final dialogMaxWidth = 500.0; // Maximum width for very large screens
-        final buttonWidth = screenWidth * 0.6; // 60% of screen width
-        final buttonMaxWidth = 300.0; // Maximum button width
-        final fontSizeMultiplier = screenWidth < 400 ? 0.8 : 1.0; // Adjust font size for small screens
+
+        // Increased button widths
+        final buttonWidth = screenWidth * 0.5; // Increased from 0.4 to 0.5 (50% of screen width)
+        final buttonMaxWidth = 240.0; // Increased from 200.0 to 240.0
+
+        final fontSizeMultiplier = screenWidth < 400 ? 0.8 : 1.0;
 
         // Get localized text
         final gameOverText = LanguageManager.getText('gameOver');
         final scoreText = LanguageManager.getText('Score:');
         final environmentText = LanguageManager.getText('environment');
         final coinsCollectedText = LanguageManager.getText('coinsCollected');
-        final playAgainText = LanguageManager.getText('playAgain');
-        final backToMenuText = LanguageManager.getText('back');
 
         // Get environment name translated
         final translatedEnvironmentName = LanguageManager.getEnvironmentName(background.currentEnvironmentName);
 
         // Use text direction from language manager
         final textDirection = LanguageManager.getTextDirection();
+
+        // Determine which language button images to use
+        final bool isSinhala = textDirection == TextDirection.rtl ||
+            LanguageManager.getText('language_code') == 'si';
+
+        final String playAgainImagePath = isSinhala ?
+        'assets/images/buttons/playagain_sinhala.png' : 'assets/images/buttons/playagain_english.png';
+        final String quitImagePath = isSinhala ?
+        'assets/images/buttons/quit_sinhala.png' : 'assets/images/buttons/quit_english.png';
 
         return Directionality(
           textDirection: textDirection,
@@ -822,96 +832,48 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      width: min(buttonWidth, buttonMaxWidth),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.orange, Colors.red],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                    // Play Again button with image - larger size, no shadow
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                        resetGame();
+                      },
+                      child: Container(
+                        width: min(buttonWidth, buttonMaxWidth),
+                        height: min(60, screenHeight * 0.1), // Increased height from 50 to 60
+                        margin: EdgeInsets.symmetric(vertical: 5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          // Shadow removed
                         ),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: screenHeight < 600 ? 10 : 15,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          resetGame();
-                        },
-                        child: Text(
-                          playAgainText,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18 * fontSizeMultiplier,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: Image.asset(
+                          playAgainImagePath,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
-                    SizedBox(height: screenHeight < 600 ? 8 : 10),
-                    Container(
-                      width: min(buttonWidth, buttonMaxWidth),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.blue, Colors.purple],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                    SizedBox(height: 8),
+                    // Quit button with image - larger size, no shadow
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MenuScreen(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: min(buttonWidth, buttonMaxWidth),
+                        height: min(60, screenHeight * 0.1), // Increased height from 50 to 60
+                        margin: EdgeInsets.symmetric(vertical: 5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          // Shadow removed
                         ),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: screenHeight < 600 ? 10 : 15,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MenuScreen(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          backToMenuText,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18 * fontSizeMultiplier,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: Image.asset(
+                          quitImagePath,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),

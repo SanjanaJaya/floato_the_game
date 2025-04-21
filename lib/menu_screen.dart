@@ -924,125 +924,121 @@ class PauseMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final isSinhala = LanguageManager.currentLanguage == LanguageManager.sinhala;
+
+    // Calculate better dimensions
+    final containerWidth = screenWidth * 0.7; // Slightly smaller container width
+    final containerHeight = screenHeight * 0.3; // Compact container height
+    final buttonWidth = containerWidth * 0.43; // Slightly smaller to prevent overflow
+    final buttonHeight = containerHeight * 0.4; // Taller button (40% of container)
 
     return Center(
-      child: Container(
-        padding: EdgeInsets.all(screenWidth * 0.05),
-        constraints: BoxConstraints(
-          maxWidth: screenWidth * 0.8,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.8),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.amber, width: 3),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.amber.withOpacity(0.3),
-              blurRadius: 15,
-              spreadRadius: 5,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                LanguageManager.getText('paused').toUpperCase(),
-                style: TextStyle(
-                  fontSize: LanguageManager.currentLanguage == LanguageManager.sinhala
-                      ? screenWidth * 0.07
-                      : screenWidth * 0.09,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.amber,
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          width: containerWidth,
+          height: containerHeight,
+          padding: EdgeInsets.all(screenWidth * 0.025), // Slightly reduced padding
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.8),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.amber, width: 3),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.amber.withOpacity(0.3),
+                blurRadius: 15,
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Title
+              Padding(
+                padding: EdgeInsets.only(bottom: containerHeight * 0.1),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    LanguageManager.getText('paused').toUpperCase(),
+                    style: TextStyle(
+                      fontSize: isSinhala ? 28 : 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.amber,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: screenHeight * 0.03),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 20,
-              runSpacing: 20,
-              children: [
-                _buildPauseMenuButton(
-                  text: LanguageManager.getText('resume'),
-                  color: Colors.green,
-                  onPressed: () {
-                    game.togglePause();
-                  },
-                  width: screenWidth * 0.3,
-                  height: screenHeight * 0.06,
-                ),
-                _buildPauseMenuButton(
-                  text: LanguageManager.getText('quit'),
-                  color: Colors.red,
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MenuScreen(),
-                      ),
-                    );
-                  },
-                  width: screenWidth * 0.3,
-                  height: screenHeight * 0.06,
-                ),
-              ],
-            ),
-          ],
+
+              // Buttons row with more space between buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center, // Changed from spaceEvenly to center
+                children: [
+                  // Resume button
+                  SizedBox(
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    child: _buildImageButton(
+                      imagePath: isSinhala
+                          ? 'assets/images/buttons/resume_sinhala.png'
+                          : 'assets/images/buttons/resume_english.png',
+                      onPressed: () {
+                        game.togglePause();
+                      },
+                    ),
+                  ),
+
+                  SizedBox(width: containerWidth * 0.04), // Add explicit spacing between buttons
+
+                  // Quit button
+                  SizedBox(
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    child: _buildImageButton(
+                      imagePath: isSinhala
+                          ? 'assets/images/buttons/quit_sinhala.png'
+                          : 'assets/images/buttons/quit_english.png',
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MenuScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildPauseMenuButton({
-    required String text,
-    required Color color,
+  Widget _buildImageButton({
+    required String imagePath,
     required VoidCallback onPressed,
-    required double width,
-    required double height,
   }) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        gradient: LinearGradient(
-          colors: [color.withOpacity(0.8), color],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            spreadRadius: 2,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(30),
-          onTap: onPressed,
-          child: Center(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: width * 0.12,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                shadows: const [
-                  Shadow(
-                    blurRadius: 4,
-                    color: Colors.black45,
-                    offset: Offset(1, 1),
-                  ),
-                ],
-              ),
+    return InkWell(
+      onTap: onPressed,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              offset: Offset(0, 2),
+              blurRadius: 4,
             ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.asset(
+            imagePath,
+            fit: BoxFit.contain,
           ),
         ),
       ),

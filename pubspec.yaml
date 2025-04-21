@@ -105,6 +105,12 @@ flutter:
     - assets/images/buttons/dev_sinhala.png
     - assets/images/buttons/back_english.png
     - assets/images/buttons/back_sinhala.png
+    - assets/images/buttons/resume_sinhala.png
+    - assets/images/buttons/resume_english.png
+    - assets/images/buttons/quit_sinhala.png
+    - assets/images/buttons/quit_english.png
+    - assets/images/buttons/playagain_english.png
+    - assets/images/buttons/playagain_sinhala.png
 
 
 
