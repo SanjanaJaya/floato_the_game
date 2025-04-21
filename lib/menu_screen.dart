@@ -350,14 +350,10 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
           child: Column(
             children: [
               _buildMenuButton(
-                text: LanguageManager.getText('startGame'),
+                englishImage: 'assets/images/buttons/start_engilsh.png',
+                sinhalaImage: 'assets/images/buttons/start_sinhala.png',
                 width: buttonWidth,
                 height: buttonHeight,
-                gradient: LinearGradient(
-                  colors: [Colors.orange.shade700, Colors.orange.shade400],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
@@ -389,14 +385,10 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               ),
               SizedBox(height: screenHeight * 0.02),
               _buildMenuButton(
-                text: LanguageManager.getText('selectBird'),
+                englishImage: 'assets/images/buttons/select_english.png',
+                sinhalaImage: 'assets/images/buttons/select_sinhala.png',
                 width: buttonWidth,
                 height: buttonHeight,
-                gradient: LinearGradient(
-                  colors: [Colors.green.shade700, Colors.green.shade400],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
                 onPressed: () {
                   setState(() {
                     showRocketSelection = true;
@@ -405,14 +397,10 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               ),
               SizedBox(height: screenHeight * 0.02),
               _buildMenuButton(
-                text: LanguageManager.getText('developers'),
+                englishImage: 'assets/images/buttons/dev_english.png',
+                sinhalaImage: 'assets/images/buttons/dev_sinhala.png',
                 width: buttonWidth,
                 height: buttonHeight,
-                gradient: LinearGradient(
-                  colors: [Colors.blueGrey.shade700, Colors.blueGrey.shade400],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
                 onPressed: () {
                   setState(() {
                     showCredits = true;
@@ -427,19 +415,17 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildMenuButton({
-    required String text,
+    required String englishImage,
+    required String sinhalaImage,
+    required VoidCallback onPressed,
     required double width,
     required double height,
-    required Gradient gradient,
-    required VoidCallback onPressed,
-    double fontSize = 24,
   }) {
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
-        gradient: gradient,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.3),
@@ -455,20 +441,11 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
           borderRadius: BorderRadius.circular(30),
           onTap: onPressed,
           child: Center(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: width * 0.06,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                shadows: const [
-                  Shadow(
-                    blurRadius: 4,
-                    color: Colors.black45,
-                    offset: Offset(1, 1),
-                  ),
-                ],
-              ),
+            child: Image.asset(
+              _isSinhala ? sinhalaImage : englishImage,
+              width: width,
+              height: height,
+              fit: BoxFit.contain,
             ),
           ),
         ),
@@ -552,14 +529,10 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
 
               // Back button
               _buildMenuButton(
-                text: LanguageManager.getText('back'),
+                englishImage: 'assets/images/buttons/back_english.png',
+                sinhalaImage: 'assets/images/buttons/back_sinhala.png',
                 width: screenWidth * 0.5,
                 height: screenHeight * 0.07,
-                gradient: LinearGradient(
-                  colors: [Colors.blueGrey.shade700, Colors.blueGrey.shade400],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
                 onPressed: () {
                   setState(() {
                     showCredits = false;
@@ -878,17 +851,13 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                 ),
                 SizedBox(height: screenHeight * 0.03),
                 _buildMenuButton(
-                  text: LanguageManager.getText('back'),
+                  englishImage: 'assets/images/buttons/back_english.png',
+                  sinhalaImage: 'assets/images/buttons/back_sinhala.png',
                   width: screenWidth * 0.5,
                   height: screenHeight * 0.07,
-                  gradient: LinearGradient(
-                    colors: [Colors.blueGrey.shade700, Colors.blueGrey.shade400],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
                   onPressed: () {
                     setState(() {
-                      showRocketSelection = false;
+                      showRocketSelection  = false;
                     });
                   },
                 ),

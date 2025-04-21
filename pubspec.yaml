@@ -97,6 +97,14 @@ flutter:
     - assets/images/abilities/slow_motion.png
     - assets/images/abilities/rapid_fire.png
     - assets/videos/menu_background.mp4
+    - assets/images/buttons/start_engilsh.png
+    - assets/images/buttons/start_sinhala.png
+    - assets/images/buttons/select_english.png
+    - assets/images/buttons/select_sinhala.png
+    - assets/images/buttons/dev_english.png
+    - assets/images/buttons/dev_sinhala.png
+    - assets/images/buttons/back_english.png
+    - assets/images/buttons/back_sinhala.png
 
 
 
