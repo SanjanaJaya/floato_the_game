@@ -117,6 +117,18 @@ const List<String> buildingImages = [
   'building28.png',
   'building29.png',
   'building30.png',
+  'building31.png',
+  'building32.png',
+  'building33.png',
+  'building34.png',
+  'building35.png',
+  'building36.png',
+  'building37.png',
+  'building38.png',
+  'building39.png',
+  'building40.png',
+  'building41.png',
+  'building42.png',
 ];
 
 // Enemy plane constants
@@ -178,7 +190,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 1 (0-79 points) - Very beginner friendly
     'buildingInterval': 4.0,
     'buildingGap': 350.0,
-    'enemySpawnInterval': 4.5,
+    'enemySpawnInterval': 4.0,
     'groundScrollingSpeed': 75.0,
     'enemySpeedMultiplier': 0.7, // Much slower than original
     'levelName': 'Level 1',
@@ -191,7 +203,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 2 (80-199 points) - Easy challenge
     'buildingInterval': 3.2,
     'buildingGap': 325.0,
-    'enemySpawnInterval': 4.0,
+    'enemySpawnInterval': 3.5,
     'groundScrollingSpeed': 90.0,
     'enemySpeedMultiplier': 0.8, // Slower than original
     'levelName': 'Level 2',
@@ -204,7 +216,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 3 (200-349 points) - Mild challenge
     'buildingInterval': 3.0,
     'buildingGap': 300.0,
-    'enemySpawnInterval': 3.75,
+    'enemySpawnInterval': 3.00,
     'groundScrollingSpeed': 105.0,
     'enemySpeedMultiplier': 0.9, // Slightly slower
     'levelName': 'Level 3',
@@ -217,7 +229,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 4 (350-599 points) - Moderate challenge
     'buildingInterval': 2.6,
     'buildingGap': 285.0,
-    'enemySpawnInterval': 3.5,
+    'enemySpawnInterval': 2.75,
     'groundScrollingSpeed': 120.0,
     'enemySpeedMultiplier': 1.0, // Base speed
     'levelName': 'Level 4',
@@ -230,7 +242,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 5 (600-999 points) - Challenging but manageable
     'buildingInterval': 2.4,
     'buildingGap': 270.0,
-    'enemySpawnInterval': 3.0,
+    'enemySpawnInterval': 2.25,
     'groundScrollingSpeed': 135.0,
     'enemySpeedMultiplier': 1.1, // 10% faster than base
     'levelName': 'Level 5',
@@ -243,7 +255,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 6 (1000-1499 points) - Hard challenge
     'buildingInterval': 2.2,
     'buildingGap': 250.0,
-    'enemySpawnInterval': 2.5,
+    'enemySpawnInterval': 2.00,
     'groundScrollingSpeed': 150.0,
     'enemySpeedMultiplier': 1.2, // 20% faster than base
     'levelName': 'Level 6',
@@ -256,7 +268,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Level 7 (1500-1999 points) - Expert challenge
     'buildingInterval': 2.0,
     'buildingGap': 230.0,
-    'enemySpawnInterval': 2.0,
+    'enemySpawnInterval': 1.75,
     'groundScrollingSpeed': 165.0,
     'enemySpeedMultiplier': 1.5, // 30% faster than base
     'levelName': 'Level 7',
@@ -269,7 +281,7 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     // Master level (2000+ points) - Extreme challenge for advanced players
     'buildingInterval': 1.8,
     'buildingGap': 220.0,
-    'enemySpawnInterval': 1.8,
+    'enemySpawnInterval': 1.5,
     'groundScrollingSpeed': 180.0,
     'enemySpeedMultiplier': 1.8, // 40% faster than base
     'levelName': 'Master Level',
@@ -289,12 +301,12 @@ const Map<String, int> coinTypes = {'bronze': 2, 'silver': 4, 'gold': 6};
 const Map<int, int> birdUnlockCosts = {
   0: 0, // First bird is free
   1: 250, // Second bird costs 250 coins
-  2: 1500, // Third bird costs 1500 coins
-  3: 2500, // Fourth bird costs 2500 coins
-  4: 7500, // Fifth bird costs 7500 coins
-  5: 10000, // Sixth bird costs 10000 coins
-  6: 12500, // Seventh bird costs 12500 coins
-  7: 15000, // Eighth bird costs 15000 coins
+  2: 2500, // Third bird costs 1500 coins
+  3: 7500, // Fourth bird costs 2500 coins
+  4: 15000, // Fifth bird costs 7500 coins
+  5: 35000, // Sixth bird costs 10000 coins
+  6: 50000, // Seventh bird costs 12500 coins
+  7: 75000, // Eighth bird costs 15000 coins
 };
 
 // Vehicle constants

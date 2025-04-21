@@ -15,11 +15,11 @@ class AbilityIndicator extends PositionComponent with HasGameRef<floato> {
   @override
   Future<void> onLoad() async {
     position = Vector2(
-      gameRef.size.x / 2 - 150 * gameRef.scaleFactor,
+      gameRef.size.x / 2 - 120 * gameRef.scaleFactor, // Reduced from 150 to 120
       38 * gameRef.heightScaleFactor,
     );
     size = Vector2(
-      300 * gameRef.scaleFactor,
+      240 * gameRef.scaleFactor, // Reduced from 300 to 240
       50 * gameRef.heightScaleFactor,
     );
     priority = 10;
@@ -35,8 +35,8 @@ class AbilityIndicator extends PositionComponent with HasGameRef<floato> {
       final remaining = gameRef.abilityDuration;
       final maxDuration = _abilityDurations[ability]!;
 
-      // Calculate progress percentage (0.0 to 1.0)
-      final progress = remaining / maxDuration;
+      // Calculate progress percentage (0.0 to 1.0) with clamp to ensure it doesn't go below 0
+      final progress = (remaining / maxDuration).clamp(0.0, 1.0);
 
       // Draw background container with rounded corners and border
       final backgroundPaint = Paint()
@@ -54,26 +54,38 @@ class AbilityIndicator extends PositionComponent with HasGameRef<floato> {
       canvas.drawRRect(backgroundRRect, backgroundPaint);
       canvas.drawRRect(backgroundRRect, borderPaint);
 
-      // Draw progress bar with gradient colors
-      final progressBarRect = Rect.fromLTWH(
-        0,
-        0,
-        size.x * progress,
-        size.y,
-      );
-      final progressBarRRect = RRect.fromRectAndRadius(
-        progressBarRect,
-        Radius.circular(25 * gameRef.scaleFactor),
-      );
-      final progressBarPaint = Paint()
-        ..shader = LinearGradient(
-          colors: [
-            Colors.green,
-            progress > 0.5 ? Colors.green : Colors.yellow,
-            progress > 0.2 ? Colors.yellow : Colors.red,
-          ],
-        ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
-      canvas.drawRRect(progressBarRRect, progressBarPaint);
+      // Draw progress bar with gradient colors only if there's remaining time
+      if (remaining > 0) {
+        // Save the canvas state before clipping
+        canvas.save();
+
+        // Create a path from the background RRect to use for clipping
+        final clipPath = Path()..addRRect(backgroundRRect);
+        canvas.clipPath(clipPath);
+
+        // Now draw the progress bar - it will be clipped to the background shape
+        final progressBarRect = Rect.fromLTWH(
+          0,
+          0,
+          size.x * progress,
+          size.y,
+        );
+
+        final progressBarPaint = Paint()
+          ..shader = LinearGradient(
+            colors: [
+              Colors.green,
+              progress > 0.5 ? Colors.green : Colors.yellow,
+              progress > 0.2 ? Colors.yellow : Colors.red,
+            ],
+          ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
+
+        // Just draw a regular rectangle - the clipping will handle the corners
+        canvas.drawRect(progressBarRect, progressBarPaint);
+
+        // Restore the canvas to remove the clipping
+        canvas.restore();
+      }
 
       // Draw ability icon (larger and centered vertically)
       final iconStyle = TextStyle(
@@ -150,9 +162,10 @@ class AbilityIndicator extends PositionComponent with HasGameRef<floato> {
         ],
       );
 
+      final timerText = remaining > 0 ? '${remaining.toStringAsFixed(1)}s' : '0.0s';
       final timer = TextPainter(
         text: TextSpan(
-          text: remaining.toStringAsFixed(1) + 's',
+          text: timerText,
           style: timerStyle,
         ),
         textDirection: TextDirection.ltr,
