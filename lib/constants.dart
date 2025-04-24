@@ -81,11 +81,11 @@ const List<String> levelNames = [
 ];
 
 // Building constants
-const double buildingInterval = 2;
-const double buildingGap = 300;
-const double minBuildingHeight = 250;
-const double maxBuildingHeight = 350;
-const double buildingWidth = 150;
+const double buildingInterval = 3;
+const double buildingGap = 350;
+const double minBuildingHeight = 200;
+const double maxBuildingHeight = 300;
+const double buildingWidth = 160;
 const List<String> buildingImages = [
   'building1.png',
   'building2.png',

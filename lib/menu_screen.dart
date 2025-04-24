@@ -350,7 +350,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
           child: Column(
             children: [
               _buildMenuButton(
-                englishImage: 'assets/images/buttons/start_engilsh.png',
+                englishImage: 'assets/images/buttons/start_english.png',
                 sinhalaImage: 'assets/images/buttons/start_sinhala.png',
                 width: buttonWidth,
                 height: buttonHeight,
