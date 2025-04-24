@@ -22,7 +22,11 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
   late Animation<double> _tipFadeAnimation;
   late AudioManager _audioManager;
   VideoPlayerController? _videoPlayerController;
+  VideoPlayerController? _englishCutsceneController;
+  VideoPlayerController? _sinhalaCutsceneController;
   bool _videoInitialized = false;
+  bool _englishCutsceneInitialized = false;
+  bool _sinhalaCutsceneInitialized = false;
   bool _loadingFailed = false;
   bool _isDisposed = false;
 
@@ -56,6 +60,9 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
 
     // Initialize the video player controller
     _initializeVideoController();
+
+    // Preload cutscene videos
+    _preloadCutscenes();
 
     Future.delayed(const Duration(milliseconds: 300), () {
       if (!_isDisposed) {
@@ -92,11 +99,34 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
     }
   }
 
+  Future<void> _preloadCutscenes() async {
+    try {
+      _englishCutsceneController = VideoPlayerController.asset('assets/videos/cutscene_english.mp4');
+      _sinhalaCutsceneController = VideoPlayerController.asset('assets/videos/cutscene_sinhala.mp4');
+
+      await Future.wait([
+        _englishCutsceneController!.initialize(),
+        _sinhalaCutsceneController!.initialize(),
+      ]);
+      if (!_isDisposed) {
+        setState(() {
+          _englishCutsceneInitialized = true;
+          _sinhalaCutsceneInitialized = true;
+        });
+      }
+    } catch (e) {
+      debugPrint('Cutscene preloading failed: $e');
+      // Continue even if cutscenes fail to load
+    }
+  }
+
   @override
   void dispose() {
     _isDisposed = true;
     _tipAnimationController.dispose();
-    // Don't dispose the controller here - it's either passed to MenuScreen or already disposed
+    _englishCutsceneController?.dispose();
+    _sinhalaCutsceneController?.dispose();
+    // Don't dispose the main video controller here - it's either passed to MenuScreen or already disposed
     super.dispose();
   }
 

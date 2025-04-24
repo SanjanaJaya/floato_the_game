@@ -111,6 +111,8 @@ flutter:
     - assets/images/buttons/quit_english.png
     - assets/images/buttons/playagain_english.png
     - assets/images/buttons/playagain_sinhala.png
+    - assets/videos/cutscene_english.mp4
+    - assets/videos/cutscene_sinhala.mp4
 
 
 
