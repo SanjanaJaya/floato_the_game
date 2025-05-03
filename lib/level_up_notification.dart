@@ -36,8 +36,8 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
     final String translatedEnvironment = LanguageManager.getEnvironmentName(environmentName);
 
     // Adjust font size for Sinhala (slightly smaller to accommodate longer text)
-    final double welcomeFontSize = _isSinhala ? 24 : 28;
-    final double levelFontSize = _isSinhala ? 28 : 32;
+    final double welcomeFontSize = _isSinhala ? 22 : 26;
+    final double levelFontSize = _isSinhala ? 26 : 30;
 
     // Prepare welcome text
     final welcomeText = TextPainter(
@@ -48,11 +48,11 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
           fontSize: welcomeFontSize,
           fontWeight: FontWeight.bold,
           shadows: [
-            Shadow(
-              blurRadius: 10,
-              color: Colors.black,
-              offset: Offset(2, 2),
-            ),
+          Shadow(
+          blurRadius: 10,
+          color: Colors.black,
+          offset: Offset(2, 2),
+          ),
           ],
         ),
       ),
@@ -60,7 +60,7 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
       textAlign: TextAlign.center,
     );
 
-    welcomeText.layout(maxWidth: gameRef.size.x * 0.75);
+    welcomeText.layout(maxWidth: gameRef.size.x * 0.85);
 
     // Prepare level text
     final levelText = TextPainter(
@@ -71,11 +71,11 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
           fontSize: levelFontSize,
           fontWeight: FontWeight.bold,
           shadows: [
-            Shadow(
-              blurRadius: 10,
-              color: Colors.black,
-              offset: Offset(2, 2),
-            ),
+          Shadow(
+          blurRadius: 10,
+          color: Colors.black,
+          offset: Offset(2, 2),
+          ),
           ],
         ),
       ),
@@ -83,15 +83,15 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
       textAlign: TextAlign.center,
     );
 
-    levelText.layout(maxWidth: gameRef.size.x * 0.75);
+    levelText.layout(maxWidth: gameRef.size.x * 0.85);
 
     final double welcomeYPosition = _isSinhala
-        ? gameRef.size.y / 3 - 60
-        : gameRef.size.y / 3 - 40;
+        ? gameRef.size.y / 3 - 70
+        : gameRef.size.y / 3 - 50;
 
     final double levelYPosition = _isSinhala
-        ? gameRef.size.y / 3 + 20
-        : gameRef.size.y / 3 + 10;
+        ? gameRef.size.y / 3 + 10
+        : gameRef.size.y / 3;
 
     welcomeText.paint(
       canvas,
@@ -109,7 +109,6 @@ class LevelUpNotification extends PositionComponent with HasGameRef {
       ),
     );
   }
-
 
   @override
   void update(double dt) {

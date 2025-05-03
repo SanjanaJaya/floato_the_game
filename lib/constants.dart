@@ -50,13 +50,30 @@ const double groundScrollingSpeed = 100;
 
 // Background and ground images for each level - added 2 new levels
 const List<String> backgroundImages = [
-  'background_level1.jpg',
-  'background_level2.jpg',
-  'background_level3.jpg',
-  'background_level4.jpg',
-  'background_level5.jpg',
-  'background_level6.jpg',
-  'background_level7.jpg',
+  'background_level1.png',
+  'background_level2.png',
+  'background_level3.png',
+  'background_level4.png',
+  'background_level5.png',
+  'background_level6.png',
+  'background_level7.png',
+  'background_level8.png',
+  'background_level9.png',
+  'background_level10.png',
+  'background_level11.png',
+  'background_level12.png',
+  'background_level13.png',
+  'background_level14.png',
+  'background_level15.png',
+  'background_level16.png',
+  'background_level17.png',
+  'background_level18.png',
+  'background_level19.png',
+  'background_level20.png',
+  'background_level21.png',
+  'background_level22.png',
+  'background_level23.png',
+  'background_level24.png',
 ];
 
 const List<String> groundImages = [
@@ -69,14 +86,31 @@ const List<String> groundImages = [
   'ground_level7.jpg',
 ];
 
-// Added 2 new level names
 const List<String> levelNames = [
   'Anuradhapura',
-  'Jaffna',
   'Galle',
   'Nuwara Eliya',
-  'Sigiriya',
+  'Matale',
   'Kandy',
+  'Trincomalee',
+  'Jaffna',
+  'Gampaha',
+  'Batticaloa',
+  'Matara',
+  'Ratnapura',
+  'Kalutara',
+  'Badulla',
+  'Kurunegala',
+  'Polonnaruwa',
+  'Hambantota',
+  'Ampara',
+  'Mannar',
+  'Vavuniya',
+  'Puttalam',
+  'Monaragala',
+  'Kilinochchi'
+  'Kegalle',
+  'Mullaitivu',
   'Colombo',
 ];
 
@@ -192,105 +226,380 @@ const Map<int, Map<String, dynamic>> difficultyLevels = {
     'buildingGap': 350.0,
     'enemySpawnInterval': 4.0,
     'groundScrollingSpeed': 75.0,
-    'enemySpeedMultiplier': 0.7, // Much slower than original
+    'enemySpeedMultiplier': 0.7,
     'levelName': 'Level 1',
     'levelRange': '0-80',
-    'backgroundImage': 'background_level1.jpg',
+    'backgroundImage': 'background_level1.png',
     'groundImage': 'ground_level1.jpg',
     'environmentName': 'Anuradhapura',
   },
   80: {
     // Level 2 (80-199 points) - Easy challenge
-    'buildingInterval': 3.2,
-    'buildingGap': 325.0,
+    'buildingInterval': 3.5,
+    'buildingGap': 340.0,
     'enemySpawnInterval': 3.5,
-    'groundScrollingSpeed': 90.0,
-    'enemySpeedMultiplier': 0.8, // Slower than original
+    'groundScrollingSpeed': 85.0,
+    'enemySpeedMultiplier': 0.8,
     'levelName': 'Level 2',
     'levelRange': '80-200',
-    'backgroundImage': 'background_level2.jpg',
+    'backgroundImage': 'background_level2.png',
     'groundImage': 'ground_level2.jpg',
-    'environmentName': 'Jaffna',
+    'environmentName': 'Galle',
   },
   200: {
     // Level 3 (200-349 points) - Mild challenge
-    'buildingInterval': 3.0,
-    'buildingGap': 300.0,
-    'enemySpawnInterval': 3.00,
-    'groundScrollingSpeed': 105.0,
-    'enemySpeedMultiplier': 0.9, // Slightly slower
+    'buildingInterval': 3.2,
+    'buildingGap': 330.0,
+    'enemySpawnInterval': 3.2,
+    'groundScrollingSpeed': 95.0,
+    'enemySpeedMultiplier': 0.9,
     'levelName': 'Level 3',
     'levelRange': '200-350',
-    'backgroundImage': 'background_level3.jpg',
+    'backgroundImage': 'background_level3.png',
     'groundImage': 'ground_level3.jpg',
-    'environmentName': 'Galle',
+    'environmentName': 'Nuwara Eliya',
   },
   350: {
     // Level 4 (350-599 points) - Moderate challenge
-    'buildingInterval': 2.6,
-    'buildingGap': 285.0,
-    'enemySpawnInterval': 2.75,
-    'groundScrollingSpeed': 120.0,
-    'enemySpeedMultiplier': 1.0, // Base speed
+    'buildingInterval': 3.0,
+    'buildingGap': 320.0,
+    'enemySpawnInterval': 3.0,
+    'groundScrollingSpeed': 105.0,
+    'enemySpeedMultiplier': 1.0,
     'levelName': 'Level 4',
     'levelRange': '350-600',
-    'backgroundImage': 'background_level4.jpg',
+    'backgroundImage': 'background_level4.png',
     'groundImage': 'ground_level4.jpg',
-    'environmentName': 'Nuwara Eliya',
+    'environmentName': 'Matale',
   },
   600: {
     // Level 5 (600-999 points) - Challenging but manageable
-    'buildingInterval': 2.4,
-    'buildingGap': 270.0,
-    'enemySpawnInterval': 2.25,
-    'groundScrollingSpeed': 135.0,
-    'enemySpeedMultiplier': 1.1, // 10% faster than base
+    'buildingInterval': 2.8,
+    'buildingGap': 310.0,
+    'enemySpawnInterval': 2.8,
+    'groundScrollingSpeed': 115.0,
+    'enemySpeedMultiplier': 1.1,
     'levelName': 'Level 5',
     'levelRange': '600-1000',
-    'backgroundImage': 'background_level5.jpg',
+    'backgroundImage': 'background_level5.png',
     'groundImage': 'ground_level5.jpg',
-    'environmentName': 'Sigiriya',
+    'environmentName': 'Kandy',
   },
   1000: {
     // Level 6 (1000-1499 points) - Hard challenge
-    'buildingInterval': 2.2,
-    'buildingGap': 250.0,
-    'enemySpawnInterval': 2.00,
-    'groundScrollingSpeed': 150.0,
-    'enemySpeedMultiplier': 1.2, // 20% faster than base
+    'buildingInterval': 2.6,
+    'buildingGap': 300.0,
+    'enemySpawnInterval': 2.6,
+    'groundScrollingSpeed': 125.0,
+    'enemySpeedMultiplier': 1.2,
     'levelName': 'Level 6',
     'levelRange': '1000-1500',
-    'backgroundImage': 'background_level6.jpg',
+    'backgroundImage': 'background_level6.png',
     'groundImage': 'ground_level6.jpg',
-    'environmentName': 'Kandy',
+    'environmentName': 'Trincomalee',
   },
   1500: {
     // Level 7 (1500-1999 points) - Expert challenge
-    'buildingInterval': 2.0,
-    'buildingGap': 230.0,
-    'enemySpawnInterval': 1.75,
-    'groundScrollingSpeed': 165.0,
-    'enemySpeedMultiplier': 1.5, // 30% faster than base
+    'buildingInterval': 2.4,
+    'buildingGap': 290.0,
+    'enemySpawnInterval': 2.4,
+    'groundScrollingSpeed': 135.0,
+    'enemySpeedMultiplier': 1.3,
     'levelName': 'Level 7',
     'levelRange': '1500-2000',
-    'backgroundImage': 'background_level7.jpg',
+    'backgroundImage': 'background_level7.png',
     'groundImage': 'ground_level7.jpg',
-    'environmentName': 'Colombo',
+    'environmentName': 'Jaffna',
   },
   2000: {
-    // Master level (2000+ points) - Extreme challenge for advanced players
+    // Level 8 (2000-2499 points)
+    'buildingInterval': 2.2,
+    'buildingGap': 280.0,
+    'enemySpawnInterval': 2.2,
+    'groundScrollingSpeed': 145.0,
+    'enemySpeedMultiplier': 1.4,
+    'levelName': 'Level 8',
+    'levelRange': '2000-2500',
+    'backgroundImage': 'background_level8.png',
+    'groundImage': 'ground_level5.jpg',
+    'environmentName': 'Gampaha',
+  },
+  2500: {
+    // Level 9 (2500-2999 points)
+    'buildingInterval': 2.0,
+    'buildingGap': 270.0,
+    'enemySpawnInterval': 2.0,
+    'groundScrollingSpeed': 155.0,
+    'enemySpeedMultiplier': 1.5,
+    'levelName': 'Level 9',
+    'levelRange': '2500-3000',
+    'backgroundImage': 'background_level9.png',
+    'groundImage': 'ground_level3.jpg',
+    'environmentName': 'Batticaloa',
+  },
+  3000: {
+    // Level 10 (3000-3499 points)
+    'buildingInterval': 1.9,
+    'buildingGap': 260.0,
+    'enemySpawnInterval': 1.9,
+    'groundScrollingSpeed': 165.0,
+    'enemySpeedMultiplier': 1.6,
+    'levelName': 'Level 10',
+    'levelRange': '3000-3500',
+    'backgroundImage': 'background_level10.png',
+    'groundImage': 'ground_level2.jpg',
+    'environmentName': 'Matara',
+  },
+  3500: {
+    // Level 11 (3500-3999 points)
     'buildingInterval': 1.8,
+    'buildingGap': 250.0,
+    'enemySpawnInterval': 1.8,
+    'groundScrollingSpeed': 175.0,
+    'enemySpeedMultiplier': 1.7,
+    'levelName': 'Level 11',
+    'levelRange': '3500-4000',
+    'backgroundImage': 'background_level11.png',
+    'groundImage': 'ground_level1.jpg',
+    'environmentName': 'Ratnapura',
+  },
+  4000: {
+    // Level 12 (4000-4499 points)
+    'buildingInterval': 1.7,
+    'buildingGap': 240.0,
+    'enemySpawnInterval': 1.7,
+    'groundScrollingSpeed': 185.0,
+    'enemySpeedMultiplier': 1.8,
+    'levelName': 'Level 12',
+    'levelRange': '4000-4500',
+    'backgroundImage': 'background_level12.png',
+    'groundImage': 'ground_level16.jpg',
+    'environmentName': 'Kalutara',
+  },
+  4500: {
+    // Level 13 (4500-4999 points)
+    'buildingInterval': 1.6,
+    'buildingGap': 230.0,
+    'enemySpawnInterval': 1.6,
+    'groundScrollingSpeed': 195.0,
+    'enemySpeedMultiplier': 1.9,
+    'levelName': 'Level 13',
+    'levelRange': '4500-5000',
+    'backgroundImage': 'background_level13.png',
+    'groundImage': 'ground_level7.jpg',
+    'environmentName': 'Badulla',
+  },
+  5000: {
+    // Level 14 (5000-5499 points)
+    'buildingInterval': 1.5,
     'buildingGap': 220.0,
     'enemySpawnInterval': 1.5,
-    'groundScrollingSpeed': 180.0,
-    'enemySpeedMultiplier': 1.8, // 40% faster than base
+    'groundScrollingSpeed': 205.0,
+    'enemySpeedMultiplier': 2.0,
+    'levelName': 'Level 14',
+    'levelRange': '5000-5500',
+    'backgroundImage': 'background_level14.png',
+    'groundImage': 'ground_level3.jpg',
+    'environmentName': 'Kurunegala',
+  },
+  5500: {
+    // Level 15 (5500-5999 points)
+    'buildingInterval': 1.4,
+    'buildingGap': 210.0,
+    'enemySpawnInterval': 1.4,
+    'groundScrollingSpeed': 215.0,
+    'enemySpeedMultiplier': 2.1,
+    'levelName': 'Level 15',
+    'levelRange': '5500-6000',
+    'backgroundImage': 'background_level15.png',
+    'groundImage': 'ground_level5.jpg',
+    'environmentName': 'Polonnaruwa',
+  },
+  6000: {
+    // Level 16 (6000-6499 points)
+    'buildingInterval': 1.3,
+    'buildingGap': 200.0,
+    'enemySpawnInterval': 1.3,
+    'groundScrollingSpeed': 225.0,
+    'enemySpeedMultiplier': 2.2,
+    'levelName': 'Level 16',
+    'levelRange': '6000-6500',
+    'backgroundImage': 'background_level16.png',
+    'groundImage': 'ground_level6.jpg',
+    'environmentName': 'Hambantota',
+  },
+  6500: {
+    // Level 17 (6500-6999 points)
+    'buildingInterval': 1.2,
+    'buildingGap': 190.0,
+    'enemySpawnInterval': 1.2,
+    'groundScrollingSpeed': 235.0,
+    'enemySpeedMultiplier': 2.3,
+    'levelName': 'Level 17',
+    'levelRange': '6500-7000',
+    'backgroundImage': 'background_level17.png',
+    'groundImage': 'ground_level2.jpg',
+    'environmentName': 'Ampara',
+  },
+  7000: {
+    // Level 18 (7000-7499 points)
+    'buildingInterval': 1.1,
+    'buildingGap': 180.0,
+    'enemySpawnInterval': 1.1,
+    'groundScrollingSpeed': 245.0,
+    'enemySpeedMultiplier': 2.4,
+    'levelName': 'Level 18',
+    'levelRange': '7000-7500',
+    'backgroundImage': 'background_level18.png',
+    'groundImage': 'ground_level1.jpg',
+    'environmentName': 'Mannar',
+  },
+  7500: {
+    // Level 19 (7500-7999 points)
+    'buildingInterval': 1.0,
+    'buildingGap': 170.0,
+    'enemySpawnInterval': 1.0,
+    'groundScrollingSpeed': 255.0,
+    'enemySpeedMultiplier': 2.5,
+    'levelName': 'Level 19',
+    'levelRange': '7500-8000',
+    'backgroundImage': 'background_level19.png',
+    'groundImage': 'ground_level6.jpg',
+    'environmentName': 'Vavuniya',
+  },
+  8000: {
+    // Level 20 (8000-8499 points)
+    'buildingInterval': 0.9,
+    'buildingGap': 160.0,
+    'enemySpawnInterval': 0.9,
+    'groundScrollingSpeed': 265.0,
+    'enemySpeedMultiplier': 2.6,
+    'levelName': 'Level 20',
+    'levelRange': '8000-8500',
+    'backgroundImage': 'background_level20.png',
+    'groundImage': 'ground_level7.jpg',
+    'environmentName': 'Puttalam',
+  },
+  8500: {
+    // Level 21 (8500-8999 points)
+    'buildingInterval': 0.8,
+    'buildingGap': 150.0,
+    'enemySpawnInterval': 0.8,
+    'groundScrollingSpeed': 275.0,
+    'enemySpeedMultiplier': 2.7,
+    'levelName': 'Level 21',
+    'levelRange': '8500-9000',
+    'backgroundImage': 'background_level21.png',
+    'groundImage': 'ground_level3.jpg',
+    'environmentName': 'Monaragala',
+  },
+  9000: {
+    // Level 22 (9000-9499 points)
+    'buildingInterval': 0.7,
+    'buildingGap': 140.0,
+    'enemySpawnInterval': 0.7,
+    'groundScrollingSpeed': 285.0,
+    'enemySpeedMultiplier': 2.8,
+    'levelName': 'Level 22',
+    'levelRange': '9000-9500',
+    'backgroundImage': 'background_level22.png',
+    'groundImage': 'ground_level4.jpg',
+    'environmentName': 'Kilinochchi',
+  },
+  9500: {
+    // Level 23 (9500-9999 points)
+    'buildingInterval': 0.6,
+    'buildingGap': 130.0,
+    'enemySpawnInterval': 0.6,
+    'groundScrollingSpeed': 295.0,
+    'enemySpeedMultiplier': 2.9,
+    'levelName': 'Level 23',
+    'levelRange': '9500-10000',
+    'backgroundImage': 'background_level23.png',
+    'groundImage': 'ground_level1.jpg',
+    'environmentName': 'Kegalle',
+  },
+  10000: {
+    // Level 24 (10000+ points) - Ultimate challenge
+    'buildingInterval': 0.5,
+    'buildingGap': 120.0,
+    'enemySpawnInterval': 0.5,
+    'groundScrollingSpeed': 300.0,
+    'enemySpeedMultiplier': 3.0,
     'levelName': 'Master Level',
-    'levelRange': '2000+',
-    'backgroundImage': 'background_level7.jpg', // Reuse Colombo background
-    'groundImage': 'ground_level7.jpg', // Reuse Colombo ground
-    'environmentName': 'Colombo Elite',
+    'levelRange': '10000+',
+    'backgroundImage': 'background_level24.png',
+    'groundImage': 'ground_level6.jpg',
+    'environmentName': 'Colombo',
   },
 };
+
+// Function to get difficulty settings beyond defined thresholds
+Map<String, dynamic> getDifficultyForScore(int score) {
+  // Find the appropriate difficulty level based on score
+  int thresholdKey = 0;
+
+  for (int threshold in difficultyLevels.keys) {
+    if (score >= threshold) {
+      thresholdKey = threshold;
+    } else {
+      break;
+    }
+  }
+
+  // Get the base difficulty settings
+  Map<String, dynamic> settings = Map.from(difficultyLevels[thresholdKey]!);
+
+  // For scores beyond 10000, scale difficulty gradually
+  if (score > 10000) {
+    // Calculate scaling factor - increases as score grows, but at a diminishing rate
+    double scalingFactor = 1.0 + (score - 10000) / 5000; // Caps at 3x at 20000 points
+
+    // Apply scaling to difficulty parameters (limit to reasonable values)
+    settings['buildingInterval'] = max(
+      0.3,
+      settings['buildingInterval'] / scalingFactor,
+    );
+    settings['buildingGap'] = max(
+      100.0,
+      settings['buildingGap'] / scalingFactor,
+    );
+    settings['enemySpawnInterval'] = max(
+      0.3,
+      settings['enemySpawnInterval'] / scalingFactor,
+    );
+    settings['groundScrollingSpeed'] = min(
+      350.0,
+      settings['groundScrollingSpeed'] * scalingFactor,
+    );
+    settings['enemySpeedMultiplier'] = min(
+      4.0,
+      settings['enemySpeedMultiplier'] * sqrt(scalingFactor),
+    );
+
+    // Update level info
+    settings['levelName'] = 'Master Level';
+    settings['levelRange'] = '${10000}+';
+    settings['environmentName'] = 'Colombo Elite';
+  }
+
+  return settings;
+}
+
+// Helper function for getDifficultyForScore
+double max(double a, double b) {
+  return a > b ? a : b;
+}
+
+// Helper function for getDifficultyForScore
+double min(double a, double b) {
+  return a < b ? a : b;
+}
+
+// Helper function for getDifficultyForScore
+double sqrt(double x) {
+  return x * 0.5 + 0.5; // Simple approximation of square root curve
+}
 
 // Coin constants
 const double coinSize = 30;
@@ -328,72 +637,3 @@ const List<String> vehicleImages = [
   'vehicle8.png',
   'vehicle9.png',
 ];
-
-// Function to get difficulty settings beyond defined thresholds
-// Add this function to handle scores above 2000
-Map<String, dynamic> getDifficultyForScore(int score) {
-  // Find the appropriate difficulty level based on score
-  int thresholdKey = 0;
-
-  for (int threshold in difficultyLevels.keys) {
-    if (score >= threshold) {
-      thresholdKey = threshold;
-    } else {
-      break;
-    }
-  }
-
-  // Get the base difficulty settings
-  Map<String, dynamic> settings = Map.from(difficultyLevels[thresholdKey]!);
-
-  // For scores beyond 2000, scale difficulty gradually
-  if (score > 2000) {
-    // Calculate scaling factor - increases as score grows, but at a diminishing rate
-    double scalingFactor =
-        1.0 + (score - 2000) / 4000; // Caps at 1.5x at 6000 points
-
-    // Apply scaling to difficulty parameters (limit to reasonable values)
-    settings['buildingInterval'] = max(
-      1.5,
-      settings['buildingInterval'] / scalingFactor,
-    );
-    settings['buildingGap'] = max(
-      180.0,
-      settings['buildingGap'] / scalingFactor,
-    );
-    settings['enemySpawnInterval'] = max(
-      0.8,
-      settings['enemySpawnInterval'] / scalingFactor,
-    );
-    settings['groundScrollingSpeed'] = min(
-      250.0,
-      settings['groundScrollingSpeed'] * scalingFactor,
-    );
-    settings['enemySpeedMultiplier'] = min(
-      1.8,
-      settings['enemySpeedMultiplier'] * sqrt(scalingFactor),
-    );
-
-    // Update level info
-    settings['levelName'] = 'Master Level';
-    settings['levelRange'] = '${2000}+';
-    settings['environmentName'] = 'Colombo Elite';
-  }
-
-  return settings;
-}
-
-// Helper function for getDifficultyForScore
-double max(double a, double b) {
-  return a > b ? a : b;
-}
-
-// Helper function for getDifficultyForScore
-double min(double a, double b) {
-  return a < b ? a : b;
-}
-
-// Helper function for getDifficultyForScore
-double sqrt(double x) {
-  return x * 0.5 + 0.5; // Simple approximation of square root curve
-}
