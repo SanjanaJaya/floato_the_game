@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:floato_the_game/components/background.dart';
 import 'package:floato_the_game/components/building_manager.dart';
@@ -41,6 +42,9 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   late CoinDisplay coinDisplay;
   final AudioManager _audioManager = AudioManager();
   final int selectedRocketType;
+
+  // Add this at the top of the floato class
+  bool _assetsLoaded = false;
 
   // Control zones
   late Rect dragZone;
@@ -87,49 +91,47 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
   // Add this to the floato class
   double get abilityDuration => _abilityDuration;
 
+  // Update the onLoad method to check for preloaded assets
   @override
   FutureOr<void> onLoad() async {
     print('Game initialized with rocket type: $selectedRocketType');
-
+    // Check if assets are preloaded
+    if (!_assetsLoaded) {
+      try {
+        await Flame.images.ready(); // Wait for all images to be loaded
+        _assetsLoaded = true;
+      } catch (e) {
+        print('Error loading assets: $e');
+        // Handle error or proceed with loading assets on demand
+      }
+    }
     // Start background music
     _audioManager.playBackgroundMusic();
-
     // Initialize coins
     coins = await PreferencesHelper.getCoins();
     coinManager = CoinManager();
     add(coinManager);
-
     background = Background(size);
     add(background);
-
     rocket = Rocket(rocketType: selectedRocketType);
     add(rocket);
-
     ground = Ground();
     add(ground);
-
     vehicleManager = VehicleManager();
     add(vehicleManager);
-
     buildingManager = BuildingManager();
     add(buildingManager);
-
     scoreText = ScoreText();
     add(scoreText);
-
     // Initialize coin display with image
     coinDisplay = CoinDisplay();
     add(coinDisplay);
-
     // Define responsive control zones
     dragZone = Rect.fromLTWH(0, 0, size.x * 0.66, size.y);
     shootZone = Rect.fromLTWH(size.x * 0.66, 0, size.x * 0.34, size.y);
-
     // Add pause button overlay
     overlays.add('pauseButton');
-
     add(AbilityIndicator());
-
     // Check if tutorial is needed
     bool needsTutorial = await PreferencesHelper.hasTutorialBeenSeen();
     if (!needsTutorial) {
@@ -139,7 +141,6 @@ class floato extends FlameGame with TapDetector, DragCallbacks, HasCollisionDete
     } else {
       showCountdown();
     }
-
     // Initialize difficulty settings
     updateDifficultySettings();
   }

@@ -1,3 +1,50 @@
+// Add this at the top of constants.dart
+import 'package:flame/flame.dart';
+import 'package:floato_the_game/audio_manager.dart';
+
+final List<String> allAssetPaths = [
+  // Rocket images
+  ...rocketImages.map((img) => 'assets/images/bird/$img'),
+  // Background images
+  ...backgroundImages.map((img) => 'assets/images/$img'),
+  // Ground images
+  ...groundImages.map((img) => 'assets/images/$img'),
+  // Building images
+  ...buildingImages.map((img) => 'assets/images/$img'),
+  // Enemy plane images
+  ...enemyPlaneImages.map((img) => 'assets/images/$img'),
+  // Vehicle images
+  ...vehicleImages.map((img) => 'assets/images/$img'),
+  // Ability images
+  'assets/images/abilities/double_score.png',
+  'assets/images/abilities/invincibility.png',
+  'assets/images/abilities/slow_motion.png',
+  'assets/images/abilities/rapid_fire.png',
+  // Coin images
+  'assets/images/coins/bronze.png',
+  'assets/images/coins/silver.png',
+  'assets/images/coins/gold.png',
+  // Explosion images
+  'assets/images/explosion/explosion1.png',
+  'assets/images/explosion/explosion2.png',
+  'assets/images/explosion/explosion3.png',
+  // Missile images
+  'assets/images/bird/missile1.png',
+  'assets/images/bird/missile2.png',
+  'assets/images/bird/missile3.png',
+  'assets/images/bird/missile4.png',
+  'assets/images/bird/missile5.png',
+  'assets/images/bird/missile6.png',
+  'assets/images/bird/missile7.png',
+  'assets/images/bird/missile8.png',
+];
+
+// Add this function to check if all assets are loaded
+Future<void> preloadAllAssets() async {
+  final images = await Flame.images.loadAll(allAssetPaths);
+  final audio = AudioManager();
+  await audio.init(); // Preload audio files
+}
 // Rocket constants
 const double rocketStartX = 100;
 const double rocketStartY = 100;

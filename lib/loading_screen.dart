@@ -4,6 +4,8 @@ import 'package:floato_the_game/language_manager.dart';
 import 'package:floato_the_game/audio_manager.dart';
 import 'package:video_player/video_player.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:flame/flame.dart';
+import 'package:floato_the_game/constants.dart';
 import 'dart:math' show Random;
 
 class LoadingScreen extends StatefulWidget {
@@ -30,6 +32,7 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
   bool _sinhalaCutsceneInitialized = false;
   bool _loadingFailed = false;
   bool _isDisposed = false;
+  bool _assetsPreloaded = false;
 
   // Ad related variables
   BannerAd? _bannerAd;
@@ -172,17 +175,26 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
       // Start audio preloading
       final audioFuture = _audioManager.init();
 
+      // Start asset preloading
+      final assetFuture = preloadAllAssets();
+
       // Simulate progress updates while loading
-      const totalSteps = 10;
+      const totalSteps = 20;
       for (int i = 0; i <= totalSteps; i++) {
-        await Future.delayed(const Duration(milliseconds: 200));
+        await Future.delayed(const Duration(milliseconds: 100));
         if (!_isDisposed && mounted) {
           setState(() => _progressValue = i / totalSteps);
         }
       }
 
-      // Wait for audio to finish loading
-      await audioFuture;
+      // Wait for all preloading to finish
+      await Future.wait([audioFuture, assetFuture]);
+
+      if (!_isDisposed && mounted) {
+        setState(() {
+          _assetsPreloaded = true;
+        });
+      }
 
       // Run additional initialization if provided
       if (widget.onInitialization != null) {
@@ -237,7 +249,7 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
                   height: _bannerAd!.size.height.toDouble(),
                   child: AdWidget(ad: _bannerAd!),
                 ),
-              const Spacer(flex: 2), // Increased spacer to push content down
+              const Spacer(flex: 2),
               FadeTransition(
                 opacity: _tipFadeAnimation,
                 child: Container(
@@ -297,7 +309,7 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
                   ),
                 ),
               ),
-              SizedBox(height: screenHeight * 0.06), // Increased spacing here
+              SizedBox(height: screenHeight * 0.06),
               Text(
                 LanguageManager.getText('loadingGame'),
                 style: TextStyle(
@@ -354,7 +366,7 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
                   ),
                 ),
               ),
-              const Spacer(flex: 3), // Adjusted spacer to balance the layout
+              const Spacer(flex: 3),
             ],
           ),
         ),
