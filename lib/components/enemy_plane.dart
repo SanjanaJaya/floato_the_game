@@ -149,15 +149,15 @@ class EnemyPlane extends SpriteAnimationComponent with CollisionCallbacks, HasGa
     // - Planes with health 350+: 15 points (highest tier)
 
     if (maxHealth >= 350) {
-      return 12; // Highest tier planes
+      return 15; // Highest tier planes
     } else if (maxHealth >= 300) {
-      return 8; // High tier planes
+      return 10; // High tier planes
     } else if (maxHealth >= 250) {
-      return 6;  // Medium-high tier planes
+      return 8;  // Medium-high tier planes
     } else if (maxHealth >= 200) {
-      return 4;  // Medium tier planes
+      return 6;  // Medium tier planes
     } else {
-      return 2;  // Basic planes (default)
+      return 4;  // Basic planes (default)
     }
   }
 
