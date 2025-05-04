@@ -3,6 +3,7 @@ import 'package:floato_the_game/menu_screen.dart';
 import 'package:floato_the_game/language_manager.dart';
 import 'package:floato_the_game/audio_manager.dart';
 import 'package:video_player/video_player.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:math' show Random;
 
 class LoadingScreen extends StatefulWidget {
@@ -29,6 +30,10 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
   bool _sinhalaCutsceneInitialized = false;
   bool _loadingFailed = false;
   bool _isDisposed = false;
+
+  // Ad related variables
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
 
   final List<String> _gameTips = [
     LanguageManager.getText('tipCollectAbilities'),
@@ -64,6 +69,9 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
     // Preload cutscene videos
     _preloadCutscenes();
 
+    // Load banner ad
+    _loadBannerAd();
+
     Future.delayed(const Duration(milliseconds: 300), () {
       if (!_isDisposed) {
         _tipAnimationController.forward();
@@ -71,6 +79,30 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
     });
 
     _startLoading();
+  }
+
+  void _loadBannerAd() {
+    _bannerAd = BannerAd(
+      adUnitId: 'ca-app-pub-2235164538831559/2281505799',
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          if (!_isDisposed && mounted) {
+            setState(() {
+              _isAdLoaded = true;
+            });
+          }
+          print('Banner ad loaded successfully');
+        },
+        onAdFailedToLoad: (ad, error) {
+          print('Banner ad failed to load: $error');
+          ad.dispose();
+        },
+      ),
+    );
+
+    _bannerAd?.load();
   }
 
   Future<void> _initializeVideoController() async {
@@ -126,6 +158,7 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
     _tipAnimationController.dispose();
     _englishCutsceneController?.dispose();
     _sinhalaCutsceneController?.dispose();
+    _bannerAd?.dispose();
     // Don't dispose the main video controller here - it's either passed to MenuScreen or already disposed
     super.dispose();
   }
@@ -196,6 +229,14 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
         child: SafeArea(
           child: Column(
             children: [
+              // Banner ad at the top
+              if (_isAdLoaded && _bannerAd != null)
+                Container(
+                  alignment: Alignment.center,
+                  width: _bannerAd!.size.width.toDouble(),
+                  height: _bannerAd!.size.height.toDouble(),
+                  child: AdWidget(ad: _bannerAd!),
+                ),
               const Spacer(flex: 2), // Increased spacer to push content down
               FadeTransition(
                 opacity: _tipFadeAnimation,

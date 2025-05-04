@@ -13,9 +13,15 @@ class AdManager {
   static InterstitialAd? _interstitialAd;
   static bool _isAdLoaded = false;
 
+  // Banner ad ID for loading screen
+  static const String bannerAdUnitId = 'ca-app-pub-2235164538831559/9968424124';
+
+  // Interstitial ad ID
+  static const String interstitialAdUnitId = 'ca-app-pub-2235164538831559/3346766334';
+
   static void loadInterstitialAd() {
     InterstitialAd.load(
-      adUnitId: 'ca-app-pub-2235164538831559/3346766334',
+      adUnitId: interstitialAdUnitId,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
@@ -56,7 +62,14 @@ class AdManager {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await MobileAds.instance.initialize(); // Initialize Mobile Ads SDK
+
+  // Initialize Mobile Ads SDK
+  await MobileAds.instance.initialize();
+
+  // Enable test mode for development (remove for production)
+  // MobileAds.instance.updateRequestConfiguration(
+  //   RequestConfiguration(testDeviceIds: ['YOUR_TEST_DEVICE_ID']),
+  // );
 
   // Load language preference
   final prefs = await SharedPreferences.getInstance();
