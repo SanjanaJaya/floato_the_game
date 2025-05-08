@@ -1,4 +1,4 @@
-package com.example.floato_the_game
+package com.horizonforge.floato_the_game
 
 import io.flutter.embedding.android.FlutterActivity
 
