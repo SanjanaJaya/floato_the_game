@@ -83,6 +83,6 @@ Feel free to contribute or report issues.
 
   <div>
     <img src="assets\Display Images\5.jpg" width="600" alt="Colelctables"/>
-    <p><b>Colelctables</b></p>
+    <p><b>Collectables</b></p>
   </div>
 </div> 
